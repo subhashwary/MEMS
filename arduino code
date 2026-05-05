@@ -1,0 +1,22 @@
+int sensorPin = A0;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int raw = analogRead(sensorPin);
+
+  // Convert to voltage
+  float voltage = raw * (5.0 / 1023.0);
+
+  // Example conversion (CHANGE based on your sensor)
+  float pressure = (voltage - 0.5) * (100.0 / 4.0);  
+  // Example: 0.5V → 0 kPa, 4.5V → 100 kPa
+
+  Serial.print(voltage);
+  Serial.print(",");
+  Serial.println(pressure);
+
+  delay(500);
+}
