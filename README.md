@@ -1,2 +1,2 @@
 # MEMS
-Environmental Stress Screening
+Environmental Stress Screening (ESS)
