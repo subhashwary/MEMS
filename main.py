@@ -1,243 +1,109 @@
-import serial
-import time
-
-ports = ["COM5", "COM6", "COM11", "COM12"]
-
-for port in ports:
-    try:
-        ser = serial.Serial(port, baudrate=9600, timeout=2)
-        time.sleep(1)
-
-        ser.write(b"*IDN?\n")
-        time.sleep(0.5)
-
-        response = ser.readline().decode(errors='ignore').strip()
-
-        print(f"{port}: {response if response else 'No response'}")
-        ser.close()
-
-    except Exception as e:
-        print(f"{port}: Not available ({e})")
-
-import serial
-import time
-
-from threading import Lock
-
-serial_lock = Lock()
-
-class SCPIInstrument:
-
-    def __init__(self, port, baudrate=115200, timeout=2):
-
-        self.port = port
-
-        self.ser = serial.Serial(
-            port=port,
-            baudrate=baudrate,
-            timeout=timeout
-        )
-
-        time.sleep(1)
-
-    # -------------------------------------------------
-    # WRITE COMMAND
-    # -------------------------------------------------
-    def write(self, cmd):
-
-        if not cmd.endswith("\n"):
-            cmd += "\n"
-
-        self.ser.write(cmd.encode())
-
-    # -------------------------------------------------
-    # QUERY COMMAND
-    # -------------------------------------------------
-    def query(self, cmd):
-
-        with serial_lock:
-
-            try:
-                # Clear old data
-                self.ser.reset_input_buffer()
-                self.ser.reset_output_buffer()
-
-                # Add newline automatically
-                if not cmd.endswith("\n"):
-                    cmd += "\n"
-
-                # Send command
-                self.ser.write(cmd.encode())
-
-                # Wait for full response
-                time.sleep(0.3)
-
-                # Read response
-                response = self.ser.readline().decode(
-                    errors='ignore'
-                ).strip()
-
-                print(f"SCPI QUERY [{cmd.strip()}] -> {response}")
-
-                return response
-
-            except Exception as e:
-
-                print("SCPI Query Error:", e)
-
-                return "ERROR"
-
-    # -------------------------------------------------
-    # CLOSE PORT
-    # -------------------------------------------------
-    def close(self):
-
-        if self.ser.is_open:
-            self.ser.close()
-
-
-# =====================================================
-# POWER SUPPLY CLASS
-# =====================================================
-
-class PowerSupply(SCPIInstrument):
-
-    def idn(self):
-        return self.query("*IDN?")
-
-    def set_voltage(self, voltage):
-        self.write(f"VSET1:{voltage}")
-
-    def set_current(self, current):
-        self.write(f"ISET1:{current}")
-
-    def get_voltage(self):
-        return self.query("VOUT1?")
-
-    def get_current(self):
-        return self.query("IOUT1?")
-
-    def output_on(self):
-        self.write("OUT1")
-
-    def output_off(self):
-        self.write("OUT0")
-
-
-# =====================================================
-# MULTIMETER CLASS
-# =====================================================
-
-class Multimeter(SCPIInstrument):
-
-    def idn(self):
-
-        return self.query("*IDN?")
-
-    def measure_voltage(self):
-
-        try:
-            with serial_lock:
-
-                # Clear old garbage data
-                self.ser.reset_input_buffer()
-
-                # Send command
-                self.ser.write(b"MEAS:VOLT:DC?\n")
-
-                # Small wait for full response
-                time.sleep(0.2)
-
-                # Read full line
-                response = self.ser.readline().decode(errors='ignore').strip()
-
-                print("RAW RESPONSE:", response)
-
-                # Clean unwanted characters
-                response = response.replace('\r', '').replace('\n', '')
-
-                # Reject incomplete scientific notation
-                if response.endswith('E') or response.endswith('+') or response.endswith('-'):
-                    raise ValueError(f"Incomplete reading: {response}")
-
-                value = float(response)
-
-                return round(value, 4)
-
-        except Exception as e:
-
-            print("Measurement Error:", e)
-
-            return None
-
-
-from instrument import Multimeter
-import time
-
-# CONNECT TO DMM
-dmm = Multimeter("COM3")
-
-# PRINT DMM ID
-print("DMM ID:")
-print(dmm.idn())
-
-print("\nReading Voltage...\n")
-
-while True:
-
-    voltage = dmm.measure_voltage()
-
-    print("Voltage =", voltage, "V")
-
-    time.sleep(1)
-
-
-import serial.tools.list_ports
-
-print("\nAvailable COM Ports:\n")
-
-ports = serial.tools.list_ports.comports()
-
-if len(ports) == 0:
-    print("No COM ports detected.")
-
-else:
-    for port in ports:
-        print(f"Port: {port.device}")
-        print(f"Description: {port.description}")
-        print(f"HWID: {port.hwid}")
-        print("-" * 40)
-
-
-import csv
-import os
-from datetime import datetime
-
-CSV_FILE = "sensor_data.csv"
-
-
-def initialize_csv():
-    if not os.path.exists(CSV_FILE):
-        with open(CSV_FILE, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                "Timestamp",
-                "Pressure_kPa",
-                "DMM_Voltage",
-                "PSU_Voltage",
-                "PSU_Current",
-                "Mode"
-            ])
-
-
-def log_data(pressure, dmm_voltage, psu_voltage, psu_current, mode):
-    with open(CSV_FILE, "a", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow([
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            pressure,
-            dmm_voltage,
-            psu_voltage,
-            psu_current,
-            mode
-        ])
+RAW RESPONSE: +0.210020E+1
+127.0.0.1 - - [01/Jun/2026 10:23:06] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.210019E+1
+127.0.0.1 - - [01/Jun/2026 10:23:09] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.210015E+1
+127.0.0.1 - - [01/Jun/2026 10:23:12] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.259999E+1
+127.0.0.1 - - [01/Jun/2026 10:23:15] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.259992E+1
+127.0.0.1 - - [01/Jun/2026 10:23:17] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.259992E+1
+127.0.0.1 - - [01/Jun/2026 10:23:20] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.259989E+1
+127.0.0.1 - - [01/Jun/2026 10:23:23] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.300063E+1
+127.0.0.1 - - [01/Jun/2026 10:23:26] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.300061E+1
+127.0.0.1 - - [01/Jun/2026 10:23:29] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340067E+1
+127.0.0.1 - - [01/Jun/2026 10:23:32] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340069E+1
+127.0.0.1 - - [01/Jun/2026 10:23:35] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340068E+1
+127.0.0.1 - - [01/Jun/2026 10:23:38] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340065E+1
+127.0.0.1 - - [01/Jun/2026 10:23:40] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340066E+1
+127.0.0.1 - - [01/Jun/2026 10:23:43] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340063E+1
+127.0.0.1 - - [01/Jun/2026 10:23:46] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340059E+1
+127.0.0.1 - - [01/Jun/2026 10:23:49] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340057E+1
+127.0.0.1 - - [01/Jun/2026 10:23:52] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340051E+1
+127.0.0.1 - - [01/Jun/2026 10:23:55] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340046E+1
+127.0.0.1 - - [01/Jun/2026 10:23:58] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340043E+1
+127.0.0.1 - - [01/Jun/2026 10:24:00] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340042E+1
+127.0.0.1 - - [01/Jun/2026 10:24:03] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340039E+1
+127.0.0.1 - - [01/Jun/2026 10:24:06] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340038E+1
+127.0.0.1 - - [01/Jun/2026 10:24:09] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340039E+1
+127.0.0.1 - - [01/Jun/2026 10:24:12] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340034E+1
+127.0.0.1 - - [01/Jun/2026 10:24:15] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +0.340032E+1
+127.0.0.1 - - [01/Jun/2026 10:24:18] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59933E+0
+127.0.0.1 - - [01/Jun/2026 10:24:21] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59930E+0
+127.0.0.1 - - [01/Jun/2026 10:24:23] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59927E+0
+127.0.0.1 - - [01/Jun/2026 10:24:26] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59925E+0
+127.0.0.1 - - [01/Jun/2026 10:24:29] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59924E+0
+127.0.0.1 - - [01/Jun/2026 10:24:32] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59927E+0
+127.0.0.1 - - [01/Jun/2026 10:24:35] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59925E+0
+127.0.0.1 - - [01/Jun/2026 10:24:38] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59923E+0
+127.0.0.1 - - [01/Jun/2026 10:24:41] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59922E+0
+127.0.0.1 - - [01/Jun/2026 10:24:43] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59919E+0
+127.0.0.1 - - [01/Jun/2026 10:24:46] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59915E+0
+127.0.0.1 - - [01/Jun/2026 10:24:49] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59912E+0
+127.0.0.1 - - [01/Jun/2026 10:24:52] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59913E+0
+127.0.0.1 - - [01/Jun/2026 10:24:55] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59912E+0
+127.0.0.1 - - [01/Jun/2026 10:24:58] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59911E+0
+127.0.0.1 - - [01/Jun/2026 10:25:01] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59909E+0
+127.0.0.1 - - [01/Jun/2026 10:25:04] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59906E+0
+127.0.0.1 - - [01/Jun/2026 10:25:06] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59904E+0
+127.0.0.1 - - [01/Jun/2026 10:25:09] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59903E+0
+127.0.0.1 - - [01/Jun/2026 10:25:12] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59904E+0
+127.0.0.1 - - [01/Jun/2026 10:25:15] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59903E+0
+127.0.0.1 - - [01/Jun/2026 10:25:18] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59906E+0
+127.0.0.1 - - [01/Jun/2026 10:25:21] "GET /data HTTP/1.1" 200 -
+RAW RESPONSE: +1.59907E+0
+127.0.0.1 - - [01/Jun/2026 10:25:24] "GET /data HTTP/1.1" 200 -
+
+ *  History restored 
+
+PS D:\Wary\MEMS> (Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned) ; (& d:\Wary\MEMS\venv\Scripts\Activate.ps1)
+(venv) PS D:\Wary\MEMS> python app.py                                                                                                  
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+127.0.0.1 - - [01/Jun/2026 15:22:39] "GET /data HTTP/1.1" 200 -
