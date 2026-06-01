@@ -1,356 +1,243 @@
-from flask import Flask, jsonify, request, render_template, send_file
-import random
+import serial
 import time
-import serial.tools.list_ports
+
+ports = ["COM5", "COM6", "COM11", "COM12"]
+
+for port in ports:
+    try:
+        ser = serial.Serial(port, baudrate=9600, timeout=2)
+        time.sleep(1)
+
+        ser.write(b"*IDN?\n")
+        time.sleep(0.5)
+
+        response = ser.readline().decode(errors='ignore').strip()
+
+        print(f"{port}: {response if response else 'No response'}")
+        ser.close()
+
+    except Exception as e:
+        print(f"{port}: Not available ({e})")
+
+import serial
+import time
 
 from threading import Lock
 
 serial_lock = Lock()
 
-from instrument import PowerSupply, Multimeter
-from logger import initialize_csv, log_data, CSV_FILE
+class SCPIInstrument:
 
-app = Flask(__name__)
+    def __init__(self, port, baudrate=115200, timeout=2):
 
-# =========================================================
-# INITIALIZATION
-# =========================================================
-initialize_csv()
+        self.port = port
 
-# Connect to instruments (replace COM ports with your actual ports)
-psu = None
+        self.ser = serial.Serial(
+            port=port,
+            baudrate=baudrate,
+            timeout=timeout
+        )
 
-dmm = None
+        time.sleep(1)
 
-# =========================================================
-# GLOBAL SYSTEM STATE
-# =========================================================
-system_state = {
-    "mode": "manual",
-    "dmm_running": False,
-    "dmm_voltage": 0.0,
-    "pressure": 0.0,
-    "psu_voltage": 0.0,
-    "psu_current": 0.0,
-    "cycle_start": time.time(),
-    "config": {
-        "initial_off": 5,
-        "on_time": 5,
-        "off_time": 5,
-        "cycles": 10
-    }
-}
+    # -------------------------------------------------
+    # WRITE COMMAND
+    # -------------------------------------------------
+    def write(self, cmd):
 
+        if not cmd.endswith("\n"):
+            cmd += "\n"
 
-# =========================================================
-# WEB PAGE
-# =========================================================
-@app.route('/')
-def index():
-    return render_template('index.html')
+        self.ser.write(cmd.encode())
 
+    # -------------------------------------------------
+    # QUERY COMMAND
+    # -------------------------------------------------
+    def query(self, cmd):
 
-# =========================================================
-# LIVE DATA API
-# =========================================================
-@app.route('/data')
-def data():
-    # Simulated pressure reading (replace with real sensor data)
-    system_state["pressure"] = round(random.uniform(20, 100), 2)
+        with serial_lock:
 
-    # -----------------------------------------------------
-    # AUTO MODE LOGIC
-    # -----------------------------------------------------
-    if system_state["mode"] == "auto":
-        cfg = system_state["config"]
-        elapsed = time.time() - system_state["cycle_start"]
-
-        cycle_period = cfg["on_time"] + cfg["off_time"]
-
-        if elapsed < cfg["initial_off"]:
-            system_state["dmm_running"] = False
-        else:
-            adjusted = elapsed - cfg["initial_off"]
-            position = adjusted % cycle_period
-            system_state["dmm_running"] = position < cfg["on_time"]
-
-    # -----------------------------------------------------
-    # DMM VOLTAGE READING
-    # -----------------------------------------------------
-    if system_state["dmm_running"]:
-        if dmm:
             try:
-                reading = dmm.measure_voltage()
+                # Clear old data
+                self.ser.reset_input_buffer()
+                self.ser.reset_output_buffer()
 
-                if isinstance(reading, (int, float)):
-                    system_state["dmm_voltage"] = reading
+                # Add newline automatically
+                if not cmd.endswith("\n"):
+                    cmd += "\n"
+
+                # Send command
+                self.ser.write(cmd.encode())
+
+                # Wait for full response
+                time.sleep(0.3)
+
+                # Read response
+                response = self.ser.readline().decode(
+                    errors='ignore'
+                ).strip()
+
+                print(f"SCPI QUERY [{cmd.strip()}] -> {response}")
+
+                return response
+
             except Exception as e:
-                print("DMM read error:", e)
-                system_state["dmm_voltage"] = 0.0
-        else:
-            # Simulation mode if DMM not connected
-            system_state["dmm_voltage"] = round(random.uniform(0, 10), 3)
-    else:
-        system_state["dmm_voltage"] = 0.0
 
-    # -----------------------------------------------------
-    # PSU READINGS
-    # -----------------------------------------------------
-    if psu:
+                print("SCPI Query Error:", e)
+
+                return "ERROR"
+
+    # -------------------------------------------------
+    # CLOSE PORT
+    # -------------------------------------------------
+    def close(self):
+
+        if self.ser.is_open:
+            self.ser.close()
+
+
+# =====================================================
+# POWER SUPPLY CLASS
+# =====================================================
+
+class PowerSupply(SCPIInstrument):
+
+    def idn(self):
+        return self.query("*IDN?")
+
+    def set_voltage(self, voltage):
+        self.write(f"VSET1:{voltage}")
+
+    def set_current(self, current):
+        self.write(f"ISET1:{current}")
+
+    def get_voltage(self):
+        return self.query("VOUT1?")
+
+    def get_current(self):
+        return self.query("IOUT1?")
+
+    def output_on(self):
+        self.write("OUT1")
+
+    def output_off(self):
+        self.write("OUT0")
+
+
+# =====================================================
+# MULTIMETER CLASS
+# =====================================================
+
+class Multimeter(SCPIInstrument):
+
+    def idn(self):
+
+        return self.query("*IDN?")
+
+    def measure_voltage(self):
+
         try:
-            system_state["psu_voltage"] = float(psu.get_voltage())
-            system_state["psu_current"] = float(psu.get_current())
+            with serial_lock:
+
+                # Clear old garbage data
+                self.ser.reset_input_buffer()
+
+                # Send command
+                self.ser.write(b"MEAS:VOLT:DC?\n")
+
+                # Small wait for full response
+                time.sleep(0.2)
+
+                # Read full line
+                response = self.ser.readline().decode(errors='ignore').strip()
+
+                print("RAW RESPONSE:", response)
+
+                # Clean unwanted characters
+                response = response.replace('\r', '').replace('\n', '')
+
+                # Reject incomplete scientific notation
+                if response.endswith('E') or response.endswith('+') or response.endswith('-'):
+                    raise ValueError(f"Incomplete reading: {response}")
+
+                value = float(response)
+
+                return round(value, 4)
+
         except Exception as e:
-            print("PSU read error:", e)
 
-    # -----------------------------------------------------
-    # LOG DATA TO CSV
-    # -----------------------------------------------------
-    log_data(
-        system_state["pressure"],
-        system_state["dmm_voltage"],
-        system_state["psu_voltage"],
-        system_state["psu_current"],
-        system_state["mode"]
-    )
+            print("Measurement Error:", e)
 
-    return jsonify(system_state)
+            return None
 
 
-# =========================================================
-# MODE CONTROL
-# =========================================================
-@app.route('/mode', methods=['POST'])
-def set_mode():
-    mode = request.json.get("mode")
+from instrument import Multimeter
+import time
 
-    if mode in ["manual", "auto"]:
-        system_state["mode"] = mode
-        system_state["cycle_start"] = time.time()
-        return jsonify({"status": f"{mode} mode activated"})
+# CONNECT TO DMM
+dmm = Multimeter("COM3")
 
-    return jsonify({"error": "Invalid mode"}), 400
+# PRINT DMM ID
+print("DMM ID:")
+print(dmm.idn())
 
+print("\nReading Voltage...\n")
 
-# =========================================================
-# DMM CONTROL
-# =========================================================
-@app.route('/dmm/start', methods=['POST'])
-def start_dmm():
-    if system_state["mode"] != "manual":
-        return jsonify({"error": "Auto mode active"}), 403
+while True:
 
-    system_state["dmm_running"] = True
-    return jsonify({"status": "DMM started"})
+    voltage = dmm.measure_voltage()
+
+    print("Voltage =", voltage, "V")
+
+    time.sleep(1)
 
 
-@app.route('/dmm/stop', methods=['POST'])
-def stop_dmm():
-    if system_state["mode"] != "manual":
-        return jsonify({"error": "Auto mode active"}), 403
+import serial.tools.list_ports
 
-    system_state["dmm_running"] = False
-    return jsonify({"status": "DMM stopped"})
+print("\nAvailable COM Ports:\n")
 
+ports = serial.tools.list_ports.comports()
 
-# =========================================================
-# POWER SUPPLY CONTROL
-# =========================================================
-@app.route('/psu/start', methods=['POST'])
-def start_psu():
-    data = request.json or {}
+if len(ports) == 0:
+    print("No COM ports detected.")
 
-    voltage = float(data.get("voltage", 5.0))
-    current = float(data.get("current", 0.1))
-
-    if psu:
-        try:
-            psu.set_voltage(voltage)
-            psu.set_current(current)
-            psu.output_on()
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-
-    return jsonify({
-        "status": "PSU started",
-        "voltage": voltage,
-        "current": current
-    })
-
-
-@app.route('/psu/stop', methods=['POST'])
-def stop_psu():
-    if psu:
-        try:
-            psu.output_off()
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-
-    return jsonify({"status": "PSU stopped"})
-
-
-# =========================================================
-# SAVE AUTO MODE CONFIGURATION
-# =========================================================
-@app.route('/config', methods=['POST'])
-def save_config():
-    data = request.json or {}
-
-    system_state["config"] = {
-        "initial_off": int(data.get("initial_off", 5)),
-        "on_time": int(data.get("on_time", 5)),
-        "off_time": int(data.get("off_time", 5)),
-        "cycles": int(data.get("cycles", 10))
-    }
-
-    system_state["cycle_start"] = time.time()
-
-    return jsonify({
-        "status": "Configuration saved",
-        "config": system_state["config"]
-    })
-
-
-# =========================================================
-# DOWNLOAD CSV
-# =========================================================
-@app.route('/download')
-def download():
-    return send_file(CSV_FILE, as_attachment=True)
-
-
-# =========================================================
-# GET INSTRUMENT IDS
-# =========================================================
-@app.route('/id')
-def get_ids():
-    return jsonify({
-        "psu_id": psu.idn() if psu else "Not Connected",
-        "dmm_id": dmm.idn() if dmm else "Not Connected"
-    })
-
-
-# =========================================================
-# GET AVAILABLE COM PORTS
-# =========================================================
-@app.route('/ports')
-def get_ports():
-
-    ports = serial.tools.list_ports.comports()
-
-    port_list = []
-
+else:
     for port in ports:
-        port_list.append({
-            "device": port.device,
-            "description": port.description
-        })
-
-    return jsonify(port_list)
+        print(f"Port: {port.device}")
+        print(f"Description: {port.description}")
+        print(f"HWID: {port.hwid}")
+        print("-" * 40)
 
 
+import csv
+import os
+from datetime import datetime
 
-# =========================================================
-# CONNECT DMM
-# =========================================================
-@app.route('/connect_dmm', methods=['POST'])
-def connect_dmm():
-
-    global dmm
-
-    data = request.json
-
-    com_port = data.get("port")
-
-    BAUDRATES = [9600, 19200, 38400, 57600, 115200]
-
-    # -----------------------------------------
-    # CLOSE OLD CONNECTION FIRST
-    # -----------------------------------------
-    try:
-        if dmm:
-            dmm.close()
-            dmm = None
-    except:
-        pass
-
-    # -----------------------------------------
-    # TRY DIFFERENT BAUDRATES
-    # -----------------------------------------
-    for baud in BAUDRATES:
-
-        test_dmm = None
-
-        try:
-
-            print(f"\nTrying baudrate: {baud}")
-
-            test_dmm = Multimeter(
-                port=com_port,
-                baudrate=baud,
-                timeout=2
-            )
-
-            # give instrument time
-            time.sleep(1)
-
-            response = test_dmm.idn()
-
-            print("RAW ID RESPONSE:", response)
-
-            # ---------------------------------
-            # VALID RESPONSE CHECK
-            # ---------------------------------
-            if response and len(response) > 3:
-
-                dmm = test_dmm
-
-                print("\n================================")
-                print("DMM CONNECTED SUCCESSFULLY")
-                print("PORT:", com_port)
-                print("BAUDRATE:", baud)
-                print("DMM ID:", response)
-                print("================================\n")
-
-                return jsonify({
-                    "status": "connected",
-                    "id": response,
-                    "baudrate": baud
-                })
-
-            else:
-
-                print("Invalid response")
-
-                test_dmm.close()
-
-        except Exception as e:
-
-            print(f"FAILED at {baud}: {e}")
-
-            # IMPORTANT
-            try:
-                if test_dmm:
-                    test_dmm.close()
-            except:
-                pass
-
-    # -----------------------------------------
-    # IF ALL BAUDRATES FAIL
-    # -----------------------------------------
-    dmm = None
-
-    return jsonify({
-        "status": "error",
-        "message": "Could not connect to DMM"
-    }), 500
+CSV_FILE = "sensor_data.csv"
 
 
-# =========================================================
-# MAIN
-# =========================================================
-if __name__ == '__main__':
-    app.run(
-    debug=False,
-    threaded=True
-)
+def initialize_csv():
+    if not os.path.exists(CSV_FILE):
+        with open(CSV_FILE, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                "Timestamp",
+                "Pressure_kPa",
+                "DMM_Voltage",
+                "PSU_Voltage",
+                "PSU_Current",
+                "Mode"
+            ])
+
+
+def log_data(pressure, dmm_voltage, psu_voltage, psu_current, mode):
+    with open(CSV_FILE, "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            pressure,
+            dmm_voltage,
+            psu_voltage,
+            psu_current,
+            mode
+        ])
