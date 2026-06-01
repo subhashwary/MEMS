@@ -1,150 +1,19 @@
-import serial
+from instrument import Multimeter
 import time
 
-from threading import Lock
+# CONNECT TO DMM
+dmm = Multimeter("COM3")
 
-serial_lock = Lock()
+# PRINT DMM ID
+print("DMM ID:")
+print(dmm.idn())
 
-class SCPIInstrument:
+print("\nReading Voltage...\n")
 
-    def __init__(self, port, baudrate=115200, timeout=2):
+while True:
 
-        self.port = port
+    voltage = dmm.measure_voltage()
 
-        self.ser = serial.Serial(
-            port=port,
-            baudrate=baudrate,
-            timeout=timeout
-        )
+    print("Voltage =", voltage, "V")
 
-        time.sleep(1)
-
-    # -------------------------------------------------
-    # WRITE COMMAND
-    # -------------------------------------------------
-    def write(self, cmd):
-
-        if not cmd.endswith("\n"):
-            cmd += "\n"
-
-        self.ser.write(cmd.encode())
-
-    # -------------------------------------------------
-    # QUERY COMMAND
-    # -------------------------------------------------
-    def query(self, cmd):
-
-        with serial_lock:
-
-            try:
-                # Clear old data
-                self.ser.reset_input_buffer()
-                self.ser.reset_output_buffer()
-
-                # Add newline automatically
-                if not cmd.endswith("\n"):
-                    cmd += "\n"
-
-                # Send command
-                self.ser.write(cmd.encode())
-
-                # Wait for full response
-                time.sleep(0.3)
-
-                # Read response
-                response = self.ser.readline().decode(
-                    errors='ignore'
-                ).strip()
-
-                print(f"SCPI QUERY [{cmd.strip()}] -> {response}")
-
-                return response
-
-            except Exception as e:
-
-                print("SCPI Query Error:", e)
-
-                return "ERROR"
-
-    # -------------------------------------------------
-    # CLOSE PORT
-    # -------------------------------------------------
-    def close(self):
-
-        if self.ser.is_open:
-            self.ser.close()
-
-
-# =====================================================
-# POWER SUPPLY CLASS
-# =====================================================
-
-class PowerSupply(SCPIInstrument):
-
-    def idn(self):
-        return self.query("*IDN?")
-
-    def set_voltage(self, voltage):
-        self.write(f"VSET1:{voltage}")
-
-    def set_current(self, current):
-        self.write(f"ISET1:{current}")
-
-    def get_voltage(self):
-        return self.query("VOUT1?")
-
-    def get_current(self):
-        return self.query("IOUT1?")
-
-    def output_on(self):
-        self.write("OUT1")
-
-    def output_off(self):
-        self.write("OUT0")
-
-
-# =====================================================
-# MULTIMETER CLASS
-# =====================================================
-
-class Multimeter(SCPIInstrument):
-
-    def idn(self):
-
-        return self.query("*IDN?")
-
-    def measure_voltage(self):
-
-        try:
-            with serial_lock:
-
-                # Clear old garbage data
-                self.ser.reset_input_buffer()
-
-                # Send command
-                self.ser.write(b"MEAS:VOLT:DC?\n")
-
-                # Small wait for full response
-                time.sleep(0.2)
-
-                # Read full line
-                response = self.ser.readline().decode(errors='ignore').strip()
-
-                print("RAW RESPONSE:", response)
-
-                # Clean unwanted characters
-                response = response.replace('\r', '').replace('\n', '')
-
-                # Reject incomplete scientific notation
-                if response.endswith('E') or response.endswith('+') or response.endswith('-'):
-                    raise ValueError(f"Incomplete reading: {response}")
-
-                value = float(response)
-
-                return round(value, 4)
-
-        except Exception as e:
-
-            print("Measurement Error:", e)
-
-            return None
+    time.sleep(1)
