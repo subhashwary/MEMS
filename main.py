@@ -1,6 +1,12 @@
-<div class="ess-box instrument-box psu-box">
+.psu-box {
+    grid-column: 1;
+}
 
-<div class="ess-box instrument-box dmm-box">
+.dmm-box {
+    grid-column: 2;
+}
 
-<div class="ess-box small-box manual-box">
-
+.manual-box {
+    grid-column: 3;
+    align-self: center;
+}
