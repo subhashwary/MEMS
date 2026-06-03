@@ -1,20 +1,20 @@
-@app.route('/psu/start', methods=['POST'])
-def start_psu():
+function updatePSU() {
 
-    global psu
+    fetch('/psu/set', {
 
-    if not psu:
-        return jsonify({"error": "PSU not connected"}), 500
+        method: 'POST',
 
-    try:
+        headers: {
+            'Content-Type': 'application/json'
+        },
 
-        psu.output_on()
+        body: JSON.stringify({
 
-        system_state["dmm_running"] = True
+            voltage:
+                document.getElementById("psVoltage").value,
 
-        return jsonify({
-            "status": "PSU started"
+            current:
+                document.getElementById("psCurrent").value
         })
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    });
+}
