@@ -1,31 +1,30 @@
-function startPSU() {
+@app.route('/psu/start', methods=['POST'])
+def start_psu():
 
-    const voltage =
-        document.getElementById("psVoltage").value;
+    global psu
 
-    const current =
-        document.getElementById("psCurrent").value;
+    data = request.json or {}
 
-    fetch('/psu/start', {
+    voltage = float(data.get("voltage", 0))
+    current = float(data.get("current", 0))
 
-        method: 'POST',
+    if not psu:
+        return jsonify({"error": "PSU not connected"}), 500
 
-        headers: {
-            'Content-Type': 'application/json'
-        },
+    try:
 
-        body: JSON.stringify({
-            voltage: voltage,
-            current: current
+        psu.set_voltage(voltage)
+        psu.set_current(current)
+
+        psu.output_on()
+
+        system_state["dmm_running"] = True
+
+        return jsonify({
+            "status": "PSU started",
+            "voltage": voltage,
+            "current": current
         })
-    })
-    .then(res => res.json())
-    .then(data => {
 
-        console.log(data);
-
-        if(data.error){
-            alert(data.error);
-        }
-    });
-}
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
