@@ -1,15 +1,21 @@
-function stopPSU() {
+.instrument-row {
+    display: grid;
+    grid-template-columns: 120px 120px 60px;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0;
+}
 
-    fetch('/psu/stop', {
-        method: 'POST'
-    })
-    .then(res => res.json())
-    .then(data => {
+.instrument-row input {
+    width: 100px;
+    text-align: center;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
 
-        console.log(data);
-
-        if(data.error){
-            alert(data.error);
-        }
-    });
+.ps-head {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
 }
