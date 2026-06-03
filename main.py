@@ -3,22 +3,18 @@ def set_psu():
 
     global psu
 
-    data = request.json or {}
+    data = request.json
 
-    voltage = float(data.get("voltage", 5))
-    current = float(data.get("current", 0.1))
-
-    if not psu:
-        return jsonify({"error": "PSU not connected"}), 500
+    voltage = float(data["voltage"])
+    current = float(data["current"])
 
     try:
+
         psu.set_voltage(voltage)
         psu.set_current(current)
 
         return jsonify({
-            "status": "Values Set",
-            "voltage": voltage,
-            "current": current
+            "status": "Settings Updated"
         })
 
     except Exception as e:
