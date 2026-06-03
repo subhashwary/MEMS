@@ -1,11 +1,6 @@
-.instrument-box {
-    width: 100%;
-    min-height: 420px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    padding: 25px;
-    box-sizing: border-box;
+.ess-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 0.45fr;
+    gap: 20px;
+    align-items: start;
 }
