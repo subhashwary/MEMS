@@ -1,33 +1,25 @@
-import csv
-import os
-from datetime import datetime
+@app.route('/psu/set', methods=['POST'])
+def set_psu():
 
-CSV_FILE = "sensor_data.csv"
+    global psu
 
+    data = request.json or {}
 
-def initialize_csv():
-    if not os.path.exists(CSV_FILE):
-        with open(CSV_FILE, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                "Timestamp",
-                "Pressure_kPa",
-                "DMM_Voltage",
-                "PSU_Voltage",
-                "PSU_Current",
-                "Mode"
-            ])
+    voltage = float(data.get("voltage", 5))
+    current = float(data.get("current", 0.1))
 
+    if not psu:
+        return jsonify({"error": "PSU not connected"}), 500
 
-def log_data(pressure, dmm_voltage, psu_voltage, psu_current, mode):
-    with open(CSV_FILE, "a", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow([
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            pressure,
-            dmm_voltage,
-            psu_voltage,
-            psu_current,
-            mode
-        ])
+    try:
+        psu.set_voltage(voltage)
+        psu.set_current(current)
 
+        return jsonify({
+            "status": "Values Set",
+            "voltage": voltage,
+            "current": current
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
