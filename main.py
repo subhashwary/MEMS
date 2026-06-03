@@ -1,12 +1,11 @@
-.psu-box {
-    grid-column: 1;
-}
+.instrument-box {
+    width: 100%;
+    min-height: 420px;
 
-.dmm-box {
-    grid-column: 2;
-}
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-.manual-box {
-    grid-column: 3;
-    align-self: center;
+    padding: 25px;
+    box-sizing: border-box;
 }
