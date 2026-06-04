@@ -1,15 +1,27 @@
-def set_voltage(self, voltage):
-    print(f"PSU CMD -> VSET1:{voltage}")
-    self.write(f"VSET1:{voltage}")
+try:
 
-def set_current(self, current):
-    print(f"PSU CMD -> ISET1:{current}")
-    self.write(f"ISET1:{current}")
+    print(f"Setting Voltage = {voltage}")
+    print(f"Setting Current = {current}")
 
-def output_on(self):
-    print("PSU CMD -> OUT1")
-    self.write("OUT1")
+    psu.set_voltage(voltage)
+    psu.set_current(current)
 
-def output_off(self):
-    print("PSU CMD -> OUT0")
-    self.write("OUT0")
+    # Verify PSU accepted values
+    print("VERIFY VSET =", psu.query("VSET1?"))
+    print("VERIFY ISET =", psu.query("ISET1?"))
+
+    psu.output_on()
+
+    print("PSU OUTPUT ON")
+
+    return jsonify({
+        "status": "PSU started",
+        "voltage": voltage,
+        "current": current
+    })
+
+except Exception as e:
+
+    print("PSU START ERROR:", e)
+
+    return jsonify({"error": str(e)}), 500
