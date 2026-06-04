@@ -9,12 +9,20 @@ ser = serial.Serial(
 
 time.sleep(2)
 
-print("Sending command...")
+commands = [
+    "VSET1:2.00\n",
+    "VSET1 2.00\n",
+    "VSET1=2.00\n"
+]
 
-ser.write(b"VSET1:2.00\n")
+for cmd in commands:
 
-time.sleep(1)
+    print("Sending:", cmd.strip())
+
+    ser.write(cmd.encode())
+
+    time.sleep(3)
+
+input("Check PSU display. Press ENTER...")
 
 ser.close()
-
-print("Finished")
