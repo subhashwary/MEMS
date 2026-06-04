@@ -1,5 +1,7 @@
-(venv) PS D:\Wary\MEMS> python test_psu_write.py
-Sending: VSET1:2.00
-Sending: VSET1 2.00
-Sending: VSET1=2.00
-Check PSU display. Press ENTER...
+import serial.tools.list_ports
+
+for p in serial.tools.list_ports.comports():
+    print(p.device)
+    print(p.description)
+    print(p.hwid)
+    print()
