@@ -1,46 +1,43 @@
-@app.route('/connect_psu', methods=['POST'])
-def connect_psu():
+// ============================================
+// LOAD AVAILABLE COM PORTS
+// ============================================
 
-    global psu
+function loadPorts() {
 
-    data = request.json
+    fetch('/ports')
+    .then(res => res.json())
+    .then(ports => {
 
-    com_port = data.get("port")
+        const dmmSelect =
+            document.getElementById('comPortSelect');
 
-    try:
+        const psuSelect =
+            document.getElementById('psuPortSelect');
 
-        if psu:
-            psu.close()
+        dmmSelect.innerHTML = '';
+        psuSelect.innerHTML = '';
 
-    except:
-        pass
+        ports.forEach(port => {
 
-    try:
+            const option1 =
+                document.createElement('option');
 
-        psu = PowerSupply(
-            port=com_port,
-            baudrate=9600,
-            timeout=2
-        )
+            option1.value = port.device;
+            option1.text =
+                `${port.device} - ${port.description};
 
-        response = psu.idn()
+            dmmSelect.appendChild(option1);
 
-        print("\n========================")
-        print("PSU CONNECTED")
-        print("PORT:", com_port)
-        print("ID:", response)
-        print("========================\n")
+            const option2 =
+                document.createElement('option');
 
-        return jsonify({
-            "status": "connected",
-            "id": response
-        })
+            option2.value = port.device;
+            option2.text =
+                `${port.device} - ${port.description}`;
 
-    except Exception as e:
+            psuSelect.appendChild(option2);
+        });
+    });
+}
 
-        psu = None
-
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
+loadPorts();
