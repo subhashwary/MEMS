@@ -739,12 +739,6 @@
     
     <div class="ess-grid">
 
-            <!-- TOP LABELS -->
-            <div class="top-label-box">COM6</div>
-            <div></div>
-            <div class="top-label-box">COM5</div>
-
-
 <div class="ess-box instrument-box psu-box">
 
     <div class="ps-title">DC Power Supply</div>
@@ -765,9 +759,6 @@
     </button>
 
 </div>
-
-
-    <div class="ps-title">DC Power Supply</div>
 
     <div class="ps-head" style="margin-bottom:20px;">
         CH1
@@ -1185,7 +1176,7 @@ function loadPorts() {
 
             option1.value = port.device;
             option1.text =
-                `${port.device} - ${port.description};
+                `${port.device} - ${port.description}`;
 
             dmmSelect.appendChild(option1);
 
