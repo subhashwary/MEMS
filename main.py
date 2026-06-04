@@ -1,17 +1,14 @@
 import serial
-import time
 
 ser = serial.Serial(
-    port="COM5",
-    baudrate=9600,
+    "COM5",
+    9600,
     timeout=1
 )
 
-print("Port opened")
+print("CTS =", ser.cts)
+print("DSR =", ser.dsr)
+print("RI  =", ser.ri)
+print("CD  =", ser.cd)
 
-while True:
-
-    data = ser.read(100)
-
-    if data:
-        print(data)
+ser.close()
