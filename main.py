@@ -1,7 +1,1 @@
-@app.route('/status')
-def status():
-
-    return jsonify({
-        "psu_connected": psu is not None,
-        "dmm_connected": dmm is not None
-    })
+http://127.0.0.1:5000/status
