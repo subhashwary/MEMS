@@ -1,25 +1,15 @@
-import serial
-import time
-
-ser = serial.Serial(
-    port="COM5",
-    baudrate=9600,
-    timeout=2
-)
-
-while True:
-
-    cmd = input("Command: ")
-
-    if cmd.lower() == "exit":
-        break
-
-    ser.write((cmd + "\r\n").encode())
-
-    time.sleep(1)
-
-    data = ser.read_all()
-
-    print("Response:", data)
-
-ser.close()
+(venv) PS D:\Wary\MEMS> python psu_display.py
+Sending: b'VSET1:2.00\r\n'
+Sending: b'VSET1:2.00\r'
+Sending: b'VSET1:2.00\n'
+(venv) PS D:\Wary\MEMS> python raw_test.py
+Command: *IDN?
+Response: b''
+Command: VSET1?
+Response: b''
+Command: HELP
+Response: b''
+Command: STATUS
+Response: b''
+Command: ?
+Response: b''
