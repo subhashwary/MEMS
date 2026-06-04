@@ -1,16 +1,29 @@
 import serial
 import time
 
-ser = serial.Serial("COM5", 9600, timeout=2)
+for baud in [9600, 19200, 38400, 57600, 115200]:
 
-time.sleep(2)
+    try:
+        print("\n====================")
+        print("Testing baud:", baud)
 
-print("Sending 2V")
+        ser = serial.Serial(
+            port="COM5",
+            baudrate=baud,
+            timeout=2
+        )
 
-ser.write(b"VSET1:2.00\n")
+        time.sleep(2)
 
-time.sleep(1)
+        ser.write(b"*IDN?\n")
 
-print("Done")
+        time.sleep(1)
 
-ser.close()
+        response = ser.readline()
+
+        print("Response:", response)
+
+        ser.close()
+
+    except Exception as e:
+        print("Error:", e)
