@@ -1,14 +1,8 @@
-import serial
+import pyvisa
 
-ser = serial.Serial(
-    "COM5",
-    9600,
-    timeout=1
-)
+rm = pyvisa.ResourceManager()
 
-print("CTS =", ser.cts)
-print("DSR =", ser.dsr)
-print("RI  =", ser.ri)
-print("CD  =", ser.cd)
+print("Searching...")
 
-ser.close()
+for r in rm.list_resources():
+    print(r)
