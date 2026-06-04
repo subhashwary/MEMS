@@ -1,43 +1,86 @@
-# scan_psu.py
+(venv) PS D:\Wary\MEMS> python scan_psu.py
 
-import serial
-import time
+BAUD = 2400
+Sending: b'*IDN?\r\n'
+Response: b''
+Sending: b'*IDN?\r'
+Response: b''
+Sending: b'*IDN?\n'
+Response: b''
+Sending: b'ID?\r\n'
+Response: b''
+Sending: b'MODEL?\r\n'
+Response: b''
 
-for baud in [2400,4800,9600,19200,38400,57600,115200]:
+BAUD = 4800
+Sending: b'*IDN?\r\n'
+Response: b''
+Sending: b'*IDN?\r'
+Response: b''
+Sending: b'*IDN?\n'
+Response: b''
+Sending: b'ID?\r\n'
+Response: b''
+Sending: b'MODEL?\r\n'
+Response: b''
 
-    print("\nBAUD =", baud)
+BAUD = 9600
+Sending: b'*IDN?\r\n'
+Response: b''
+Sending: b'*IDN?\r'
+Response: b''
+Sending: b'*IDN?\n'
+Response: b''
+Sending: b'ID?\r\n'
+Response: b''
+Sending: b'MODEL?\r\n'
+Response: b''
 
-    try:
-        ser = serial.Serial(
-            "COM5",
-            baudrate=baud,
-            bytesize=8,
-            parity='N',
-            stopbits=1,
-            timeout=1
-        )
+BAUD = 19200
+Sending: b'*IDN?\r\n'
+Response: b''
+Sending: b'*IDN?\r'
+Response: b''
+Sending: b'*IDN?\n'
+Response: b''
+Sending: b'ID?\r\n'
+Response: b''
+Sending: b'MODEL?\r\n'
+Response: b''
 
-        time.sleep(2)
+BAUD = 38400
+Sending: b'*IDN?\r\n'
+Response: b''
+Sending: b'*IDN?\r'
+Response: b''
+Sending: b'*IDN?\n'
+Response: b''
+Sending: b'ID?\r\n'
+Response: b''
+Sending: b'MODEL?\r\n'
+Response: b''
 
-        for cmd in [
-            b"*IDN?\r\n",
-            b"*IDN?\r",
-            b"*IDN?\n",
-            b"ID?\r\n",
-            b"MODEL?\r\n"
-        ]:
+BAUD = 57600
+Sending: b'*IDN?\r\n'
+Response: b''
+Sending: b'*IDN?\r'
+Response: b''
+Sending: b'*IDN?\n'
+Response: b''
+Sending: b'ID?\r\n'
+Response: b''
+Sending: b'MODEL?\r\n'
+Response: b''
 
-            print("Sending:", cmd)
-
-            ser.write(cmd)
-
-            time.sleep(1)
-
-            resp = ser.read(100)
-
-            print("Response:", resp)
-
-        ser.close()
-
-    except Exception as e:
-        print(e)
+BAUD = 115200
+Sending: b'*IDN?\r\n'
+Response: b''
+Sending: b'*IDN?\r'
+Response: b''
+Sending: b'*IDN?\n'
+Response: b''
+Sending: b'ID?\r\n'
+Response: b''
+Sending: b'MODEL?\r\n'
+Response: b''
+(venv) PS D:\Wary\MEMS> 
