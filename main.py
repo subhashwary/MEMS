@@ -1,11 +1,3 @@
-Connecting to COM3...
-DMM ID:
-SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
-GWInstek,GDM8261A,GEO882227,1.02
-PS D:\Wary\MEMS> & d:/Wary/MEMS/venv/Scripts/python.exe d:/Wary/MEMS/test_dmm.py
-SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
-GWInstek,GDM8261A,GEO882227,1.02
-PS D:\Wary\MEMS> (Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned) ; (& d:\Wary\MEMS\venv\Scripts\Activate.ps1)
 (venv) PS D:\Wary\MEMS> & d:/Wary/MEMS/venv/Scripts/python.exe d:/Wary/MEMS/test_voltage.py
 Connected:
 SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
@@ -68,4 +60,40 @@ Voltage = -0.0146
 Traceback (most recent call last):
   File "d:\Wary\MEMS\test_voltage.py", line 17, in <module>
     time.sleep(1)
+KeyboardInterrupt
+(venv) PS D:\Wary\MEMS> python test_voltage.py                                                                  
+Connected:             
+SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
+GWInstek,GDM8261A,GEO882227,1.02
+
+Reading voltage...
+
+RAW RESPONSE: -1.46200E-2
+Voltage = -0.0146
+RAW RESPONSE: -1.46222E-2
+Voltage = -0.0146
+RAW RESPONSE: -1.46225E-2
+Voltage = -0.0146
+RAW RESPONSE: -1.46226E-2
+Voltage = -0.0146
+RAW RESPONSE: -1.46230E-2
+Voltage = -0.0146
+RAW RESPONSE: -1.46231E-2
+Voltage = -0.0146
+RAW RESPONSE: -1.46233E-2
+Voltage = -0.0146
+RAW RESPONSE: -1.46237E-2
+Voltage = -0.0146
+RAW RESPONSE: -1.46240E-2
+Voltage = -0.0146
+Traceback (most recent call last):
+  File "D:\Wary\MEMS\test_voltage.py", line 13, in <module>
+    voltage = dmm.measure_voltage()
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Wary\MEMS\instrument.py", line 131, in measure_voltage
+    response = self.ser.readline().decode(errors='ignore').strip()
+               ^^^^^^^^^^^^^^^^^^^
+  File "D:\Wary\MEMS\venv\Lib\site-packages\serial\serialwin32.py", line 288, in read
+    result_ok = win32.GetOverlappedResult(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
 KeyboardInterrupt
