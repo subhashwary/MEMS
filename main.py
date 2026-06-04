@@ -1,17 +1,15 @@
-# detect_protocol.py
-
 import serial
 import time
 
 ser = serial.Serial("COM5", 9600, timeout=1)
 
-for i in range(20):
+while True:
+    cmd = input("Send command: ")
 
-    data = ser.read(100)
+    ser.write((cmd + "\r\n").encode())
 
-    if data:
-        print(data)
+    time.sleep(1)
 
-    time.sleep(0.5)
+    data = ser.read_all()
 
-ser.close()
+    print("Response:", data)
