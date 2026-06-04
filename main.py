@@ -1,4 +1,3 @@
-import serial.tools.list_ports
-
-for p in serial.tools.list_ports.comports():
-    print(p.device, "-", p.description)
+(venv) PS D:\Wary\MEMS> python check_ports.py
+COM1 - Communications Port (COM1)
+COM3 - USB Serial Device (COM3)
