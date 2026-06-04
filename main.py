@@ -1,86 +1,17 @@
-(venv) PS D:\Wary\MEMS> python scan_psu.py
+# detect_protocol.py
 
-BAUD = 2400
-Sending: b'*IDN?\r\n'
-Response: b''
-Sending: b'*IDN?\r'
-Response: b''
-Sending: b'*IDN?\n'
-Response: b''
-Sending: b'ID?\r\n'
-Response: b''
-Sending: b'MODEL?\r\n'
-Response: b''
+import serial
+import time
 
-BAUD = 4800
-Sending: b'*IDN?\r\n'
-Response: b''
-Sending: b'*IDN?\r'
-Response: b''
-Sending: b'*IDN?\n'
-Response: b''
-Sending: b'ID?\r\n'
-Response: b''
-Sending: b'MODEL?\r\n'
-Response: b''
+ser = serial.Serial("COM5", 9600, timeout=1)
 
-BAUD = 9600
-Sending: b'*IDN?\r\n'
-Response: b''
-Sending: b'*IDN?\r'
-Response: b''
-Sending: b'*IDN?\n'
-Response: b''
-Sending: b'ID?\r\n'
-Response: b''
-Sending: b'MODEL?\r\n'
-Response: b''
+for i in range(20):
 
-BAUD = 19200
-Sending: b'*IDN?\r\n'
-Response: b''
-Sending: b'*IDN?\r'
-Response: b''
-Sending: b'*IDN?\n'
-Response: b''
-Sending: b'ID?\r\n'
-Response: b''
-Sending: b'MODEL?\r\n'
-Response: b''
+    data = ser.read(100)
 
-BAUD = 38400
-Sending: b'*IDN?\r\n'
-Response: b''
-Sending: b'*IDN?\r'
-Response: b''
-Sending: b'*IDN?\n'
-Response: b''
-Sending: b'ID?\r\n'
-Response: b''
-Sending: b'MODEL?\r\n'
-Response: b''
+    if data:
+        print(data)
 
-BAUD = 57600
-Sending: b'*IDN?\r\n'
-Response: b''
-Sending: b'*IDN?\r'
-Response: b''
-Sending: b'*IDN?\n'
-Response: b''
-Sending: b'ID?\r\n'
-Response: b''
-Sending: b'MODEL?\r\n'
-Response: b''
+    time.sleep(0.5)
 
-BAUD = 115200
-Sending: b'*IDN?\r\n'
-Response: b''
-Sending: b'*IDN?\r'
-Response: b''
-Sending: b'*IDN?\n'
-Response: b''
-Sending: b'ID?\r\n'
-Response: b''
-Sending: b'MODEL?\r\n'
-Response: b''
-(venv) PS D:\Wary\MEMS> 
+ser.close()
