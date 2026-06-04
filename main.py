@@ -1,29 +1,21 @@
-import serial
-import time
+(venv) PS D:\Wary\MEMS> python test_psu_write.py
 
-for baud in [9600, 19200, 38400, 57600, 115200]:
+====================
+Testing baud: 9600
+Response: b''
 
-    try:
-        print("\n====================")
-        print("Testing baud:", baud)
+====================
+Testing baud: 19200
+Response: b''
 
-        ser = serial.Serial(
-            port="COM5",
-            baudrate=baud,
-            timeout=2
-        )
+====================
+Testing baud: 38400
+Response: b''
 
-        time.sleep(2)
+====================
+Testing baud: 57600
+Response: b''
 
-        ser.write(b"*IDN?\n")
-
-        time.sleep(1)
-
-        response = ser.readline()
-
-        print("Response:", response)
-
-        ser.close()
-
-    except Exception as e:
-        print("Error:", e)
+====================
+Testing baud: 115200
+Response: b''
