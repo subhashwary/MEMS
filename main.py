@@ -1,38 +1,46 @@
-function connectPSU() {
+@app.route('/connect_psu', methods=['POST'])
+def connect_psu():
 
-    const port =
-        document.getElementById("psuPortSelect").value;
+    global psu
 
-    fetch('/connect_psu', {
+    data = request.json
 
-        method: 'POST',
+    com_port = data.get("port")
 
-        headers: {
-            'Content-Type': 'application/json'
-        },
+    try:
 
-        body: JSON.stringify({
-            port: port
+        if psu:
+            psu.close()
+
+    except:
+        pass
+
+    try:
+
+        psu = PowerSupply(
+            port=com_port,
+            baudrate=9600,
+            timeout=2
+        )
+
+        response = psu.idn()
+
+        print("\n========================")
+        print("PSU CONNECTED")
+        print("PORT:", com_port)
+        print("ID:", response)
+        print("========================\n")
+
+        return jsonify({
+            "status": "connected",
+            "id": response
         })
-    })
 
-    .then(res => res.json())
+    except Exception as e:
 
-    .then(data => {
+        psu = None
 
-        if(data.status === "connected") {
-
-            alert(
-                "PSU Connected\n\n" +
-                data.id
-            );
-
-        } else {
-
-            alert(
-                "Connection Failed\n\n" +
-                data.message
-            );
-        }
-    });
-}
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
