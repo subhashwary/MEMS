@@ -1,21 +1,20 @@
-(venv) PS D:\Wary\MEMS> python test_psu_write.py
+import serial
+import time
 
-====================
-Testing baud: 9600
-Response: b''
+ser = serial.Serial(
+    port="COM5",
+    baudrate=9600,
+    timeout=2
+)
 
-====================
-Testing baud: 19200
-Response: b''
+time.sleep(2)
 
-====================
-Testing baud: 38400
-Response: b''
+print("Sending 2V command...")
 
-====================
-Testing baud: 57600
-Response: b''
+ser.write(b"VSET1:2.00\n")
 
-====================
-Testing baud: 115200
-Response: b''
+time.sleep(1)
+
+ser.close()
+
+print("Done")
