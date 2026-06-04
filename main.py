@@ -1,7 +1,12 @@
-import serial.tools.list_ports
+(venv) PS D:\Wary\MEMS> python comports.py
+COM1
+Communications Port (COM1)
+ACPI\PNP0501\1
 
-for p in serial.tools.list_ports.comports():
-    print(p.device)
-    print(p.description)
-    print(p.hwid)
-    print()
+COM3
+USB Serial Device (COM3)
+USB VID:PID=2184:001A SER=GEO882227 LOCATION=1-1.6
+
+COM5
+USB Serial Port (COM5)
+USB VID:PID=0403:6001 SER=A4008SWIA
