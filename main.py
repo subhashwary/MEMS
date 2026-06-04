@@ -1,12 +1,24 @@
-(venv) PS D:\Wary\MEMS> python comports.py
-COM1
-Communications Port (COM1)
-ACPI\PNP0501\1
+import serial
+import time
 
-COM3
-USB Serial Device (COM3)
-USB VID:PID=2184:001A SER=GEO882227 LOCATION=1-1.6
+ser = serial.Serial(
+    "COM5",
+    baudrate=9600,
+    bytesize=8,
+    parity='N',
+    stopbits=1,
+    timeout=2
+)
 
-COM5
-USB Serial Port (COM5)
-USB VID:PID=0403:6001 SER=A4008SWIA
+commands = [
+    b"VSET1:2.00\r\n",
+    b"VSET1:2.00\r",
+    b"VSET1:2.00\n",
+]
+
+for cmd in commands:
+    print("Sending:", cmd)
+    ser.write(cmd)
+    time.sleep(3)
+
+ser.close()
