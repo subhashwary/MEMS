@@ -1,18 +1,43 @@
+# scan_psu.py
+
 import serial
 import time
 
-ser = serial.Serial("COM5", 9600, timeout=2)
+for baud in [2400,4800,9600,19200,38400,57600,115200]:
 
-commands = [
-    b"VSET1:2.00\r\n",
-    b"VSET 2.00\r\n",
-    b"SOURCE:VOLT 2.00\r\n"
-]
+    print("\nBAUD =", baud)
 
-for cmd in commands:
-    print("Sending:", cmd)
-    ser.write(cmd)
-    time.sleep(3)
+    try:
+        ser = serial.Serial(
+            "COM5",
+            baudrate=baud,
+            bytesize=8,
+            parity='N',
+            stopbits=1,
+            timeout=1
+        )
 
-input("Watch PSU display. Did any command change the voltage?")
-ser.close()
+        time.sleep(2)
+
+        for cmd in [
+            b"*IDN?\r\n",
+            b"*IDN?\r",
+            b"*IDN?\n",
+            b"ID?\r\n",
+            b"MODEL?\r\n"
+        ]:
+
+            print("Sending:", cmd)
+
+            ser.write(cmd)
+
+            time.sleep(1)
+
+            resp = ser.read(100)
+
+            print("Response:", resp)
+
+        ser.close()
+
+    except Exception as e:
+        print(e)
