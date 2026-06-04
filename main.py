@@ -2,23 +2,24 @@ import serial
 import time
 
 ser = serial.Serial(
-    "COM5",
+    port="COM5",
     baudrate=9600,
-    bytesize=8,
-    parity='N',
-    stopbits=1,
     timeout=2
 )
 
-commands = [
-    b"VSET1:2.00\r\n",
-    b"VSET1:2.00\r",
-    b"VSET1:2.00\n",
-]
+while True:
 
-for cmd in commands:
-    print("Sending:", cmd)
-    ser.write(cmd)
-    time.sleep(3)
+    cmd = input("Command: ")
+
+    if cmd.lower() == "exit":
+        break
+
+    ser.write((cmd + "\r\n").encode())
+
+    time.sleep(1)
+
+    data = ser.read_all()
+
+    print("Response:", data)
 
 ser.close()
