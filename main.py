@@ -1,16 +1,16 @@
-(venv) PS D:\Wary\MEMS> python test_query.py
-RAW BYTES = b'GW INSTEK,GPD-2303S,SN:EL863672,V2.04\r\n'
-SCPI QUERY [*IDN?] -> GW INSTEK,GPD-2303S,SN:EL863672,V2.04
-IDN: GW INSTEK,GPD-2303S,SN:EL863672,V2.04
-RAW BYTES = b'5.031V\r\n'
-SCPI QUERY [VSET1?] -> 5.031V
-VSET: 5.031V
-RAW BYTES = b'0.200A\r\n'
-SCPI QUERY [ISET1?] -> 0.200A
-ISET: 0.200A
-RAW BYTES = b'0.000V\r\n'
-SCPI QUERY [VOUT1?] -> 0.000V
-VOUT: 0.000V
-RAW BYTES = b'0.000A\r\n'
-SCPI QUERY [IOUT1?] -> 0.000A
-IOUT: 0.000A
+from instrument import PowerSupply
+import time
+
+psu = PowerSupply("COM5", 9600)
+
+print(psu.query("VSET1?"))
+print(psu.query("ISET1?"))
+
+psu.output_on()
+
+time.sleep(1)
+
+print(psu.query("VOUT1?"))
+print(psu.query("IOUT1?"))
+
+psu.close()
