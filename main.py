@@ -1,39 +1,41 @@
-(venv) PS D:\Wary\MEMS> mode COM5
+import serial
+import time
 
-Status for device COM5:
------------------------
-    Baud:            9600
-    Parity:          None
-    Data Bits:       8
-    Stop Bits:       1
-    Timeout:         ON
-    XON/XOFF:        OFF
-    CTS handshaking: OFF
-    DSR handshaking: OFF
-    DSR sensitivity: OFF
-    DTR circuit:     ON
-    RTS circuit:     ON
+ser = serial.Serial("COM5", 9600, timeout=2)
 
-(venv) PS D:\Wary\MEMS> python test_baud.py 
+tests = [
+    "VSET1?\n",
+    "ISET1?\n",
+    "VOUT1?\n",
+    "IOUT1?\n",
+    "STATUS?\n",
+    "*IDN?\n",
 
-Testing 9600
-Waiting: 0
-Received: b''
+    "VSET1?\r",
+    "ISET1?\r",
+    "VOUT1?\r",
+    "IOUT1?\r",
 
-Testing 19200
-Waiting: 0
-Received: b''
+    "VSET1?\r\n",
+    "ISET1?\r\n",
+    "VOUT1?\r\n",
+    "IOUT1?\r\n",
+]
 
-Testing 38400
-Waiting: 0
-Received: b''
+for cmd in tests:
 
-Testing 57600
-Waiting: 0
-Received: b''
+    print("\nTEST:", repr(cmd))
 
-Testing 115200
-Waiting: 0
-Received: b''
+    ser.reset_input_buffer()
 
+    ser.write(cmd.encode())
 
+    time.sleep(1)
+
+    print("waiting:", ser.in_waiting)
+
+    data = ser.read_all()
+
+    print("response:", data)
+
+ser.close()
