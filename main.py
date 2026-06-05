@@ -1,391 +1,471 @@
-(venv) PS D:\Wary\MEMS> python app.py              
- * Serving Flask app 'app'
- * Debug mode: off
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
-127.0.0.1 - - [05/Jun/2026 10:12:08] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:09] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 10:12:10] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 10:12:10] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:12] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:13] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:14] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:16] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:17] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:19] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:22] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:22] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 10:12:22] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 10:12:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:25] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:25] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:26] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:26] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:27] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:28] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:28] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:29] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:30] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:31] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:31] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:33] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:35] "GET /favicon.ico HTTP/1.1" 404 -
-127.0.0.1 - - [05/Jun/2026 10:12:35] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:36] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [*IDN?] -> GW INSTEK,GPD-2303S,SN:EL863672,V2.04
+from flask import Flask, jsonify, request, render_template, send_file
+import random
+import time
+import serial.tools.list_ports
+import pyvisa
 
-========================
-PSU CONNECTED
-PORT: COM5
-ID: GW INSTEK,GPD-2303S,SN:EL863672,V2.04
-========================
+rm = pyvisa.ResourceManager()
 
-127.0.0.1 - - [05/Jun/2026 10:12:37] "POST /connect_psu HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:38] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:39] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:39] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:40] "GET /data HTTP/1.1" 200 -
+psu = rm.open_resource("ASRL5::INSTR")
 
-Trying baudrate: 9600
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:41] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:42] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:42] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
-RAW ID RESPONSE: GWInstek,GDM8261A,GEO882227,1.02
+from threading import Lock
 
-================================
-DMM CONNECTED SUCCESSFULLY
-PORT: COM3
-BAUDRATE: 9600
-DMM ID: GWInstek,GDM8261A,GEO882227,1.02
-================================
+serial_lock = Lock()
 
-127.0.0.1 - - [05/Jun/2026 10:12:45] "POST /connect_dmm HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:45] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:45] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:46] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:46] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:47] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:48] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:49] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:51] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:51] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:51] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 10:12:52] "POST /dmm/start HTTP/1.1" 200 -
-RAW RESPONSE: -1.47026E-2
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:54] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.47030E-2
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:57] "GET /data HTTP/1.1" 200 -
-Setting Voltage = 2.0
-Setting Current = 0.2
-PSU CMD -> VSET1:2.0
-PSU CMD -> ISET1:0.2
-RAW RESPONSE: -1.47033E-2
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:12:59] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VSET1?] -> 2.000V
-VERIFY VSET = 2.000V
-RAW RESPONSE: -1.47036E-2
-SCPI QUERY [VOUT1?] -> 0.000V
-PSU read error: could not convert string to float: '0.000V'
-127.0.0.1 - - [05/Jun/2026 10:13:02] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [ISET1?] -> 0.200A
-VERIFY ISET = 0.200A
-PSU CMD -> OUT1
-PSU OUTPUT ON
-127.0.0.1 - - [05/Jun/2026 10:13:03] "POST /psu/start HTTP/1.1" 200 -
-RAW RESPONSE: -0.53753E-2
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:05] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70403E+0
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:08] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70410E+0
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:11] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70407E+0
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:15] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70406E+0
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:18] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70407E+0
-RAW RESPONSE: +1.70404E+0
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:24] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:24] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70398E+0
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:27] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70394E+0
-SCPI QUERY [VOUT1?] -> 1.998V
-PSU read error: could not convert string to float: '1.998V'
-127.0.0.1 - - [05/Jun/2026 10:13:30] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70392E+0
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:13:36] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70381E+0
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:13:41] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70377E+0
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:13:46] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70373E+0
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:13:51] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.70361E+0
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:13:56] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +1.99673E+0
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:02] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.201085E+1
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:07] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.200287E+1
-RAW RESPONSE: +0.200164E+1
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:15] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.200156E+1
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:20] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.200152E+1
-RAW RESPONSE: +0.200150E+1
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:28] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.13137E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:33] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.42179E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:37] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:39] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45102E-2
-RAW RESPONSE: -1.45435E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:46] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45858E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:51] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46119E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:14:55] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46289E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:00] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46412E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:04] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46490E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:09] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46551E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:13] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:16] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46623E-2
-RAW RESPONSE: -1.46635E-2
-RAW RESPONSE: -1.46660E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:25] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46692E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:29] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46711E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:34] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46728E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:38] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46746E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:43] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:45] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:47] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46787E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:52] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46796E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:57] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:15:59] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46798E-2
-RAW RESPONSE: -1.46795E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:06] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46792E-2
-RAW RESPONSE: -1.46797E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:13] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46801E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:17] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46798E-2
-RAW RESPONSE: -1.46792E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:24] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.200150E+1
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:29] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.200165E+1
-RAW RESPONSE: +0.200167E+1
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:38] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.200167E+1
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:43] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -0.97558E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:47] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:50] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.44320E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:54] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:16:56] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45723E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:01] "GET /data HTTP/1.1" 200 -
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:03] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46200E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:08] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46336E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:12] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46458E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:17] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46535E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:22] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46590E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:27] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46640E-2
-RAW RESPONSE: -1.46658E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:34] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46690E-2
-RAW RESPONSE: -1.46699E-2
-RAW RESPONSE: -1.46698E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:43] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.46711E-2
-RAW RESPONSE: -1.46715E-2
-RAW RESPONSE: -1.46724E-2
-SCPI QUERY [VOUT1?] -> 
-PSU read error: could not convert string to float: ''
-127.0.0.1 - - [05/Jun/2026 10:17:52] "GET /data HTTP/1.1" 200 -
+from instrument import PowerSupply, Multimeter
+from logger import initialize_csv, log_data, CSV_FILE
+
+app = Flask(__name__)
+
+# =========================================================
+# INITIALIZATION
+# =========================================================
+initialize_csv()
+
+# Connect to instruments (replace COM ports with your actual ports)
+psu = None
+dmm = None
+
+# =========================================================
+# GLOBAL SYSTEM STATE
+# =========================================================
+system_state = {
+    "mode": "manual",
+    "dmm_running": False,
+    "dmm_voltage": 0.0,
+    "pressure": 0.0,
+    "psu_voltage": 0.0,
+    "psu_current": 0.0,
+    "cycle_start": time.time(),
+    "config": {
+        "initial_off": 5,
+        "on_time": 5,
+        "off_time": 5,
+        "cycles": 10
+    }
+}
+
+
+# =========================================================
+# WEB PAGE
+# =========================================================
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+
+@app.route('/status')
+def status():
+
+    return jsonify({
+        "psu_connected": psu is not None,
+        "dmm_connected": dmm is not None
+    })
+
+
+@app.route('/connect_psu', methods=['POST'])
+def connect_psu():
+
+    global psu
+
+    data = request.json
+
+    com_port = data.get("port")
+
+    try:
+
+        if psu:
+            psu.close()
+
+    except:
+        pass
+
+    try:
+
+        psu = PowerSupply(
+            port=com_port,
+            baudrate=9600,
+            timeout=2
+        )
+
+        response = psu.idn()
+
+        print("\n========================")
+        print("PSU CONNECTED")
+        print("PORT:", com_port)
+        print("ID:", response)
+        print("========================\n")
+
+        return jsonify({
+            "status": "connected",
+            "id": response
+        })
+
+    except Exception as e:
+
+        psu = None
+
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+
+# =========================================================
+# LIVE DATA API
+# =========================================================
+@app.route('/data')
+def data():
+    # Simulated pressure reading (replace with real sensor data)
+    system_state["pressure"] = round(random.uniform(20, 100), 2)
+
+    # -----------------------------------------------------
+    # AUTO MODE LOGIC
+    # -----------------------------------------------------
+    if system_state["mode"] == "auto":
+        cfg = system_state["config"]
+        elapsed = time.time() - system_state["cycle_start"]
+
+        cycle_period = cfg["on_time"] + cfg["off_time"]
+
+        if elapsed < cfg["initial_off"]:
+            system_state["dmm_running"] = False
+        else:
+            adjusted = elapsed - cfg["initial_off"]
+            position = adjusted % cycle_period
+            system_state["dmm_running"] = position < cfg["on_time"]
+
+    # -----------------------------------------------------
+    # DMM VOLTAGE READING
+    # -----------------------------------------------------
+    if system_state["dmm_running"]:
+        if dmm:
+            try:
+                reading = dmm.measure_voltage()
+
+                if isinstance(reading, (int, float)):
+                    system_state["dmm_voltage"] = reading
+            except Exception as e:
+                print("DMM read error:", e)
+                system_state["dmm_voltage"] = 0.0
+        else:
+            # Simulation mode if DMM not connected
+            system_state["dmm_voltage"] = round(random.uniform(0, 10), 3)
+    else:
+        system_state["dmm_voltage"] = 0.0
+
+    # -----------------------------------------------------
+    # PSU READINGS
+    # -----------------------------------------------------
+    if psu:
+        try:
+            system_state["psu_voltage"] = float(psu.get_voltage())
+            system_state["psu_current"] = float(psu.get_current())
+        except Exception as e:
+            print("PSU read error:", e)
+
+    # -----------------------------------------------------
+    # LOG DATA TO CSV
+    # -----------------------------------------------------
+    log_data(
+        system_state["pressure"],
+        system_state["dmm_voltage"],
+        system_state["psu_voltage"],
+        system_state["psu_current"],
+        system_state["mode"]
+    )
+
+    return jsonify(system_state)
+
+
+# =========================================================
+# MODE CONTROL
+# =========================================================
+@app.route('/mode', methods=['POST'])
+def set_mode():
+    mode = request.json.get("mode")
+
+    if mode in ["manual", "auto"]:
+        system_state["mode"] = mode
+        system_state["cycle_start"] = time.time()
+        return jsonify({"status": f"{mode} mode activated"})
+
+    return jsonify({"error": "Invalid mode"}), 400
+
+
+# =========================================================
+# DMM CONTROL
+# =========================================================
+@app.route('/dmm/start', methods=['POST'])
+def start_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+
+    system_state["dmm_running"] = True
+    return jsonify({"status": "DMM started"})
+
+
+@app.route('/dmm/stop', methods=['POST'])
+def stop_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+
+    system_state["dmm_running"] = False
+    return jsonify({"status": "DMM stopped"})
+
+
+# =========================================================
+# POWER SUPPLY CONTROL
+# =========================================================
+@app.route('/psu/start', methods=['POST'])
+def start_psu():
+
+    global psu
+
+    data = request.json or {}
+
+    voltage = float(data.get("voltage", 0))
+    current = float(data.get("current", 0))
+
+    if not psu:
+        return jsonify({"error": "PSU not connected"}), 500
+
+    try:
+
+        print(f"Setting Voltage = {voltage}")
+        print(f"Setting Current = {current}")
+
+        psu.set_voltage(voltage)
+        psu.set_current(current)
+
+        # Verify PSU accepted values
+        print("VERIFY VSET =", psu.query("VSET1?"))
+        print("VERIFY ISET =", psu.query("ISET1?"))
+
+        psu.output_on()
+
+        print("PSU OUTPUT ON")
+
+        return jsonify({
+            "status": "PSU started",
+            "voltage": voltage,
+            "current": current
+        })
+
+    except Exception as e:
+
+        print("PSU START ERROR:", e)
+
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/psu/stop', methods=['POST'])
+def stop_psu():
+
+    if psu:
+        try:
+            psu.output_off()
+
+            system_state["dmm_running"] = False
+            system_state["dmm_voltage"] = 0.0
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+    return jsonify({"status": "PSU stopped"})
+
+# =========================================================
+# NEW ROUTE
+# =========================================================
+@app.route('/psu/set', methods=['POST'])
+def set_psu():
+
+    global psu
+
+    data = request.json or {}
+
+    voltage = float(data.get("voltage", 5))
+    current = float(data.get("current", 0.1))
+
+    if not psu:
+        return jsonify({"error": "PSU not connected"}), 500
+
+    try:
+        psu.set_voltage(voltage)
+        psu.set_current(current)
+
+        return jsonify({
+            "status": "Values Set",
+            "voltage": voltage,
+            "current": current
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# =========================================================
+# SAVE AUTO MODE CONFIGURATION
+# =========================================================
+@app.route('/config', methods=['POST'])
+def save_config():
+    data = request.json or {}
+
+    system_state["config"] = {
+        "initial_off": int(data.get("initial_off", 5)),
+        "on_time": int(data.get("on_time", 5)),
+        "off_time": int(data.get("off_time", 5)),
+        "cycles": int(data.get("cycles", 10))
+    }
+
+    system_state["cycle_start"] = time.time()
+
+    return jsonify({
+        "status": "Configuration saved",
+        "config": system_state["config"]
+    })
+
+
+# =========================================================
+# DOWNLOAD CSV
+# =========================================================
+@app.route('/download')
+def download():
+    return send_file(CSV_FILE, as_attachment=True)
+
+
+# =========================================================
+# GET INSTRUMENT IDS
+# =========================================================
+@app.route('/id')
+def get_ids():
+    return jsonify({
+        "psu_id": psu.idn() if psu else "Not Connected",
+        "dmm_id": dmm.idn() if dmm else "Not Connected"
+    })
+
+
+# =========================================================
+# GET AVAILABLE COM PORTS
+# =========================================================
+@app.route('/ports')
+def get_ports():
+
+    ports = serial.tools.list_ports.comports()
+
+    port_list = []
+
+    for port in ports:
+        port_list.append({
+            "device": port.device,
+            "description": port.description
+        })
+
+    return jsonify(port_list)
+
+
+
+# =========================================================
+# CONNECT DMM
+# =========================================================
+@app.route('/connect_dmm', methods=['POST'])
+def connect_dmm():
+
+    global dmm
+
+    data = request.json
+
+    com_port = data.get("port")
+
+    BAUDRATES = [9600, 19200, 38400, 57600, 115200]
+
+    # -----------------------------------------
+    # CLOSE OLD CONNECTION FIRST
+    # -----------------------------------------
+    try:
+        if dmm:
+            dmm.close()
+            dmm = None
+    except:
+        pass
+
+    # -----------------------------------------
+    # TRY DIFFERENT BAUDRATES
+    # -----------------------------------------
+    for baud in BAUDRATES:
+
+        test_dmm = None
+
+        try:
+
+            print(f"\nTrying baudrate: {baud}")
+
+            test_dmm = Multimeter(
+                port=com_port,
+                baudrate=baud,
+                timeout=2
+            )
+
+            # give instrument time
+            time.sleep(1)
+
+            response = test_dmm.idn()
+
+            print("RAW ID RESPONSE:", response)
+
+            # ---------------------------------
+            # VALID RESPONSE CHECK
+            # ---------------------------------
+            if response and len(response) > 3:
+
+                dmm = test_dmm
+
+                print("\n================================")
+                print("DMM CONNECTED SUCCESSFULLY")
+                print("PORT:", com_port)
+                print("BAUDRATE:", baud)
+                print("DMM ID:", response)
+                print("================================\n")
+
+                return jsonify({
+                    "status": "connected",
+                    "id": response,
+                    "baudrate": baud
+                })
+
+            else:
+
+                print("Invalid response")
+
+                test_dmm.close()
+
+        except Exception as e:
+
+            print(f"FAILED at {baud}: {e}")
+
+            # IMPORTANT
+            try:
+                if test_dmm:
+                    test_dmm.close()
+            except:
+                pass
+
+    # -----------------------------------------
+    # IF ALL BAUDRATES FAIL
+    # -----------------------------------------
+    dmm = None
+
+    return jsonify({
+        "status": "error",
+        "message": "Could not connect to DMM"
+    }), 500
+
+
+# =========================================================
+# MAIN
+# =========================================================
+if __name__ == '__main__':
+    app.run(
+    debug=False,
+    threaded=True
+)
