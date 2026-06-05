@@ -1,27 +1,11 @@
-@app.route('/psu/set', methods=['POST'])
-def set_psu():
+<div class="ps-row-bottom">
 
-    global psu
+    <button
+        class="control-btn"
+        onclick="updatePSU()">
 
-    data = request.json
+        Send To PSU
 
-    voltage = float(data["voltage"])
-    current = float(data["current"])
+    </button>
 
-    try:
-
-        psu.set_voltage(voltage)
-        psu.set_current(current)
-
-        print(f"SET V={voltage}")
-        print(f"SET I={current}")
-
-        return jsonify({
-            "status": "updated"
-        })
-
-    except Exception as e:
-
-        return jsonify({
-            "error": str(e)
-        }), 500
+</div>
