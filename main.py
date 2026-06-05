@@ -1,351 +1,232 @@
-(venv) PS D:\Wary\MEMS> python app.py          
-================================
-PSU CONNECTED
-PORT = COM5
-================================
- * Serving Flask app 'app'
- * Debug mode: off
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
-127.0.0.1 - - [05/Jun/2026 16:01:33] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 16:01:33] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 16:01:33] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 16:01:33] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 16:01:33] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 16:01:33] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 16:01:33] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 16:01:33] "GET /ports HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:36] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:37] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:38] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:39] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 16:01:40] "GET / HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:41] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:42] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 16:01:43] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [05/Jun/2026 16:01:43] "GET /static/images/cense.png HTTP/1.1" 304 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:44] "GET /ports HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:44] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:45] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:46] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:47] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:48] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
+@app.route('/connect_psu', methods=['POST'])
+def connect_psu():
 
-========================
-PSU CONNECTED
-PORT: COM5
-ID: 
-========================
+    global psu
 
-127.0.0.1 - - [05/Jun/2026 16:01:49] "POST /connect_psu HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:50] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:51] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:52] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
+    data = request.json
+    com_port = data.get("port")
 
-Trying baudrate: 9600
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:53] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:54] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:55] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b'GWInstek,GDM8261A,GEO882227,1.02\r'
-SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
-RAW ID RESPONSE: GWInstek,GDM8261A,GEO882227,1.02
+    with psu_lock:
+        
+        try:
 
-================================
-DMM CONNECTED SUCCESSFULLY
-PORT: COM3
-BAUDRATE: 9600
-DMM ID: GWInstek,GDM8261A,GEO882227,1.02
-================================
+            if psu:
+                psu.close()
 
-127.0.0.1 - - [05/Jun/2026 16:01:56] "POST /connect_dmm HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:57] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:58] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:01:59] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:00] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:01] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:02] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [05/Jun/2026 16:02:02] "POST /dmm/start HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:03] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:04] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.311936E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:08] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.311937E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:12] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.311938E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW RESPONSE: +0.295690E+1
-RAW RESPONSE: +0.295645E+1
-RAW RESPONSE: +0.295642E+1
-RAW RESPONSE: +0.295640E+1
-RAW RESPONSE: +0.295642E+1
-RAW RESPONSE: +0.295641E+1
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:33] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.295643E+1
-RAW RESPONSE: +0.294059E+1
-RAW RESPONSE: +0.294058E+1
-RAW RESPONSE: +0.282608E+1
-RAW RESPONSE: +0.282609E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:48] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.282610E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:52] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.282610E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:02:56] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.282608E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:00] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.282606E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:04] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.282603E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:08] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.282603E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:12] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: +0.282604E+1
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:15] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.03970E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:19] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.37468E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:22] "GET /data HTTP/1.1" 200 -
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:23] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.42055E-2
-RAW RESPONSE: -1.42873E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:28] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.43734E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:32] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.44269E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:35] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.44672E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:38] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.44904E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:41] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45089E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:45] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45236E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:48] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45371E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:51] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45479E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:55] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45559E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:03:58] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45655E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:04:01] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45703E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
-RAW BYTES = b''
-SCPI QUERY [IOUT1?] -> 
-127.0.0.1 - - [05/Jun/2026 16:04:05] "GET /data HTTP/1.1" 200 -
-RAW RESPONSE: -1.45765E-2
-RAW BYTES = b''
-SCPI QUERY [VOUT1?] -> 
+        except:
+            pass
+
+        try:
+
+            psu = PowerSupply(
+                port=com_port,
+                baudrate=9600,
+                timeout=2
+            )
+
+            response = psu.idn()
+
+            print("\n========================")
+            print("PSU CONNECTED")
+            print("PORT:", com_port)
+            print("ID:", response)
+            print("========================\n")
+
+            return jsonify({
+                "status": "connected",
+                "id": response
+            })
+
+        except Exception as e:
+
+            psu = None
+
+            return jsonify({
+                "status": "error",
+                "message": str(e)
+            }), 500
+
+@app.route('/data')
+def data():
+    # Simulated pressure reading (replace with real sensor data)
+    system_state["pressure"] = round(random.uniform(20, 100), 2)
+
+    if system_state["mode"] == "auto":
+        cfg = system_state["config"]
+        elapsed = time.time() - system_state["cycle_start"]
+
+        cycle_period = cfg["on_time"] + cfg["off_time"]
+
+        if elapsed < cfg["initial_off"]:
+            system_state["dmm_running"] = False
+        else:
+            adjusted = elapsed - cfg["initial_off"]
+            position = adjusted % cycle_period
+            system_state["dmm_running"] = position < cfg["on_time"]
+
+    if system_state["dmm_running"]:
+        if dmm:
+            try:
+                reading = dmm.measure_voltage()
+
+                if isinstance(reading, (int, float)):
+                    system_state["dmm_voltage"] = reading
+            except Exception as e:
+                print("DMM read error:", e)
+                system_state["dmm_voltage"] = 0.0
+        else:
+            # Simulation mode if DMM not connected
+            system_state["dmm_voltage"] = round(random.uniform(0, 10), 3)
+    else:
+        system_state["dmm_voltage"] = 0.0
+      
+    if psu:
+        try:
+
+            with psu_lock:
+                v = psu.get_voltage()
+                i = psu.get_current()
+
+            if v not in ["", "ERROR", None]:
+                system_state["psu_voltage"] = float(v)
+
+            if i not in ["", "ERROR", None]:
+                system_state["psu_current"] = float(i)
+
+        except Exception as e:
+
+            print("PSU read error:", e)
+
+    log_data(
+        system_state["pressure"],
+        system_state["dmm_voltage"],
+        system_state["psu_voltage"],
+        system_state["psu_current"],
+        system_state["mode"]
+    )
+
+    return jsonify(system_state)
+
+@app.route('/mode', methods=['POST'])
+def set_mode():
+    mode = request.json.get("mode")
+
+    if mode in ["manual", "auto"]:
+        system_state["mode"] = mode
+        system_state["cycle_start"] = time.time()
+        return jsonify({"status": f"{mode} mode activated"})
+
+    return jsonify({"error": "Invalid mode"}), 400
+
+@app.route('/dmm/start', methods=['POST'])
+def start_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+
+    system_state["dmm_running"] = True
+    return jsonify({"status": "DMM started"})
+
+
+@app.route('/dmm/stop', methods=['POST'])
+def stop_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+
+    system_state["dmm_running"] = False
+    return jsonify({"status": "DMM stopped"})
+
+@app.route('/psu/start', methods=['POST'])
+def start_psu():
+
+    global psu
+
+    data = request.json or {}
+
+    voltage = float(data.get("voltage", 0))
+    current = float(data.get("current", 0))
+
+    try:
+        with psu_lock:
+            psu.set_voltage(voltage)
+            psu.set_current(current)
+
+            psu.output_on()
+
+        print("PSU OUTPUT ON")
+
+        return jsonify({
+            "status": "started"
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+@app.route('/psu/stop', methods=['POST'])
+def stop_psu():
+
+    try:
+
+        psu.output_off()
+
+        print("PSU OUTPUT OFF")
+
+        return jsonify({
+            "status":"stopped"
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "error":str(e)
+        }), 500
+
+@app.route('/psu/set', methods=['POST'])
+def set_psu():
+
+    global psu
+
+    if not psu:
+        return jsonify({
+            "error": "PSU not connected"
+        }), 500
+
+    data = request.json
+
+    voltage = float(data["voltage"])
+    current = float(data["current"])
+
+    try:
+
+        print("\n====================")
+        print("USER UPDATED PSU")
+        print("Voltage =", voltage)
+        print("Current =", current)
+        print("====================")
+
+        with psu_lock:
+            psu.set_voltage(voltage)
+            psu.set_current(current)
+
+        # verify values
+        try:
+            print("VSET1? =", psu.query("VSET1?"))
+            print("ISET1? =", psu.query("ISET1?"))
+        except:
+            pass
+
+        return jsonify({
+            "status": "updated",
+            "voltage": voltage,
+            "current": current
+        })
+
+    except Exception as e:
+
+        print("PSU ERROR:", e)
+
+        return jsonify({
+            "error": str(e)
+        }), 500
