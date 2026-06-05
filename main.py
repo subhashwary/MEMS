@@ -1,18 +1,14 @@
-@app.route('/psu/stop', methods=['POST'])
-def stop_psu():
+try:
 
-    try:
+    v = psu.get_voltage()
+    i = psu.get_current()
 
-        psu.output_off()
+    if v:
+        system_state["psu_voltage"] = float(v)
 
-        print("PSU OUTPUT OFF")
+    if i:
+        system_state["psu_current"] = float(i)
 
-        return jsonify({
-            "status":"stopped"
-        })
+except Exception as e:
 
-    except Exception as e:
-
-        return jsonify({
-            "error":str(e)
-        }), 500
+    print("PSU read error:", e)
