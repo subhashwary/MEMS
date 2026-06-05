@@ -1,11 +1,20 @@
-<div class="ps-row-bottom">
+function updatePSU() {
 
-    <button
-        class="control-btn"
-        onclick="updatePSU()">
+    fetch('/psu/set', {
 
-        Send To PSU
+        method: 'POST',
 
-    </button>
+        headers: {
+            'Content-Type': 'application/json'
+        },
 
-</div>
+        body: JSON.stringify({
+
+            voltage:
+                document.getElementById("psVoltage").value,
+
+            current:
+                document.getElementById("psCurrent").value
+        })
+    });
+}
