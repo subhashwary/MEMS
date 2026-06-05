@@ -16,5 +16,21 @@ function updatePSU() {
             current:
                 document.getElementById("psCurrent").value
         })
+
+    })
+
+    .then(res => res.json())
+
+    .then(data => {
+
+        console.log(data);
+
+        if(data.error){
+            alert(data.error);
+        }
+        else{
+            alert("PSU Updated");
+        }
+
     });
 }
