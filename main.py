@@ -1,41 +1,57 @@
-import serial
-import time
+(venv) PS D:\Wary\MEMS> python protocol_test.py
 
-ser = serial.Serial("COM5", 9600, timeout=2)
+TEST: 'VSET1?\n'
+waiting: 0
+response: b''
 
-tests = [
-    "VSET1?\n",
-    "ISET1?\n",
-    "VOUT1?\n",
-    "IOUT1?\n",
-    "STATUS?\n",
-    "*IDN?\n",
+TEST: 'ISET1?\n'
+waiting: 0
+response: b''
 
-    "VSET1?\r",
-    "ISET1?\r",
-    "VOUT1?\r",
-    "IOUT1?\r",
+TEST: 'VOUT1?\n'
+waiting: 0
+response: b''
 
-    "VSET1?\r\n",
-    "ISET1?\r\n",
-    "VOUT1?\r\n",
-    "IOUT1?\r\n",
-]
+TEST: 'IOUT1?\n'
+waiting: 0
+response: b''
 
-for cmd in tests:
+TEST: 'STATUS?\n'
+waiting: 0
+response: b''
 
-    print("\nTEST:", repr(cmd))
+TEST: '*IDN?\n'
+waiting: 0
+response: b''
 
-    ser.reset_input_buffer()
+TEST: 'VSET1?\r'
+waiting: 0
+response: b''
 
-    ser.write(cmd.encode())
+TEST: 'ISET1?\r'
+waiting: 0
+response: b''
 
-    time.sleep(1)
+TEST: 'VOUT1?\r'
+waiting: 0
+response: b''
 
-    print("waiting:", ser.in_waiting)
+TEST: 'IOUT1?\r'
+waiting: 0
+response: b''
 
-    data = ser.read_all()
+TEST: 'VSET1?\r\n'
+waiting: 0
+response: b''
 
-    print("response:", data)
+TEST: 'ISET1?\r\n'
+waiting: 0
+response: b''
 
-ser.close()
+TEST: 'VOUT1?\r\n'
+waiting: 0
+response: b''
+
+TEST: 'IOUT1?\r\n'
+waiting: 0
+response: b''
