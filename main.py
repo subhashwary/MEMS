@@ -1,16 +1,13 @@
-from instrument import PowerSupply
-import time
+(venv) PS D:\Wary\MEMS> python test_output.py
+RAW BYTES = b''
+SCPI QUERY [VSET1?] -> 
 
-psu = PowerSupply("COM5", 9600)
+RAW BYTES = b''
+SCPI QUERY [ISET1?] -> 
 
-print(psu.query("VSET1?"))
-print(psu.query("ISET1?"))
+PSU CMD -> OUT1
+RAW BYTES = b''
+SCPI QUERY [VOUT1?] -> 
 
-psu.output_on()
-
-time.sleep(1)
-
-print(psu.query("VOUT1?"))
-print(psu.query("IOUT1?"))
-
-psu.close()
+RAW BYTES = b''
+SCPI QUERY [IOUT1?] -> 
