@@ -1,18 +1,8 @@
-from instrument import PowerSupply
-
-psu = PowerSupply(
-    port="COM5",
-    baudrate=9600,
-    timeout=2
-)
-
-print("Testing...")
-
-psu.set_voltage(5.0)
-psu.set_current(0.5)
-
-input("Press Enter to turn ON")
-
-psu.output_on()
-
-print("DONE")
+(venv) PS D:\Wary\MEMS> python test_psu.py
+Testing...
+PSU CMD -> VSET1:5.0
+PSU CMD -> ISET1:0.5
+Press Enter to turn ON
+PSU CMD -> OUT1
+DONE
+(venv) PS D:\Wary\MEMS> 
