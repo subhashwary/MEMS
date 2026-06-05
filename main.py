@@ -1,29 +1,46 @@
-function updatePSU() {
+@app.route('/psu/set', methods=['POST'])
+def set_psu():
 
-    fetch('/psu/set', {
+    global psu
 
-        method:'POST',
+    if not psu:
+        return jsonify({
+            "error": "PSU not connected"
+        }), 500
 
-        headers:{
-            'Content-Type':'application/json'
-        },
+    data = request.json
 
-        body:JSON.stringify({
+    voltage = float(data["voltage"])
+    current = float(data["current"])
 
-            voltage:
-                document.getElementById("psVoltage").value,
+    try:
 
-            current:
-                document.getElementById("psCurrent").value
+        print("\n====================")
+        print("USER UPDATED PSU")
+        print("Voltage =", voltage)
+        print("Current =", current)
+        print("====================")
+
+        psu.set_voltage(voltage)
+        psu.set_current(current)
+
+        # verify values
+        try:
+            print("VSET1? =", psu.query("VSET1?"))
+            print("ISET1? =", psu.query("ISET1?"))
+        except:
+            pass
+
+        return jsonify({
+            "status": "updated",
+            "voltage": voltage,
+            "current": current
         })
 
-    })
-    .then(res => res.json())
-    .then(data => {
+    except Exception as e:
 
-        console.log(data);
+        print("PSU ERROR:", e)
 
-        alert("PSU Updated");
-
-    });
-}
+        return jsonify({
+            "error": str(e)
+        }), 500
