@@ -1,31 +1,29 @@
-<div class="ps-row-bottom">
+function updatePSU() {
 
-    <button
-        class="control-btn"
-        onclick="updatePSU()">
+    fetch('/psu/set', {
 
-        Send To PSU
+        method:'POST',
 
-    </button>
+        headers:{
+            'Content-Type':'application/json'
+        },
 
-</div>
+        body:JSON.stringify({
 
-<div class="ps-row-bottom">
+            voltage:
+                document.getElementById("psVoltage").value,
 
-    <button
-        class="control-btn start-btn"
-        onclick="startPSU()">
+            current:
+                document.getElementById("psCurrent").value
+        })
 
-        ON
+    })
+    .then(res => res.json())
+    .then(data => {
 
-    </button>
+        console.log(data);
 
-    <button
-        class="control-btn stop-btn"
-        onclick="stopPSU()">
+        alert("PSU Updated");
 
-        OFF
-
-    </button>
-
-</div>
+    });
+}
