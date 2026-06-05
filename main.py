@@ -1,9 +1,13 @@
-self.ser = serial.Serial(
-    port=port,
-    baudrate=baudrate,
-    timeout=timeout
-)
+self.ser.write(cmd.encode())
 
-# IMPORTANT FOR GPD-2303S
-self.ser.dtr = False
-self.ser.rts = False
+time.sleep(0.5)
+
+raw = self.ser.read_all()
+
+print("RAW BYTES =", raw)
+
+response = raw.decode(errors="ignore").strip()
+
+print(f"SCPI QUERY [{cmd.strip()}] -> {response}")
+
+return response
