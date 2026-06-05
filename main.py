@@ -14,34 +14,26 @@ Status for device COM5:
     DTR circuit:     ON
     RTS circuit:     ON
 
+(venv) PS D:\Wary\MEMS> python test_baud.py 
 
-import serial
-import time
+Testing 9600
+Waiting: 0
+Received: b''
 
-for baud in [9600, 19200, 38400, 57600, 115200]:
+Testing 19200
+Waiting: 0
+Received: b''
 
-    print("\nTesting", baud)
+Testing 38400
+Waiting: 0
+Received: b''
 
-    try:
+Testing 57600
+Waiting: 0
+Received: b''
 
-        ser = serial.Serial(
-            "COM5",
-            baudrate=baud,
-            timeout=2
-        )
+Testing 115200
+Waiting: 0
+Received: b''
 
-        time.sleep(1)
 
-        ser.write(b"*IDN?\n")
-
-        time.sleep(1)
-
-        print("Waiting:", ser.in_waiting)
-
-        print("Received:", ser.read_all())
-
-        ser.close()
-
-    except Exception as e:
-
-        print(e)
