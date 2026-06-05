@@ -1,8 +1,9 @@
-(venv) PS D:\Wary\MEMS> python test_dtr.py
-Connected to COM5
-DTR = True
-RTS = True
-DTR OFF
-RTS OFF
-Waiting: 39
-Received: b'GW INSTEK,GPD-2303S,SN:EL863672,V2.04\r\n'
+self.ser = serial.Serial(
+    port=port,
+    baudrate=baudrate,
+    timeout=timeout
+)
+
+# IMPORTANT FOR GPD-2303S
+self.ser.dtr = False
+self.ser.rts = False
