@@ -1,12 +1,15 @@
-from instrument import PowerSupply
+if psu:
+    try:
 
-psu = PowerSupply(
-    port="COM5",
-    baudrate=9600
-)
+        v = psu.get_voltage()
+        i = psu.get_current()
 
-print(psu.query("*IDN?"))
-print(psu.query("VSET1?"))
-print(psu.query("ISET1?"))
-print(psu.query("VOUT1?"))
-print(psu.query("IOUT1?"))
+        if v:
+            system_state["psu_voltage"] = float(v)
+
+        if i:
+            system_state["psu_current"] = float(i)
+
+    except Exception as e:
+
+        print("PSU read error:", e)
