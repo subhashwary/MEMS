@@ -1,28 +1,18 @@
-@app.route('/psu/start', methods=['POST'])
-def start_psu():
-
-    global psu
-
-    data = request.json or {}
-
-    voltage = float(data.get("voltage", 0))
-    current = float(data.get("current", 0))
+@app.route('/psu/stop', methods=['POST'])
+def stop_psu():
 
     try:
 
-        psu.set_voltage(voltage)
-        psu.set_current(current)
+        psu.output_off()
 
-        psu.output_on()
-
-        print("PSU OUTPUT ON")
+        print("PSU OUTPUT OFF")
 
         return jsonify({
-            "status": "started"
+            "status":"stopped"
         })
 
     except Exception as e:
 
         return jsonify({
-            "error": str(e)
+            "error":str(e)
         }), 500
