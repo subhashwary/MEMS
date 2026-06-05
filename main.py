@@ -1,57 +1,25 @@
-(venv) PS D:\Wary\MEMS> python protocol_test.py
+import serial
+import time
 
-TEST: 'VSET1?\n'
-waiting: 0
-response: b''
+ser = serial.Serial("COM5", 9600, timeout=2)
 
-TEST: 'ISET1?\n'
-waiting: 0
-response: b''
+commands = [
+    "VSET1:5.0\n",
+    "ISET1:0.5\n",
+    "OUT1\n"
+]
 
-TEST: 'VOUT1?\n'
-waiting: 0
-response: b''
+for cmd in commands:
 
-TEST: 'IOUT1?\n'
-waiting: 0
-response: b''
+    print("Sending:", cmd.strip())
 
-TEST: 'STATUS?\n'
-waiting: 0
-response: b''
+    ser.write(cmd.encode())
 
-TEST: '*IDN?\n'
-waiting: 0
-response: b''
+    time.sleep(1)
 
-TEST: 'VSET1?\r'
-waiting: 0
-response: b''
+    print("Waiting:", ser.in_waiting)
 
-TEST: 'ISET1?\r'
-waiting: 0
-response: b''
+    if ser.in_waiting:
+        print("Response:", ser.read_all())
 
-TEST: 'VOUT1?\r'
-waiting: 0
-response: b''
-
-TEST: 'IOUT1?\r'
-waiting: 0
-response: b''
-
-TEST: 'VSET1?\r\n'
-waiting: 0
-response: b''
-
-TEST: 'ISET1?\r\n'
-waiting: 0
-response: b''
-
-TEST: 'VOUT1?\r\n'
-waiting: 0
-response: b''
-
-TEST: 'IOUT1?\r\n'
-waiting: 0
-response: b''
+ser.close()
