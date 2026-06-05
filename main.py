@@ -1,10 +1,13 @@
-from instrument import PowerSupply
-
-psu = PowerSupply("COM5", 9600)
-
-print("IDN:", psu.query("*IDN?"))
-print("VSET:", psu.query("VSET1?"))
-print("VOUT:", psu.query("VOUT1?"))
-print("STATUS:", psu.query("STATUS?"))
-
-psu.close()
+(venv) PS D:\Wary\MEMS> python test_query.py
+RAW BYTES = b''
+SCPI QUERY [*IDN?] -> 
+IDN: 
+RAW BYTES = b''
+SCPI QUERY [VSET1?] -> 
+VSET: 
+RAW BYTES = b''
+SCPI QUERY [VOUT1?] -> 
+VOUT: 
+RAW BYTES = b''
+SCPI QUERY [STATUS?] -> 
+STATUS: 
