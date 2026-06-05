@@ -1,48 +1,21 @@
-    <div class="ps-head" style="margin-bottom:20px;">
-        CH1
-    </div>
+@app.route('/psu/set', methods=['POST'])
+def set_psu():
 
-    <div class="instrument-row">
-        <span class="instrument-label">Set Voltage</span>
+    data = request.json
 
-        <input
-            id="psVoltage"
-            type="number"
-            step="0.01"
-            value="2.00">
+    voltage = float(data["voltage"])
+    current = float(data["current"])
 
-        <span>Volt</span>
-    </div>
+    print()
+    print("===============")
+    print("USER SET PSU")
+    print("Voltage:", voltage)
+    print("Current:", current)
+    print("===============")
 
-    <div class="instrument-row">
-        <span class="instrument-label">Set Current</span>
+    psu.set_voltage(voltage)
+    psu.set_current(current)
 
-        <input
-            id="psCurrent"
-            type="number"
-            step="0.01"
-            value="0.20">
-
-        <span>Amp</span>
-    </div>
-
-    <div class="ps-row-bottom">
-        <button
-            class="control-btn start-btn"
-            onclick="startPSU()">
-            ON
-        </button>
-
-        <button
-            class="control-btn stop-btn"
-            onclick="stopPSU()">
-            OFF
-        </button>
-    </div>
-
-</div>
-
-<div class="ess-box instrument-box dmm-box">
-
-    <div class="dmm-title">Digital Multimeter</div>
-
+    return jsonify({
+        "status": "ok"
+    })
