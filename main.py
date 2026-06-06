@@ -1,5 +1,8 @@
-psu.write("VOUT1?\r\n")
-v = psu.read().strip()
+import serial
+import time
 
-psu.write("IOUT1?\r\n")
-i = psu.read().strip()
+psu = serial.Serial("COM5", 9600, timeout=1)
+
+psu.write(b"*IDN?\r\n")
+time.sleep(0.2)
+print(psu.readline())
