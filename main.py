@@ -1,5 +1,2 @@
-def parse_value(x):
-    try:
-        return float(str(x).replace("V", "").replace("A", "").strip())
-    except:
-        return 0.0
+system_state["psu_voltage"] = parse_value(v)
+system_state["psu_current"] = parse_value(i)
