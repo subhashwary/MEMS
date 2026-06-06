@@ -228,9 +228,6 @@ def data():
     # Simulated pressure reading
     system_state["pressure"] = round(random.uniform(20, 100), 2)
 
-    if psu:
-        time.sleep(0.2)
-
     # -----------------------------------------------------
     # AUTO MODE LOGIC
     # -----------------------------------------------------
