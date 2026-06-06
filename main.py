@@ -1,36 +1,141 @@
-@app.route('/psu/set', methods=['POST'])
-def set_psu():
+(venv) PS D:\Wary\MEMS> python app.py
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+127.0.0.1 - - [06/Jun/2026 16:36:27] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:27] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:27] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:31] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:31] "GET /static/images/IISc.png HTTP/1.1" 304 -
+127.0.0.1 - - [06/Jun/2026 16:36:31] "GET /static/images/cense.png HTTP/1.1" 304 -
+127.0.0.1 - - [06/Jun/2026 16:36:31] "GET /ports HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:34] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:35] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:36] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:37] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:38] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:38] "GET /static/images/IISc.png HTTP/1.1" 304 -
+127.0.0.1 - - [06/Jun/2026 16:36:38] "GET /static/images/cense.png HTTP/1.1" 304 -
+127.0.0.1 - - [06/Jun/2026 16:36:38] "GET /ports HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:39] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:39] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:40] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:41] "GET /data HTTP/1.1" 200 -
 
-    global psu
+Trying PSU baudrate: 9600
+127.0.0.1 - - [06/Jun/2026 16:36:42] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:42] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:43] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:44] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:45] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [*IDN?] -> 
+IDN  = 
+127.0.0.1 - - [06/Jun/2026 16:36:45] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:46] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:47] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [VSET1?] -> 
+VSET = 
+127.0.0.1 - - [06/Jun/2026 16:36:48] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:48] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:49] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:50] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [ISET1?] -> 
+ISET = 
+127.0.0.1 - - [06/Jun/2026 16:36:51] "GET /data HTTP/1.1" 200 -
+PORT = COM5
+BAUD = 9600
+OPEN = True
 
-    if not psu:
-        return jsonify({
-            "error": "PSU not connected"
-        }), 500
+================================
+PSU CONNECTED SUCCESSFULLY
+PORT: COM5
+BAUDRATE: 9600
+================================
 
-    data = request.json or {}
-
-    voltage = float(data.get("voltage", 0))
-    current = float(data.get("current", 0))
-
-    try:
-
-        with psu_lock:
-
-            psu.write(f"VSET1:{voltage:.3f}")
-            psu.write(f"ISET1:{current:.3f}")
-            psu.write("OUT1")
-
-        # Update UI immediately
-        system_state["psu_voltage"] = voltage
-        system_state["psu_current"] = current
-
-        return jsonify({
-            "status": "updated"
-        })
-
-    except Exception as e:
-
-        return jsonify({
-            "error": str(e)
-        }), 500
+127.0.0.1 - - [06/Jun/2026 16:36:51] "POST /connect_psu HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [VOUT1?] -> 
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [IOUT1?] -> 
+127.0.0.1 - - [06/Jun/2026 16:36:57] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:57] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:57] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:57] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:36:58] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:00] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [VOUT1?] -> 
+127.0.0.1 - - [06/Jun/2026 16:37:01] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [IOUT1?] -> 
+127.0.0.1 - - [06/Jun/2026 16:37:02] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:02] "POST /psu/set HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:02] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:03] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:03] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:03] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:03] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:03] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:03] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:04] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:05] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:06] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:06] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:07] "POST /psu/set HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:07] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [VOUT1?] -> 
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [IOUT1?] -> 
+127.0.0.1 - - [06/Jun/2026 16:37:13] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:13] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:13] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:13] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:14] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:15] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [VOUT1?] -> 
+127.0.0.1 - - [06/Jun/2026 16:37:17] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [IOUT1?] -> 
+127.0.0.1 - - [06/Jun/2026 16:37:18] "GET /data HTTP/1.1" 200 -
+PSU CMD -> OUT1
+127.0.0.1 - - [06/Jun/2026 16:37:18] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:18] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:18] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:18] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:18] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:18] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:18] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:19] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:21] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:21] "GET /data HTTP/1.1" 200 -
+127.0.0.1 - - [06/Jun/2026 16:37:22] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [VOUT1?] -> 
+VERIFY VOUT = 
+127.0.0.1 - - [06/Jun/2026 16:37:22] "GET /data HTTP/1.1" 200 -
+HEX = 
+RAW BYTES = b''
+SCPI QUERY [IOUT1?] -> 
+VERIFY IOUT = 
+PSU OUTPUT ON
+127.0.0.1 - - [06/Jun/2026 16:37:25] "POST /psu/start HTTP/1.1" 200 -
+PSU CMD -> OUT1
