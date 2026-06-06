@@ -1,5 +1,7 @@
-v = psu.query("VOUT1?")
-i = psu.query("IOUT1?")
+with psu_lock:
+    psu.write(f"VSET1:{voltage:.3f}")
+    time.sleep(0.05)
+    psu.write(f"ISET1:{current:.3f}")
+    time.sleep(0.05)
 
-system_state["psu_voltage"] = parse_value(v)
-system_state["psu_current"] = parse_value(i)
+    psu.write("OUT1")
