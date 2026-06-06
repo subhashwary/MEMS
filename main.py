@@ -1,19 +1,21 @@
-system_state = {
-    "mode": "manual",
-    "dmm_running": False,
-    "dmm_voltage": 0.0,
-    "pressure": 0.0,
-    "psu_voltage": 0.0,
-    "psu_current": 0.0,
-    "cycle_start": time.time(),
+# -----------------------------------------------------
+# PSU READINGS (ONLY IN /data)
+# -----------------------------------------------------
 
-    # 🔴 ADD THIS LINE
-    "last_psu_read": 0,
+PSU_READ_INTERVAL = 0.3
+last_psu_read = system_state["last_psu_read"]
 
-    "config": {
-        "initial_off": 5,
-        "on_time": 5,
-        "off_time": 5,
-        "cycles": 10
-    }
-}
+if psu and (time.time() - last_psu_read > PSU_READ_INTERVAL):
+
+    try:
+        with psu_lock:
+            v = psu.query("VOUT1?")
+            i = psu.query("IOUT1?")
+
+        system_state["psu_voltage"] = parse_value(v)
+        system_state["psu_current"] = parse_value(i)
+
+        system_state["last_psu_read"] = time.time()
+
+    except Exception as e:
+        print("PSU read error:", e)
