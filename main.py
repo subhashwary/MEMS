@@ -1,716 +1,587 @@
-(venv) PS D:\Wary\MEMS> python app.py
- * Serving Flask app 'app'
- * Debug mode: off
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
-127.0.0.1 - - [06/Jun/2026 13:25:16] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:17] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:18] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:18] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [06/Jun/2026 13:25:18] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [06/Jun/2026 13:25:18] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:19] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:24] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:25] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:25] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:25] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [06/Jun/2026 13:25:25] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [06/Jun/2026 13:25:25] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:25] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:26] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:27] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:27] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:28] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:28] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:29] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:29] "GET /data HTTP/1.1" 200 -
+from flask import Flask, jsonify, request, render_template, send_file
+import random
+import time
+import serial.tools.list_ports
+import re
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [06/Jun/2026 13:25:30] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:30] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:31] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:31] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:32] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:25:33] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:33] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:35] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:35] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:25:36] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:36] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:37] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:37] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:38] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:25:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:39] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:39] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:40] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
-127.0.0.1 - - [06/Jun/2026 13:25:40] "GET /data HTTP/1.1" 200 -
+def parse_value(x):
+    try:
+        if x is None:
+            return 0.0
+        x = str(x)
+        # extract number from: "1.998V", "0.700A", "+0.282E+1"
+        match = re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", x)
+        return float(match.group()) if match else 0.0
+    except:
+        return 0.0
+    
+def send_psu(voltage, current):
+    global psu
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [06/Jun/2026 13:25:41] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:41] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:42] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:42] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:44] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:25:45] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:45] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:46] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:46] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:25:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:48] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:48] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:49] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:25:49] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:50] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:50] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:51] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:51] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+    if not psu:
+        return "PSU not connected"
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [06/Jun/2026 13:25:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:53] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:53] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:54] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:54] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:55] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:25:55] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:56] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:56] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:57] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:57] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:25:58] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:58] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:59] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:25:59] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:00] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:26:00] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:02] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:02] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+    try:
+        with psu_lock:
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [06/Jun/2026 13:26:03] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:03] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:04] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:04] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:05] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:05] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:06] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:26:06] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:07] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:07] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:08] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:08] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:26:09] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:09] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:10] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:10] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:11] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:26:12] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:12] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:13] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:13] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:14] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
-127.0.0.1 - - [06/Jun/2026 13:26:14] "POST /connect_psu HTTP/1.1" 500 -
+            cmd_v = f"VSET1:{voltage:.3f}"
+            cmd_i = f"ISET1:{current:.3f}"
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [06/Jun/2026 13:26:14] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:15] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:16] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:17] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:17] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:26:18] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:19] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:20] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:26:21] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:22] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:26:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:24] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:24] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:25] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+            psu.write(cmd_v + "\r\n")
+            time.sleep(0.05)
+            psu.write(cmd_i + "\n")
+            time.sleep(0.05)
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [06/Jun/2026 13:26:25] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:26] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:26] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:27] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:27] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:26:29] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:30] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:26:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:33] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:26:35] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [06/Jun/2026 13:26:36] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:39] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:26:41] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:26:42] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:44] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:26:45] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:47] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+            # optional verification (safe)
+            try:
+                v = psu.query("VSET1?")
+                i = psu.query("ISET1?")
+                print("VERIFIED:", v, i)
+            except:
+                pass
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [06/Jun/2026 13:26:48] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:50] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:26:51] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:53] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:26:54] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:26:56] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:26:57] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
-127.0.0.1 - - [06/Jun/2026 13:26:58] "POST /connect_psu HTTP/1.1" 500 -
+        return "OK"
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [06/Jun/2026 13:26:59] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:00] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:01] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:27:03] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:27:05] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:06] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:27:08] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:09] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+    except Exception as e:
+        return str(e)
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [06/Jun/2026 13:27:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:12] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:27:14] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:15] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:27:17] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:27:19] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:20] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+from threading import Lock
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [06/Jun/2026 13:27:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:23] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:27:25] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:26] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:27:28] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:29] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:27:31] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:32] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+serial_lock = Lock()
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [06/Jun/2026 13:27:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:35] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:27:37] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:38] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:27:40] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:27:41] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
-127.0.0.1 - - [06/Jun/2026 13:27:43] "POST /connect_psu HTTP/1.1" 500 -
+psu_lock = Lock()
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:46] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:46] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:27:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:49] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:49] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:27:50] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:50] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:27:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:53] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:53] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+from instrument import PowerSupply, Multimeter
+from logger import initialize_csv, log_data, CSV_FILE
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [06/Jun/2026 13:27:55] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:55] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:56] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:56] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:58] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:58] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:27:59] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:27:59] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:28:00] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:02] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:02] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:03] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:28:04] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:04] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:05] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:05] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:05] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+app = Flask(__name__)
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [06/Jun/2026 13:28:06] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:07] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:07] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:08] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:08] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:08] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:09] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:28:10] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:10] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:11] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:28:12] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:13] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:13] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:14] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:14] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:14] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:28:15] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:16] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:16] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+# =========================================================
+# INITIALIZATION
+# =========================================================
+initialize_csv()
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [06/Jun/2026 13:28:17] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:17] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:18] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:19] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:20] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-127.0.0.1 - - [06/Jun/2026 13:28:21] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:22] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-127.0.0.1 - - [06/Jun/2026 13:28:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:24] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:25] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-127.0.0.1 - - [06/Jun/2026 13:28:26] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:26] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:27] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:27] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
-127.0.0.1 - - [06/Jun/2026 13:28:28] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [06/Jun/2026 13:28:28] "POST /connect_psu HTTP/1.1" 500 -
+# Connect to instruments (replace COM ports with your actual ports)
+psu = None
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [06/Jun/2026 13:28:29] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+dmm = None
 
-Trying PSU baudrate: 19200
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+# =========================================================
+# GLOBAL SYSTEM STATE
+# =========================================================
+system_state = {
+    "mode": "manual",
+    "dmm_running": False,
+    "dmm_voltage": 0.0,
+    "pressure": 0.0,
+    "psu_voltage": 0.0,
+    "psu_current": 0.0,
+    "cycle_start": time.time(),
 
-Trying PSU baudrate: 38400
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN  = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-VSET = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-ISET = 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-IDN RESPONSE = 
+    # 🔴 ADD THIS LINE
+    "last_psu_read": 0,
 
-Trying PSU baudrate: 57600
+    "config": {
+        "initial_off": 5,
+        "on_time": 5,
+        "off_time": 5,
+        "cycles": 10
+    }
+}
+
+# =========================================================
+# WEB PAGE
+# =========================================================
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+
+@app.route('/status')
+def status():
+
+    return jsonify({
+        "psu_connected": psu is not None,
+        "dmm_connected": dmm is not None
+    })
+
+
+@app.route('/connect_psu', methods=['POST'])
+def connect_psu():
+
+    global psu
+
+    data = request.json
+    com_port = data.get("port")
+
+    with psu_lock:
+
+        # Close previous PSU connection if any
+        try:
+            if psu:
+                psu.close()
+        except:
+            pass
+
+        try:
+
+            psu = None
+            response = ""
+
+            # Try common baud rates
+            for baud in [9600, 19200, 38400, 57600]:
+
+                try:
+
+                    print(f"\nTrying PSU baudrate: {baud}")
+
+                    candidate = PowerSupply(
+                        port=com_port,
+                        baudrate=baud,
+                        timeout=2
+                    )
+
+                    print("IDN  =", candidate.query("*IDN?"))
+                    print("VSET =", candidate.query("VSET1?"))
+                    print("ISET =", candidate.query("ISET1?"))
+
+                    response = candidate.query("*IDN?")
+                    print("IDN RESPONSE =", response)
+
+                    # If we get any valid response, keep this connection
+                    if response and "ERROR" not in response.upper():
+
+                        psu = candidate
+
+                        print("\n================================")
+                        print("PSU CONNECTED SUCCESSFULLY")
+                        print("PORT:", com_port)
+                        print("BAUDRATE:", baud)
+                        print("ID:", response)
+                        print("================================\n")
+
+                        return jsonify({
+                            "status": "connected",
+                            "baudrate": baud,
+                            "id": response
+                        })
+
+                    else:
+                        candidate.close()
+
+                except Exception as e:
+
+                    print(f"Failed at {baud}: {e}")
+
+            # If all baud rates fail
+            psu = None
+
+            return jsonify({
+                "status": "error",
+                "message": "No response from PSU on any baud rate"
+            }), 500
+
+        except Exception as e:
+
+            psu = None
+
+            return jsonify({
+                "status": "error",
+                "message": str(e)
+            }), 500
+
+
+@app.route('/psu_test')
+def psu_test():
+
+    global psu
+
+    try:
+
+        print("Sending VSET1:2.00")
+        psu.write("VSET1:2.00")
+
+        time.sleep(1)
+
+        print("Sending ISET1:0.10")
+        psu.write("ISET1:0.10")
+
+        time.sleep(1)
+
+        print("Sending OUT1")
+        psu.write("OUT1")
+
+        return "Commands Sent"
+
+    except Exception as e:
+
+        return str(e)
+
+# =========================================================
+# LIVE DATA API
+# =========================================================
+@app.route('/data')
+def data():
+
+    # Simulated pressure reading
+    system_state["pressure"] = round(random.uniform(20, 100), 2)
+
+    # -----------------------------------------------------
+    # AUTO MODE LOGIC
+    # -----------------------------------------------------
+    if system_state["mode"] == "auto":
+        cfg = system_state["config"]
+        elapsed = time.time() - system_state["cycle_start"]
+
+        cycle_period = cfg["on_time"] + cfg["off_time"]
+
+        if elapsed < cfg["initial_off"]:
+            system_state["dmm_running"] = False
+        else:
+            adjusted = elapsed - cfg["initial_off"]
+            position = adjusted % cycle_period
+            system_state["dmm_running"] = position < cfg["on_time"]
+
+    # -----------------------------------------------------
+    # DMM READING
+    # -----------------------------------------------------
+    if system_state["dmm_running"]:
+        if dmm:
+            try:
+                reading = dmm.measure_voltage()
+                if isinstance(reading, (int, float)):
+                    system_state["dmm_voltage"] = reading
+            except Exception as e:
+                print("DMM read error:", e)
+                system_state["dmm_voltage"] = 0.0
+        else:
+            system_state["dmm_voltage"] = round(random.uniform(0, 10), 3)
+    else:
+        system_state["dmm_voltage"] = 0.0
+
+    # -----------------------------------------------------
+    # PSU READINGS (FIXED LOCATION)
+    # -----------------------------------------------------
+    PSU_READ_INTERVAL = 0.3
+
+    last_psu_read = system_state.get("last_psu_read", 0)
+
+    if psu and (time.time() - last_psu_read > PSU_READ_INTERVAL):
+
+        try:
+            with psu_lock:
+                v = psu.query("VOUT1?")
+                i = psu.query("IOUT1?")
+
+            system_state["psu_voltage"] = parse_value(v)
+            system_state["psu_current"] = parse_value(i)
+
+            system_state["last_psu_read"] = time.time()
+
+        except Exception as e:
+            print("PSU read error:", e)
+
+    # -----------------------------------------------------
+    # LOG DATA
+    # -----------------------------------------------------
+    log_data(
+        system_state["pressure"],
+        system_state["dmm_voltage"],
+        system_state["psu_voltage"],
+        system_state["psu_current"],
+        system_state["mode"]
+    )
+
+    return jsonify(system_state)
+
+# =========================================================
+# MODE CONTROL
+# =========================================================
+@app.route('/mode', methods=['POST'])
+def set_mode():
+    mode = request.json.get("mode")
+
+    if mode in ["manual", "auto"]:
+        system_state["mode"] = mode
+        system_state["cycle_start"] = time.time()
+        return jsonify({"status": f"{mode} mode activated"})
+
+    return jsonify({"error": "Invalid mode"}), 400
+
+
+# =========================================================
+# DMM CONTROL
+# =========================================================
+@app.route('/dmm/start', methods=['POST'])
+def start_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+
+    system_state["dmm_running"] = True
+    return jsonify({"status": "DMM started"})
+
+
+@app.route('/dmm/stop', methods=['POST'])
+def stop_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+
+    system_state["dmm_running"] = False
+    return jsonify({"status": "DMM stopped"})
+
+
+# =========================================================
+# POWER SUPPLY CONTROL
+# =========================================================
+@app.route('/psu/start', methods=['POST'])
+def start_psu():
+
+    global psu
+
+    data = request.json or {}
+
+    voltage = float(data.get("voltage", 0))
+    current = float(data.get("current", 0))
+
+    try:
+        with psu_lock:
+            psu.write(f"VSET1:{voltage:.3f}\n")
+            psu.write(f"ISET1:{current:.3f}\n")
+            psu.write("OUT1\n")
+
+
+            psu.output_on()
+
+            time.sleep(1.5)
+
+            print("VERIFY VOUT =", psu.query("VOUT1?"))
+            print("VERIFY IOUT =", psu.query("IOUT1?"))
+
+
+        print("PSU OUTPUT ON")
+
+        return jsonify({
+            "status": "started"
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+
+@app.route('/psu/stop', methods=['POST'])
+def stop_psu():
+
+    global psu
+
+    if not psu:
+        return jsonify({"error": "PSU not connected"}), 500
+
+    try:
+        with psu_lock:
+            psu.write("OUT0\n")   # 🔴 PUT HERE (THIS IS CORRECT PLACE)
+
+        return jsonify({
+            "status": "stopped"
+        })
+
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+# =========================================================
+# NEW ROUTE
+# =========================================================
+@app.route('/psu/set', methods=['POST'])
+def set_psu():
+
+    data = request.json or {}
+
+    voltage = float(data.get("voltage", 0))
+    current = float(data.get("current", 0))
+
+    # 🔴 PUT IT HERE (VERY TOP OF FUNCTION)
+    if not psu:
+        return jsonify({"error": "PSU not connected"}), 500
+
+    try:
+        with psu_lock:
+            psu.write(f"VSET1:{voltage:.3f}\n")
+            psu.write(f"ISET1:{current:.3f}\n")
+            psu.write("OUT1\n")
+
+        return jsonify({"status": "updated"})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# =========================================================
+# SAVE AUTO MODE CONFIGURATION
+# =========================================================
+@app.route('/config', methods=['POST'])
+def save_config():
+    data = request.json or {}
+
+    system_state["config"] = {
+        "initial_off": int(data.get("initial_off", 5)),
+        "on_time": int(data.get("on_time", 5)),
+        "off_time": int(data.get("off_time", 5)),
+        "cycles": int(data.get("cycles", 10))
+    }
+
+    system_state["cycle_start"] = time.time()
+
+    return jsonify({
+        "status": "Configuration saved",
+        "config": system_state["config"]
+    })
+
+
+# =========================================================
+# DOWNLOAD CSV
+# =========================================================
+@app.route('/download')
+def download():
+    return send_file(CSV_FILE, as_attachment=True)
+
+
+# =========================================================
+# GET INSTRUMENT IDS
+# =========================================================
+@app.route('/id')
+def get_ids():
+    return jsonify({
+        "psu_id": psu.idn() if psu else "Not Connected",
+        "dmm_id": dmm.idn() if dmm else "Not Connected"
+    })
+
+
+# =========================================================
+# GET AVAILABLE COM PORTS
+# =========================================================
+@app.route('/ports')
+def get_ports():
+
+    ports = serial.tools.list_ports.comports()
+
+    port_list = []
+
+    for port in ports:
+        port_list.append({
+            "device": port.device,
+            "description": port.description
+        })
+
+    return jsonify(port_list)
+
+
+
+# =========================================================
+# CONNECT DMM
+# =========================================================
+@app.route('/connect_dmm', methods=['POST'])
+def connect_dmm():
+
+    global dmm
+
+    data = request.json
+
+    com_port = data.get("port")
+
+    BAUDRATES = [9600, 19200, 38400, 57600, 115200]
+
+    # -----------------------------------------
+    # CLOSE OLD CONNECTION FIRST
+    # -----------------------------------------
+    try:
+        if dmm:
+            dmm.close()
+            dmm = None
+    except:
+        pass
+
+    # -----------------------------------------
+    # TRY DIFFERENT BAUDRATES
+    # -----------------------------------------
+    for baud in BAUDRATES:
+
+        test_dmm = None
+
+        try:
+
+            print(f"\nTrying baudrate: {baud}")
+
+            test_dmm = Multimeter(
+                port=com_port,
+                baudrate=baud,
+                timeout=2
+            )
+
+            # give instrument time
+            time.sleep(1)
+
+            response = test_dmm.idn()
+
+            print("RAW ID RESPONSE:", response)
+
+            # ---------------------------------
+            # VALID RESPONSE CHECK
+            # ---------------------------------
+            if response and len(response) > 3:
+
+                dmm = test_dmm
+
+                print("\n================================")
+                print("DMM CONNECTED SUCCESSFULLY")
+                print("PORT:", com_port)
+                print("BAUDRATE:", baud)
+                print("DMM ID:", response)
+                print("================================\n")
+
+                return jsonify({
+                    "status": "connected",
+                    "id": response,
+                    "baudrate": baud
+                })
+
+            else:
+
+                print("Invalid response")
+
+                test_dmm.close()
+
+        except Exception as e:
+
+            print(f"FAILED at {baud}: {e}")
+
+            # IMPORTANT
+            try:
+                if test_dmm:
+                    test_dmm.close()
+            except:
+                pass
+
+    # -----------------------------------------
+    # IF ALL BAUDRATES FAIL
+    # -----------------------------------------
+    dmm = None
+
+    return jsonify({
+        "status": "error",
+        "message": "Could not connect to DMM"
+    }), 500
+
+
+# =========================================================
+# MAIN
+# =========================================================
+if __name__ == '__main__':
+    app.run(
+    debug=False,
+    threaded=True
+)
