@@ -1,27 +1,23 @@
-try:
+@app.route('/psu_test')
+def psu_test():
 
-    candidate.write("VSET1:2.00")
-    time.sleep(0.5)
+    global psu
 
-    candidate.write("ISET1:0.10")
-    time.sleep(0.5)
+    if not psu:
+        return "PSU not connected"
 
-    psu = candidate
+    try:
 
-    print("\n================================")
-    print("PSU CONNECTED SUCCESSFULLY")
-    print("PORT:", com_port)
-    print("BAUDRATE:", baud)
-    print("================================\n")
+        psu.write("VSET1:2.00")
+        time.sleep(1)
 
-    return jsonify({
-        "status": "connected",
-        "baudrate": baud,
-        "id": f"PSU Connected @ {baud}"
-    })
+        psu.write("ISET1:0.10")
+        time.sleep(1)
 
-except Exception as e:
+        psu.write("OUT1")
 
-    print("PSU TEST FAILED:", e)
+        return "Commands Sent"
 
-    candidate.close()
+    except Exception as e:
+
+        return str(e)
