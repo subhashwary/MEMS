@@ -1,22 +1,11 @@
-@app.route('/psu/set', methods=['POST'])
-def set_psu():
-
-    data = request.json or {}
-
+if psu:
     try:
-        voltage = float(data.get("voltage", 0))
-        current = float(data.get("current", 0))
+        with psu_lock:
+            v = psu.query("VOUT1?")
+            i = psu.query("IOUT1?")
 
-        result = send_psu(voltage, current)
-
-        if result != "OK":
-            return jsonify({"error": result}), 500
-
-        return jsonify({
-            "status": "updated",
-            "voltage": voltage,
-            "current": current
-        })
+        system_state["psu_voltage"] = parse_value(v)
+        system_state["psu_current"] = parse_value(i)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print("PSU read error:", e)
