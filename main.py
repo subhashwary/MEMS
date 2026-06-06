@@ -1,22 +1,21 @@
-@app.route('/psu/set', methods=['POST'])
-def set_psu():
+# -----------------------------------------------------
+# PSU READINGS (PUT ONLY IN /data ROUTE)
+# -----------------------------------------------------
 
-    data = request.json or {}
+PSU_READ_INTERVAL = 0.3
+last_psu_read = system_state.get("last_psu_read", 0)
 
-    voltage = float(data.get("voltage", 0))
-    current = float(data.get("current", 0))
-
-    # 🔴 PUT IT HERE (VERY TOP OF FUNCTION)
-    if not psu:
-        return jsonify({"error": "PSU not connected"}), 500
+if psu and (time.time() - last_psu_read > PSU_READ_INTERVAL):
 
     try:
         with psu_lock:
-            psu.write(f"VSET1:{voltage:.3f}\n")
-            psu.write(f"ISET1:{current:.3f}\n")
-            psu.write("OUT1\n")
+            v = psu.query("VOUT1?")
+            i = psu.query("IOUT1?")
 
-        return jsonify({"status": "updated"})
+        system_state["psu_voltage"] = parse_value(v)
+        system_state["psu_current"] = parse_value(i)
+
+        system_state["last_psu_read"] = time.time()
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print("PSU read error:", e)
