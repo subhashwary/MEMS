@@ -1,304 +1,154 @@
-(venv) PS D:\Wary\MEMS> python app.py
- * Serving Flask app 'app'
- * Debug mode: off
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
-127.0.0.1 - - [08/Jun/2026 14:52:21] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:24] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:25] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:26] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:27] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [08/Jun/2026 14:52:27] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [08/Jun/2026 14:52:27] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:27] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:28] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:29] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:30] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:30] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:31] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:31] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:34] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:34] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [08/Jun/2026 14:52:34] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [08/Jun/2026 14:52:34] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:35] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:36] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:36] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:37] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:41] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:43] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:46] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:48] "GET /data HTTP/1.1" 200 -
+import serial
+import time
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [08/Jun/2026 14:52:49] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:51] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:52:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:54] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:52:55] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+from threading import Lock
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [08/Jun/2026 14:52:57] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:52:58] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:00] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:01] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:03] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+serial_lock = Lock()
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [08/Jun/2026 14:53:04] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:06] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:07] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:09] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:10] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+class SCPIInstrument:
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [08/Jun/2026 14:53:12] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:13] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:15] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:16] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:18] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
-127.0.0.1 - - [08/Jun/2026 14:53:19] "POST /connect_psu HTTP/1.1" 500 -
+    def __init__(self, port, baudrate=115200, timeout=2):
 
-Trying PSU baudrate: 9600
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:24] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:25] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+        self.port = port
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [08/Jun/2026 14:53:27] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:28] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:30] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:31] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:33] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+        self.ser = serial.Serial(
+            port=port,
+            baudrate=baudrate,
+            bytesize=serial.EIGHTBITS,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            timeout=timeout,
+            xonxoff=False,
+            rtscts=False,
+            dsrdtr=False
+        )
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [08/Jun/2026 14:53:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:36] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:37] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:39] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:40] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+        self.ser.dtr = False
+        self.ser.rts = False
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [08/Jun/2026 14:53:42] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:43] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:45] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:46] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:48] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
-127.0.0.1 - - [08/Jun/2026 14:53:48] "POST /connect_psu HTTP/1.1" 500 -
+        time.sleep(1)
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [08/Jun/2026 14:53:51] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:52] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:53:54] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:55] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+    def write(self, cmd):
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [08/Jun/2026 14:53:57] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:53:58] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:54:00] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:54:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:54:03] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+        if not cmd.endswith("\r\n"):
+            cmd += "\r\n"
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [08/Jun/2026 14:54:04] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:54:06] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:54:07] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:54:09] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:54:10] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+        self.ser.write(cmd.encode())
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [08/Jun/2026 14:54:12] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:54:13] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:54:15] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:54:16] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:54:18] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
-127.0.0.1 - - [08/Jun/2026 14:54:18] "POST /connect_psu HTTP/1.1" 500 -
+    def query(self, cmd):
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [08/Jun/2026 14:54:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:54:21] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 14:54:22] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 14:54:24] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+        with serial_lock:
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [08/Jun/2026 14:54:26] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 14:54:28] "GET /data HTTP/1.1" 200 -
+            try:
+
+                self.ser.reset_input_buffer()
+
+                if not cmd.endswith("\r\n"):
+                    cmd += "\r\n"
+
+                self.ser.write(cmd.encode())
+
+                time.sleep(0.1)
+
+                raw = self.ser.read(200)
+
+                print("HEX =", raw.hex())
+                print("RAW BYTES =", raw)
+
+                response = raw.decode(
+                    errors="ignore"
+                ).strip()
+
+                print(
+                    f"SCPI QUERY [{cmd.strip()}] -> {response}"
+                )
+
+                return response
+
+            except Exception as e:
+
+                print("SCPI Query Error:", e)
+
+                return "ERROR"
+
+    def close(self):
+
+        if self.ser.is_open:
+            self.ser.close()
+
+# =====================================================
+# POWER SUPPLY CLASS
+# =====================================================
+
+class PowerSupply(SCPIInstrument):
+
+    def idn(self):
+        return self.query("*IDN?")
+
+    def set_voltage(self, voltage):
+        print(f"PSU CMD -> VSET1:{voltage}")
+        self.write(f"VSET1:{voltage}")
+
+    def set_current(self, current):
+        print(f"PSU CMD -> ISET1:{current}")
+        self.write(f"ISET1:{current}")
+
+    def get_voltage(self):
+        return self.query("VOUT1?")
+
+    def get_current(self):
+        return self.query("IOUT1?")
+
+    def output_on(self):
+        print("PSU CMD -> OUT1")
+        self.write("OUT1")
+
+    def output_off(self):
+        print("PSU CMD -> OUT0")
+        self.write("OUT0")
+
+# =====================================================
+# MULTIMETER CLASS
+# =====================================================
+
+class Multimeter(SCPIInstrument):
+
+    def idn(self):
+
+        return self.query("*IDN?")
+
+    def measure_voltage(self):
+
+        try:
+            with serial_lock:
+
+                # Clear old garbage data
+                self.ser.reset_input_buffer()
+
+                # Send command
+                self.ser.write(b"MEAS:VOLT:DC?\n")
+
+                # Small wait for full response
+                time.sleep(0.2)
+
+                # Read full line
+                response = self.ser.readline().decode(errors='ignore').strip()
+
+                print("RAW RESPONSE:", response)
+
+                # Clean unwanted characters
+                response = response.replace('\r', '').replace('\n', '')
+
+                # Reject incomplete scientific notation
+                if response.endswith('E') or response.endswith('+') or response.endswith('-'):
+                    raise ValueError(f"Incomplete reading: {response}")
+
+                value = float(response)
+
+                return round(value, 4)
+
+        except Exception as e:
+
+            print("Measurement Error:", e)
+
+            return None
