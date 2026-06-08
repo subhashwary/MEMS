@@ -1,5 +1,9 @@
-(venv) PS D:\Wary\MEMS> python ports.py
-Sending: 'VSET1:2.00\r\n'
-Sending: 'ISET1:0.10\r\n'
-Sending: 'OUT1\r\n'
-Done
+import serial
+
+ser = serial.Serial("COM5", 9600, timeout=2)
+
+ser.write(b"VSET1:2.00\r\n")
+
+ser.close()
+
+print("done")
