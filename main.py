@@ -1,20 +1,17 @@
-try:
+with psu_lock:
 
-    global psu_busy
+    psu.ser.reset_input_buffer()
 
-    psu_busy = True
+    v = psu.query("VOUT1?")
+    i = psu.query("IOUT1?")
 
-    with psu_lock:
+if not v or not i:
 
-        psu.write(f"VSET1:{voltage:.3f}")
-        time.sleep(0.1)
+    print("WARNING: PSU returned empty response")
 
-        psu.write(f"ISET1:{current:.3f}")
-        time.sleep(0.1)
+else:
 
-        psu.write("OUT1")
-        time.sleep(0.1)
+    system_state["psu_voltage"] = parse_value(v)
+    system_state["psu_current"] = parse_value(i)
 
-finally:
-
-    psu_busy = False
+    system_state["last_psu_read"] = time.time()
