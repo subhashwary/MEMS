@@ -1,370 +1,537 @@
-(venv) PS D:\Wary\MEMS> python app.py
- * Serving Flask app 'app'
- * Debug mode: off
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on http://127.0.0.1:5000
-Press CTRL+C to quit
-127.0.0.1 - - [08/Jun/2026 13:20:41] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:42] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [08/Jun/2026 13:20:42] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [08/Jun/2026 13:20:42] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:46] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:46] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:48] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:49] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:50] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:50] "GET /static/images/cense.png HTTP/1.1" 304 -
-127.0.0.1 - - [08/Jun/2026 13:20:50] "GET /static/images/IISc.png HTTP/1.1" 304 -
-127.0.0.1 - - [08/Jun/2026 13:20:50] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:51] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:54] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:54] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:55] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:57] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:20:58] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:00] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:03] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:04] "GET /data HTTP/1.1" 200 -
+from flask import Flask, jsonify, request, render_template, send_file
+import random
+import time
+import serial.tools.list_ports
+import re
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [08/Jun/2026 13:21:05] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:07] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:08] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:10] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:11] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+def parse_value(x):
+    try:
+        if x is None:
+            return 0.0
+        x = str(x)
+        # extract number from: "1.998V", "0.700A", "+0.282E+1"
+        match = re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", x)
+        return float(match.group()) if match else 0.0
+    except:
+        return 0.0
+    
+def send_psu(voltage, current):
+    global psu
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [08/Jun/2026 13:21:13] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:14] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:16] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:17] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:19] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+    if not psu:
+        return "PSU not connected"
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [08/Jun/2026 13:21:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:22] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:23] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:25] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:26] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+    try:
+        with psu_lock:
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [08/Jun/2026 13:21:28] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:29] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:31] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:34] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
-127.0.0.1 - - [08/Jun/2026 13:21:34] "POST /connect_psu HTTP/1.1" 500 -
-127.0.0.1 - - [08/Jun/2026 13:21:37] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:38] "GET /data HTTP/1.1" 200 -
+            cmd_v = f"VSET1:{voltage:.3f}\r\n"
+            cmd_i = f"ISET1:{current:.3f}\r\n"
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [08/Jun/2026 13:21:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:41] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:43] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:46] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+            psu.write(cmd_v)
+            time.sleep(0.1)
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [08/Jun/2026 13:21:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:49] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:50] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:53] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+            psu.write(cmd_i)
+            time.sleep(0.1)
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [08/Jun/2026 13:21:55] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:21:56] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:58] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:21:59] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:01] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+            psu.write("OUT1\r\n")
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [08/Jun/2026 13:22:02] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:04] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:05] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:07] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:08] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
-127.0.0.1 - - [08/Jun/2026 13:22:09] "POST /connect_psu HTTP/1.1" 500 -
-127.0.0.1 - - [08/Jun/2026 13:22:12] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:13] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:14] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:16] "GET /data HTTP/1.1" 200 -
+        return "OK"
 
-Trying baudrate: 9600
+    except Exception as e:
+        return str(e)
 
-Trying baudrate: 9600
-FAILED at 9600: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+from threading import Lock
 
-Trying baudrate: 19200
-FAILED at 19200: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+serial_lock = Lock()
 
-Trying baudrate: 38400
-FAILED at 38400: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+psu_lock = Lock()
+psu_busy = False
 
-Trying baudrate: 57600
-FAILED at 57600: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+from instrument import PowerSupply, Multimeter
+from logger import initialize_csv, log_data, CSV_FILE
 
-Trying baudrate: 115200
-FAILED at 115200: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
-127.0.0.1 - - [08/Jun/2026 13:22:16] "POST /connect_dmm HTTP/1.1" 500 -
-127.0.0.1 - - [08/Jun/2026 13:22:18] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:19] "GET /data HTTP/1.1" 200 -
+app = Flask(__name__)
 
-Trying baudrate: 9600
-FAILED at 9600: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+# =========================================================
+# INITIALIZATION
+# =========================================================
+initialize_csv()
 
-Trying baudrate: 19200
-FAILED at 19200: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+# Connect to instruments (replace COM ports with your actual ports)
+psu = None
 
-Trying baudrate: 38400
-FAILED at 38400: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+dmm = None
 
-Trying baudrate: 57600
-FAILED at 57600: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
+# =========================================================
+# GLOBAL SYSTEM STATE
+# =========================================================
+system_state = {
+    "mode": "manual",
+    "dmm_running": False,
+    "dmm_voltage": 0.0,
+    "pressure": 0.0,
+    "psu_voltage": 0.0,
+    "psu_current": 0.0,
+    "cycle_start": time.time(),
 
-Trying baudrate: 115200
-FAILED at 115200: could not open port 'COM3': PermissionError(13, 'Access is denied.', None, 5)
-127.0.0.1 - - [08/Jun/2026 13:22:19] "POST /connect_dmm HTTP/1.1" 500 -
-HEX = 4757496e7374656b2c47444d38323631412c47454f3838323232372c312e30320d
-RAW BYTES = b'GWInstek,GDM8261A,GEO882227,1.02\r'
-SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
-RAW ID RESPONSE: GWInstek,GDM8261A,GEO882227,1.02
+    # 🔴 ADD THIS LINE
+    "last_psu_read": 0,
 
-================================
-DMM CONNECTED SUCCESSFULLY
-PORT: COM3
-BAUDRATE: 9600
-DMM ID: GWInstek,GDM8261A,GEO882227,1.02
-================================
+    "config": {
+        "initial_off": 5,
+        "on_time": 5,
+        "off_time": 5,
+        "cycles": 10
+    }
+}
 
-127.0.0.1 - - [08/Jun/2026 13:22:20] "POST /connect_dmm HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:22] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:23] "GET /data HTTP/1.1" 200 -
+# =========================================================
+# WEB PAGE
+# =========================================================
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-Trying baudrate: 9600
-127.0.0.1 - - [08/Jun/2026 13:22:25] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:26] "GET /data HTTP/1.1" 200 -
-HEX = 4757496e7374656b2c47444d38323631412c47454f3838323232372c312e30320d
-RAW BYTES = b'GWInstek,GDM8261A,GEO882227,1.02\r'
-SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
-RAW ID RESPONSE: GWInstek,GDM8261A,GEO882227,1.02
+@app.route('/status')
+def status():
 
-================================
-DMM CONNECTED SUCCESSFULLY
-PORT: COM3
-BAUDRATE: 9600
-DMM ID: GWInstek,GDM8261A,GEO882227,1.02
-================================
+    return jsonify({
+        "psu_connected": psu is not None,
+        "dmm_connected": dmm is not None
+    })
 
-127.0.0.1 - - [08/Jun/2026 13:22:28] "POST /connect_dmm HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:29] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:31] "GET /data HTTP/1.1" 200 -
 
-Trying PSU baudrate: 9600
-127.0.0.1 - - [08/Jun/2026 13:22:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:34] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:35] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:37] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:38] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+@app.route('/connect_psu', methods=['POST'])
+def connect_psu():
 
-Trying PSU baudrate: 19200
-127.0.0.1 - - [08/Jun/2026 13:22:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:41] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:43] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:46] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+    global psu
 
-Trying PSU baudrate: 38400
-127.0.0.1 - - [08/Jun/2026 13:22:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:49] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:50] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:52] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:53] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
+    data = request.json
+    com_port = data.get("port")
 
-Trying PSU baudrate: 57600
-127.0.0.1 - - [08/Jun/2026 13:22:55] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:22:56] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [*IDN?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:58] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [VSET1?] -> 
-127.0.0.1 - - [08/Jun/2026 13:22:59] "GET /data HTTP/1.1" 200 -
-HEX = 
-RAW BYTES = b''
-SCPI QUERY [ISET1?] -> 
-IDN  = 
-VSET = 
-ISET = 
-No PSU response
-127.0.0.1 - - [08/Jun/2026 13:23:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:23:01] "POST /connect_psu HTTP/1.1" 500 -
-127.0.0.1 - - [08/Jun/2026 13:23:03] "GET /data HTTP/1.1" 200 -
+    with psu_lock:
 
-Trying baudrate: 9600
-127.0.0.1 - - [08/Jun/2026 13:23:04] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:23:06] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:23:07] "GET /data HTTP/1.1" 200 -
-HEX = 4757496e7374656b2c47444d38323631412c47454f3838323232372c312e30320d
-RAW BYTES = b'GWInstek,GDM8261A,GEO882227,1.02\r'
-SCPI QUERY [*IDN?] -> GWInstek,GDM8261A,GEO882227,1.02
-RAW ID RESPONSE: GWInstek,GDM8261A,GEO882227,1.02
+        # Close previous PSU connection if any
+        try:
+            if psu:
+                psu.close()
+        except:
+            pass
 
-================================
-DMM CONNECTED SUCCESSFULLY
-PORT: COM3
-BAUDRATE: 9600
-DMM ID: GWInstek,GDM8261A,GEO882227,1.02
-================================
+        try:
 
-127.0.0.1 - - [08/Jun/2026 13:23:07] "POST /connect_dmm HTTP/1.1" 200 -
+            psu = None
+            response = ""
+
+            # Try common baud rates
+            for baud in [9600, 19200, 38400, 57600]:
+
+                try:
+
+                    print(f"\nTrying PSU baudrate: {baud}")
+
+                    candidate = PowerSupply(
+                        port=com_port,
+                        baudrate=baud,
+                        # timeout=2
+                    )
+
+                    idn  = candidate.query("*IDN?")
+                    vset = candidate.query("VSET1?")
+                    iset = candidate.query("ISET1?")
+
+                    print("IDN  =", idn)
+                    print("VSET =", vset)
+                    print("ISET =", iset)
+
+                    if not idn and not vset and not iset:
+                        print("No PSU response")
+                        candidate.close()
+                        continue
+
+                    try:
+
+                        candidate.write("VSET1:2.00")
+                        time.sleep(0.5)
+
+                        candidate.write("ISET1:0.10")
+                        time.sleep(0.5)
+                        print("PORT =", com_port)
+                        print("BAUD =", baud)
+                        print("OPEN =", candidate.ser.is_open)
+                        psu = candidate
+                        print("\n================================")
+                        print("PSU CONNECTED SUCCESSFULLY")
+                        print("PORT:", com_port)
+                        print("BAUDRATE:", baud)
+                        print("================================\n")
+                        return jsonify({
+                            "status": "connected",
+                            "baudrate": baud,
+                            "id": f"PSU Connected @ {baud}"
+                        })
+                    except Exception as e:
+                        print("PSU TEST FAILED:", e)
+                        candidate.close()
+                except Exception as e:
+                    print(f"Failed at {baud}: {e}")
+            # If all baud rates fail
+            psu = None
+            return jsonify({
+                "status": "error",
+                "message": "No response from PSU on any baud rate"
+            }), 500
+        except Exception as e:
+            psu = None
+            return jsonify({
+                "status": "error",
+                "message": str(e)
+            }), 500
+@app.route('/psu_test')
+def psu_test():
+    global psu
+    if not psu:
+        return "PSU not connected"
+    try:
+        psu.write("VSET1:2.00")
+        time.sleep(1)
+        psu.write("ISET1:0.10")
+        time.sleep(1)
+        psu.write("OUT1")
+        return "Commands Sent"
+    except Exception as e:
+        return str(e)
+@app.route('/psu_debug')    
+def psu_debug():
+    global psu
+    if not psu:
+        return "No PSU"
+    try:
+        print("VSET1? =", psu.query("VSET1?"))
+        print("ISET1? =", psu.query("ISET1?"))
+        print("VOUT1? =", psu.query("VOUT1?"))
+        print("IOUT1? =", psu.query("IOUT1?"))
+        return "Done"
+    except Exception as e:
+        return str(e)
+# =========================================================
+# LIVE DATA API
+# =========================================================
+@app.route('/data')
+def data():
+    global psu_busy, psu
+    # Simulated pressure reading
+    system_state["pressure"] = round(random.uniform(20, 100), 2)
+    # -----------------------------------------------------
+    # AUTO MODE LOGIC
+    # -----------------------------------------------------
+    if system_state["mode"] == "auto":
+        cfg = system_state["config"]
+        elapsed = time.time() - system_state["cycle_start"]
+        cycle_period = cfg["on_time"] + cfg["off_time"]
+        if elapsed < cfg["initial_off"]:
+            system_state["dmm_running"] = False
+        else:
+            adjusted = elapsed - cfg["initial_off"]
+            position = adjusted % cycle_period
+            system_state["dmm_running"] = position < cfg["on_time"]
+    # -----------------------------------------------------
+    # DMM READING
+    # -----------------------------------------------------
+    if system_state["dmm_running"]:
+        if dmm:
+            try:
+                reading = dmm.measure_voltage()
+                if isinstance(reading, (int, float)):
+                    system_state["dmm_voltage"] = reading
+            except Exception as e:
+                print("DMM read error:", e)
+                system_state["dmm_voltage"] = 0.0
+        else:
+            system_state["dmm_voltage"] = round(random.uniform(0, 10), 3)
+    else:
+        system_state["dmm_voltage"] = 0.0
+    # -----------------------------------------------------
+    # PSU READINGS (FIXED LOCATION)
+    # -----------------------------------------------------
+    PSU_READ_INTERVAL = 10
+    last_psu_read = system_state.get("last_psu_read", 0)
+    if (
+        psu
+        and not psu_busy
+        and (time.time() - last_psu_read > PSU_READ_INTERVAL)
+    ):
+        try:
+            with psu_lock:
+                psu.ser.reset_input_buffer()
+                v = psu.query("VSET1?")
+                i = psu.query("ISET1?")
+            if not v or not i:
+                print("WARNING: PSU returned empty response")
+            else:
+                system_state["psu_voltage"] = parse_value(v)
+                system_state["psu_current"] = parse_value(i)
+                system_state["last_psu_read"] = time.time()
+        except Exception as e:
+            print("PSU read error:", e)
+            try:
+                psu.close()
+            except:
+                pass
+            psu = None
+    # -----------------------------------------------------
+    # LOG DATA
+    # -----------------------------------------------------
+    log_data(
+        system_state["pressure"],
+        system_state["dmm_voltage"],
+        system_state["psu_voltage"],
+        system_state["psu_current"],
+        system_state["mode"]
+    )
+    return jsonify(system_state)
+# =========================================================
+# MODE CONTROL
+# =========================================================
+@app.route('/mode', methods=['POST'])
+def set_mode():
+    mode = request.json.get("mode")
+    if mode in ["manual", "auto"]:
+        system_state["mode"] = mode
+        system_state["cycle_start"] = time.time()
+        return jsonify({"status": f"{mode} mode activated"})
+
+    return jsonify({"error": "Invalid mode"}), 400
+# =========================================================
+# DMM CONTROL
+# =========================================================
+@app.route('/dmm/start', methods=['POST'])
+def start_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+    system_state["dmm_running"] = True
+    return jsonify({"status": "DMM started"})
+@app.route('/dmm/stop', methods=['POST'])
+def stop_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+    system_state["dmm_running"] = False
+    return jsonify({"status": "DMM stopped"})
+# =========================================================
+# POWER SUPPLY CONTROL
+# =========================================================
+@app.route('/psu/start', methods=['POST'])
+def start_psu():
+    global psu, psu_busy
+    if not psu:
+        return jsonify({
+            "error": "PSU not connected"
+        }), 500
+    data = request.json or {}
+    voltage = float(data.get("voltage", 0))
+    current = float(data.get("current", 0))
+    try:
+        psu_busy = True
+        with psu_lock:
+            psu.write(f"VSET1:{voltage:.3f}")
+            time.sleep(0.1)
+            psu.write(f"ISET1:{current:.3f}")
+            time.sleep(0.1)
+            psu.write("OUT1")
+            time.sleep(0.1)
+            system_state["psu_voltage"] = voltage
+            system_state["psu_current"] = current
+            time.sleep(1)
+        return jsonify({
+            "status": "started"
+        })
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+    finally:
+        psu_busy = False
+@app.route('/psu/stop', methods=['POST'])
+def stop_psu():
+    global psu
+    if not psu:
+        return jsonify({"error": "PSU not connected"}), 500
+    try:
+        with psu_lock:
+            psu.write("OUT0")   # 🔴 PUT HERE (THIS IS CORRECT PLACE)
+        return jsonify({
+            "status": "stopped"
+        })
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+# =========================================================
+# NEW ROUTE
+# =========================================================
+@app.route('/psu/set', methods=['POST'])
+def set_psu():
+    global psu, psu_busy
+    if not psu:
+        return jsonify({
+            "error": "PSU not connected"
+        }), 500
+    data = request.json or {}
+    voltage = float(data.get("voltage", 0))
+    current = float(data.get("current", 0))
+    try:
+        psu_busy = True
+        with psu_lock:
+            psu.write(f"VSET1:{voltage:.3f}")
+            time.sleep(0.1)
+            psu.write(f"ISET1:{current:.3f}")
+            time.sleep(0.1)
+            psu.write("OUT1")
+            time.sleep(0.1)
+        system_state["psu_voltage"] = voltage
+        system_state["psu_current"] = current
+        return jsonify({
+            "status": "updated"
+        })
+    except Exception as e:
+        return jsonify({
+            "error": str(e)
+        }), 500
+    
+    finally:
+        psu_busy = False
+# =========================================================
+# SAVE AUTO MODE CONFIGURATION
+# =========================================================
+@app.route('/config', methods=['POST'])
+def save_config():
+    data = request.json or {}
+    system_state["config"] = {
+        "initial_off": int(data.get("initial_off", 5)),
+        "on_time": int(data.get("on_time", 5)),
+        "off_time": int(data.get("off_time", 5)),
+        "cycles": int(data.get("cycles", 10))
+    }
+    system_state["cycle_start"] = time.time()
+    return jsonify({
+        "status": "Configuration saved",
+        "config": system_state["config"]
+    })
+# =========================================================
+# DOWNLOAD CSV
+# =========================================================
+@app.route('/download')
+def download():
+    return send_file(CSV_FILE, as_attachment=True)
+# =========================================================
+# GET INSTRUMENT IDS
+# =========================================================
+@app.route('/id')
+def get_ids():
+    return jsonify({
+        "psu_id": psu.idn() if psu else "Not Connected",
+        "dmm_id": dmm.idn() if dmm else "Not Connected"
+    })
+@app.route('/psu_raw')
+def psu_raw():
+    global psu
+    if not psu:
+        return "No PSU"
+    cmds = [
+        "VSET1?",
+        "ISET1?",
+        "STATUS?"
+    ]
+    for cmd in cmds:
+        print(cmd, "=", psu.query(cmd))
+    return "Done"
+# =========================================================
+# GET AVAILABLE COM PORTS
+# =========================================================
+@app.route('/ports')
+def get_ports():
+    ports = serial.tools.list_ports.comports()
+    port_list = []
+    for port in ports:
+        port_list.append({
+            "device": port.device,
+            "description": port.description
+        })
+    return jsonify(port_list)
+# =========================================================
+# CONNECT DMM
+# =========================================================
+@app.route('/connect_dmm', methods=['POST'])
+def connect_dmm():
+    global dmm
+    data = request.json
+    com_port = data.get("port")
+    BAUDRATES = [9600, 19200, 38400, 57600, 115200]
+    # -----------------------------------------
+    # CLOSE OLD CONNECTION FIRST
+    # -----------------------------------------
+    try:
+        if dmm:
+            dmm.close()
+            dmm = None
+    except:
+        pass
+    # -----------------------------------------
+    # TRY DIFFERENT BAUDRATES
+    # -----------------------------------------
+    for baud in BAUDRATES:
+        test_dmm = None
+        try:
+            print(f"\nTrying baudrate: {baud}")
+            test_dmm = Multimeter(
+                port=com_port,
+                baudrate=baud,
+            #   timeout=2
+            )
+            # give instrument time
+            time.sleep(1)
+            response = test_dmm.idn()
+            print("RAW ID RESPONSE:", response)
+            # ---------------------------------
+            # VALID RESPONSE CHECK
+            # ---------------------------------
+            if response and len(response) > 3:
+                dmm = test_dmm
+                print("\n================================")
+                print("DMM CONNECTED SUCCESSFULLY")
+                print("PORT:", com_port)
+                print("BAUDRATE:", baud)
+                print("DMM ID:", response)
+                print("================================\n")
+                return jsonify({
+                    "status": "connected",
+                    "id": response,
+                    "baudrate": baud
+                })
+            else:
+                print("Invalid response")
+                test_dmm.close()
+        except Exception as e:
+            print(f"FAILED at {baud}: {e}")
+            # IMPORTANT
+            try:
+                if test_dmm:
+                    test_dmm.close()
+            except:
+                pass
+    # -----------------------------------------
+    # IF ALL BAUDRATES FAIL
+    # -----------------------------------------
+    dmm = None
+    return jsonify({
+        "status": "error",
+        "message": "Could not connect to DMM"
+    }), 500
+# =========================================================
+# MAIN
+# =========================================================
+if __name__ == '__main__':
+    app.run(
+    debug=False,
+    threaded=True
+)
