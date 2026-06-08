@@ -1,10 +1,14 @@
-global psu_busy
+if (
+    psu
+    and not psu_busy
+    and (time.time() - last_psu_read > PSU_READ_INTERVAL)
+):
 
-with psu_lock:
+    try:
 
-    psu_busy = True
+        with psu_lock:
 
+            psu.ser.reset_input_buffer()
 
-
-
-psu_busy = False
+            v = psu.query("VOUT1?")
+            i = psu.query("IOUT1?")
