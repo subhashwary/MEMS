@@ -1,5 +1,33 @@
-(venv) PS D:\Wary\MEMS> python test_dmm.py
-COM5 USB Serial Port (COM5) USB VID:PID=0403:6001 SER=A4008SWIA
-COM1 Communications Port (COM1) ACPI\PNP0501\1
-COM3 USB Serial Device (COM3) USB VID:PID=2184:001A SER=GEO882227 LOCATION=1-1.6
-(venv) PS D:\Wary\MEMS> 
+import serial
+import time
+
+ser = serial.Serial(
+    port="COM5",
+    baudrate=9600,
+    timeout=2
+)
+
+time.sleep(1)
+
+commands = [
+    "VSET1?",
+    "ISET1?",
+    "STATUS?",
+]
+
+for cmd in commands:
+
+    print("\nSending:", cmd)
+
+    ser.reset_input_buffer()
+
+    ser.write((cmd + "\r\n").encode())
+
+    time.sleep(1)
+
+    data = ser.read(200)
+
+    print("HEX:", data.hex())
+    print("RAW:", data)
+
+ser.close()
