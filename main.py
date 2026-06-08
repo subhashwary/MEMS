@@ -1,9 +1,7 @@
-import serial
-
-ser = serial.Serial("COM5", 9600, timeout=2)
-
-ser.write(b"VSET1:2.00\r\n")
-
-ser.close()
-
-print("done")
+PS D:\Wary\MEMS> python ports.py                                                                                                
+done
+PS D:\Wary\MEMS> python app.py                                                                                                  
+Traceback (most recent call last):
+  File "D:\Wary\MEMS\app.py", line 1, in <module>
+    from flask import Flask, jsonify, request, render_template, send_file
+ModuleNotFoundError: No module named 'flask'
