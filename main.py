@@ -1,14 +1,5 @@
-if (
-    psu
-    and not psu_busy
-    and (time.time() - last_psu_read > PSU_READ_INTERVAL)
-):
+if not v or not i:
 
-    try:
+    print("WARNING: PSU returned empty response")
 
-        with psu_lock:
-
-            psu.ser.reset_input_buffer()
-
-            v = psu.query("VOUT1?")
-            i = psu.query("IOUT1?")
+    return jsonify(system_state)
