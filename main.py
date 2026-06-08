@@ -8,32 +8,12 @@ Press CTRL+C to quit
 127.0.0.1 - - [08/Jun/2026 13:00:12] "GET /static/images/IISc.png HTTP/1.1" 304 -
 127.0.0.1 - - [08/Jun/2026 13:00:12] "GET /static/images/cense.png HTTP/1.1" 304 -
 127.0.0.1 - - [08/Jun/2026 13:00:14] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:15] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:17] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:18] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:19] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:21] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:24] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:26] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:00:27] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:00:27] "GET / HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:00:28] "GET /static/images/cense.png HTTP/1.1" 304 -
 127.0.0.1 - - [08/Jun/2026 13:00:28] "GET /static/images/IISc.png HTTP/1.1" 304 -
 127.0.0.1 - - [08/Jun/2026 13:00:29] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:00:29] "GET /ports HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:30] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:30] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:33] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:34] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:36] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:37] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:39] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:42] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:00:43] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:00:44] "GET /data HTTP/1.1" 200 -
 
 Trying PSU baudrate: 9600
@@ -145,17 +125,6 @@ RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
 127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:23] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:01:23] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
 RAW BYTES = b''
@@ -181,13 +150,6 @@ RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
 127.0.0.1 - - [08/Jun/2026 13:01:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:38] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:38] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:01:38] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
 RAW BYTES = b''
@@ -196,9 +158,6 @@ HEX =
 RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
-127.0.0.1 - - [08/Jun/2026 13:01:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:44] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:44] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:01:44] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:01:44] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
@@ -209,10 +168,6 @@ RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
 127.0.0.1 - - [08/Jun/2026 13:01:50] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:50] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:50] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:50] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:01:51] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:01:51] "POST /psu/start HTTP/1.1" 200 -
 HEX = 
 RAW BYTES = b''
@@ -229,10 +184,6 @@ HEX =
 RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
-127.0.0.1 - - [08/Jun/2026 13:02:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:01] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:01] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:01] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:02] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
@@ -267,15 +218,6 @@ RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
 127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:20] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:20] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
 RAW BYTES = b''
@@ -292,11 +234,6 @@ HEX =
 RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
-127.0.0.1 - - [08/Jun/2026 13:02:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:32] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:32] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:32] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:32] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
@@ -323,12 +260,6 @@ RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
 127.0.0.1 - - [08/Jun/2026 13:02:46] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:47] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:47] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:47] "POST /psu/set HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:47] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
@@ -346,11 +277,6 @@ HEX =
 RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
-127.0.0.1 - - [08/Jun/2026 13:02:56] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:56] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:56] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:56] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:02:56] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:56] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:02:56] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
@@ -376,13 +302,6 @@ HEX =
 RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
-127.0.0.1 - - [08/Jun/2026 13:03:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:11] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:11] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:03:11] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:03:11] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
@@ -441,20 +360,6 @@ HEX =
 RAW BYTES = b''
 SCPI QUERY [IOUT1?] -> 
 WARNING: PSU returned empty response
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
-127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:03:40] "GET /data HTTP/1.1" 200 -
 127.0.0.1 - - [08/Jun/2026 13:03:40] "POST /psu/set HTTP/1.1" 200 -
 HEX = 
