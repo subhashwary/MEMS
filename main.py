@@ -1,5 +1,5 @@
-@app.route('/psu/start', methods=['POST'])
-def start_psu():
+@app.route('/psu/stop', methods=['POST'])
+def stop_psu():
 
     global psu
 
@@ -8,25 +8,14 @@ def start_psu():
 
     try:
 
-        data = request.json or {}
-
-        voltage = float(data.get("voltage",0))
-        current = float(data.get("current",0))
-
         with psu_lock:
 
-            psu.write(f"VSET1:{voltage:.3f}")
-            time.sleep(0.2)
-
-            psu.write(f"ISET1:{current:.3f}")
-            time.sleep(0.2)
-
-            psu.write("OUT1")
+            psu.write("OUT0")
             time.sleep(0.5)
 
-        system_state["psu_output"] = True
+        system_state["psu_output"] = False
 
-        return jsonify({"status":"started"})
+        return jsonify({"status":"stopped"})
 
     except Exception as e:
 
