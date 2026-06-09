@@ -1,23 +1,50 @@
-@app.route('/psu_debug')
-def psu_debug():
+@app.route('/psu_test')
+def psu_test():
 
     global psu
 
     if not psu:
-        return jsonify({"error": "No PSU"})
+        return jsonify({"error": "PSU not connected"})
 
     try:
 
-        result = {
-            "VSET1": psu.query("VSET1?"),
-            "ISET1": psu.query("ISET1?"),
-            "VOUT1": psu.query("VOUT1?"),
-            "IOUT1": psu.query("IOUT1?")
-        }
+        with psu_lock:
 
-        print(result)
+            print("SETTING VOLTAGE...")
+            psu.write("VSET1:2.00")
+            time.sleep(1)
 
-        return jsonify(result)
+            print("SETTING CURRENT...")
+            psu.write("ISET1:0.10")
+            time.sleep(1)
+
+            print("OUTPUT ON...")
+            psu.write("OUT1")
+            time.sleep(1)
+
+            vset = psu.query("VSET1?")
+            iset = psu.query("ISET1?")
+
+            try:
+                vout = psu.query("VOUT1?")
+            except:
+                vout = "N/A"
+
+            try:
+                iout = psu.query("IOUT1?")
+            except:
+                iout = "N/A"
+
+            result = {
+                "VSET1": vset,
+                "ISET1": iset,
+                "VOUT1": vout,
+                "IOUT1": iout
+            }
+
+            print(result)
+
+            return jsonify(result)
 
     except Exception as e:
 
