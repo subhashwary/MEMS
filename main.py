@@ -1,5 +1,9 @@
-psu = candidate
+if system_state["psu_output"]:
 
-system_state["psu_output"] = False
-system_state["psu_voltage"] = 0.0
-system_state["psu_current"] = 0.0
+    v = psu.query("VOUT1?")
+    i = psu.query("IOUT1?")
+
+else:
+
+    v = "0"
+    i = "0"
