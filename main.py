@@ -1,30 +1,38 @@
-if (
-    psu
-    and not psu_busy
-    and (time.time() - last_psu_read > PSU_READ_INTERVAL)
-):
+# POWER SUPPLY CONTROL
+@app.route('/psu/start', methods=['POST'])
+def start_psu():
+
+    global psu, psu_busy
+
+    if not psu:
+        return jsonify({"error":"PSU not connected"}),500
 
     try:
 
+        data = request.json or {}
+
+        voltage = float(data.get("voltage",0))
+        current = float(data.get("current",0))
+
         with psu_lock:
 
-            v = psu.query("VSET1?")
-            i = psu.query("ISET1?")
+            psu.write(f"VSET1:{voltage:.3f}")
+            time.sleep(0.2)
 
-        print("PSU V =", v)
-        print("PSU I =", i)
+            psu.write(f"ISET1:{current:.3f}")
+            time.sleep(0.2)
 
-        if not v or not i:
+            psu.write("OUT1")
+            time.sleep(0.5)
 
-            print("WARNING: PSU returned empty response")
+        system_state["psu_output"] = True
 
-        else:
-
-            system_state["psu_voltage"] = parse_value(v)
-            system_state["psu_current"] = parse_value(i)
-
-            system_state["last_psu_read"] = time.time()
+        return jsonify({"status":"started"})
 
     except Exception as e:
 
-        print("PSU read error:", e)
+        return jsonify({"error":str(e)}),500
+
+    finally:
+
+        psu_busy = False
