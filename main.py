@@ -1,79 +1,33 @@
-import serial
-import time
+@app.route('/psu/start', methods=['POST'])
+def start_psu():
 
-ports = ["COM5", "COM6", "COM11", "COM12"]
+    global psu
 
-for port in ports:
+    if not psu:
+        return jsonify({"error":"PSU not connected"}),500
+
     try:
-        ser = serial.Serial(port, baudrate=9600, timeout=2)
-        time.sleep(1)
 
-        ser.write(b"*IDN?\n")
-        time.sleep(0.5)
+        data = request.json or {}
 
-        response = ser.readline().decode(errors='ignore').strip()
+        voltage = float(data.get("voltage",0))
+        current = float(data.get("current",0))
 
-        print(f"{port}: {response if response else 'No response'}")
-        ser.close()
+        with psu_lock:
+
+            psu.write(f"VSET1:{voltage:.3f}")
+            time.sleep(0.2)
+
+            psu.write(f"ISET1:{current:.3f}")
+            time.sleep(0.2)
+
+            psu.write("OUT1")
+            time.sleep(0.5)
+
+        system_state["psu_output"] = True
+
+        return jsonify({"status":"started"})
 
     except Exception as e:
-        print(f"{port}: Not available ({e})")
 
-
-this is detect_instruments.py
-
-import serial.tools.list_ports
-
-print("\nAvailable COM Ports:\n")
-
-ports = serial.tools.list_ports.comports()
-
-if len(ports) == 0:
-    print("No COM ports detected.")
-
-else:
-    for port in ports:
-        print(f"Port: {port.device}")
-        print(f"Description: {port.description}")
-        print(f"HWID: {port.hwid}")
-        print("-" * 40)
-
-
-this above is find_ports.py
-
-import csv
-import os
-from datetime import datetime
-
-CSV_FILE = "sensor_data.csv"
-
-
-def initialize_csv():
-    if not os.path.exists(CSV_FILE):
-        with open(CSV_FILE, "w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow([
-                "Timestamp",
-                "Pressure_kPa",
-                "DMM_Voltage",
-                "PSU_Voltage",
-                "PSU_Current",
-                "Mode"
-            ])
-
-
-def log_data(pressure, dmm_voltage, psu_voltage, psu_current, mode):
-    with open(CSV_FILE, "a", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow([
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            pressure,
-            dmm_voltage,
-            psu_voltage,
-            psu_current,
-            mode
-        ])
-
-
-
-this is logger.py
+        return jsonify({"error":str(e)}),500
