@@ -1,9 +1,11 @@
-if system_state["psu_output"]:
+candidate.write("VSET1:2.00")
+time.sleep(0.5)
 
-    v = psu.query("VOUT1?")
-    i = psu.query("IOUT1?")
+candidate.write("ISET1:0.10")
+time.sleep(0.5)
 
-else:
+check_v = candidate.query("VSET1?")
+check_i = candidate.query("ISET1?")
 
-    v = "0"
-    i = "0"
+print("VERIFY V =", check_v)
+print("VERIFY I =", check_i)
