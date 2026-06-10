@@ -1,7 +1,21 @@
-<input id="initialDelay" type="number" value="10">
+<div class="card">
 
-<input id="onTime" type="number" value="5">
+    <h3>ESS Status</h3>
 
-<input id="offTime" type="number" value="3">
+    <div id="essState">
+        IDLE
+    </div>
 
-<input id="cycleCountInput" type="number" value="4">
+    <br>
+
+    <div id="cycleCount">
+        Cycle 0
+    </div>
+
+    <br>
+
+    <div id="cycleEvent">
+        Waiting...
+    </div>
+
+</div>
