@@ -1,70 +1,17 @@
-// Simulated data (replace with API)
-setInterval(() => {
-    fetch('/data')
-        .then(res => res.json())
-        .then(data => {
+return jsonify({
 
-            // PRESSURE
-            document.getElementById('pressure').innerText = data.pressure;
+    "psu_connected": psu is not None,
 
-            document.getElementById("essState")
-            .innerText = data.ess_state;
+    "dmm_connected": dmm is not None,
 
-            document.getElementById("cycleCount")
-            .innerText =
-                "Cycle " + data.current_cycle;
+    "psu_output": system_state["psu_output"],
 
-            // DMM REAL-TIME DISPLAY
-            const voltage = parseFloat(data.dmm_voltage || 0);
+    "auto_running": system_state["auto_running"],
 
-            document.getElementById('dmmVoltage').innerText =
-                voltage.toFixed(3).padStart(6, '0');
+    "ess_state": system_state["ess_state"],
 
-            // MODE SYNC (IMPORTANT)
-            if (data.mode === "manual") {
-                manualBtn.classList.add("active");
-                autoBtn.classList.remove("active");
-            } else {
-                autoBtn.classList.add("active");
-                manualBtn.classList.remove("active");
-            }
+    "voltage": system_state["psu_voltage"],
 
-            // STATUS
-            let statusEl = document.getElementById('status');
-            if (data.pressure < 50) {
-                statusEl.innerText = "NORMAL";
-                statusEl.className = "status normal";
-            } else if (data.pressure < 80) {
-                statusEl.innerText = "WARNING";
-                statusEl.className = "status warning";
-            } else {
-                statusEl.innerText = "CRITICAL";
-                statusEl.className = "status critical";
-            }
+    "current": system_state["psu_current"]
 
-            // GRAPH
-            dataPoints.push(data.pressure);
-            labels.push(new Date().toLocaleTimeString());
-
-            if (dataPoints.length > 50) {
-                dataPoints.shift();
-                labels.shift();
-            }
-
-            if (data.mode === "auto") {
-                dmmStartBtn.disabled = true;
-                dmmStopBtn.disabled = true;
-                dmmStartBtn.style.opacity = 0.5;
-                dmmStopBtn.style.opacity = 0.5;
-            } else {
-                dmmStartBtn.disabled = false;
-                dmmStopBtn.disabled = false;
-                dmmStartBtn.style.opacity = 1;
-                dmmStopBtn.style.opacity = 1;
-            }
-
-            chart.update();
-        });
-
-}, 1500);
-
+})
