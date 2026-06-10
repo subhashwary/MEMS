@@ -1,21 +1,8 @@
-<div class="card">
+"current_cycle":
+    system_state["current_cycle"],
 
-    <h3>ESS Status</h3>
+"ess_state":
+    system_state["ess_state"],
 
-    <div id="essState">
-        IDLE
-    </div>
-
-    <br>
-
-    <div id="cycleCount">
-        Cycle 0
-    </div>
-
-    <br>
-
-    <div id="cycleEvent">
-        Waiting...
-    </div>
-
-</div>
+"cycle_event":
+    system_state["cycle_event"],
