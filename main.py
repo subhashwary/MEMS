@@ -1,18 +1,6 @@
-setInterval(() => {
+document.getElementById("essState")
+.innerText = data.ess_state;
 
-    fetch('/status')
-
-    .then(res => res.json())
-
-    .then(data => {
-
-        document.getElementById("psuStatus")
-        .innerText =
-            data.psu_connected ? "🟢" : "🔴";
-
-        document.getElementById("dmmStatus")
-        .innerText =
-            data.dmm_connected ? "🟢" : "🔴";
-    });
-
-},1000);
+document.getElementById("cycleCount")
+.innerText =
+    "Cycle " + data.current_cycle;
