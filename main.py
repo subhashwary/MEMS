@@ -1,15 +1,13 @@
-<div class="card">
+<br>
 
-    <h3>ESS Status</h3>
+<div class="status-indicator">
 
-    <div id="essState">
-        IDLE
-    </div>
+    PSU:
+    <span id="psuStatus">🔴</span>
 
-    <br>
+    &nbsp;&nbsp;&nbsp;
 
-    <div id="cycleCount">
-        Cycle 0
-    </div>
+    DMM:
+    <span id="dmmStatus">🔴</span>
 
 </div>
