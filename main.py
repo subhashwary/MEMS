@@ -1,10 +1,11 @@
-log_data(
-    system_state["pressure"],
-    system_state["dmm_voltage"],
-    system_state["psu_voltage"],
-    system_state["psu_current"],
-    system_state["mode"],
-    system_state["ess_state"],
-    system_state["current_cycle"],
-    system_state["cycle_event"]
-)
+[
+    "Timestamp",
+    "Pressure",
+    "DMM_Voltage",
+    "PSU_Voltage",
+    "PSU_Current",
+    "Mode",
+    "ESS_State",
+    "Cycle",
+    "Event"
+]
