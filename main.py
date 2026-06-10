@@ -1,31 +1,35 @@
-<div class="card">
+setInterval(() => {
 
-    <h3>System Status</h3>
+    fetch('/status')
 
-    <div>
-        PSU Connection:
-        <span id="psuStatus">🔴</span>
-    </div>
+    .then(res => res.json())
 
-    <br>
+    .then(data => {
 
-    <div>
-        DMM Connection:
-        <span id="dmmStatus">🔴</span>
-    </div>
+        document.getElementById("psuStatus")
+        .innerText =
+            data.psu_connected
+            ? "🟢 Connected"
+            : "🔴 Disconnected";
 
-    <br>
+        document.getElementById("dmmStatus")
+        .innerText =
+            data.dmm_connected
+            ? "🟢 Connected"
+            : "🔴 Disconnected";
 
-    <div>
-        PSU Output:
-        <span id="psuOutputStatus">🔴</span>
-    </div>
+        document.getElementById("psuOutputStatus")
+        .innerText =
+            data.psu_output
+            ? "🟢 ON"
+            : "🔴 OFF";
 
-    <br>
+        document.getElementById("autoStatus")
+        .innerText =
+            data.auto_running
+            ? "🟢 RUNNING"
+            : "🔴 IDLE";
 
-    <div>
-        Auto Mode:
-        <span id="autoStatus">🔴</span>
-    </div>
+    });
 
-</div>
+}, 1000);
