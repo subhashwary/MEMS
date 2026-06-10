@@ -1,1583 +1,902 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>MEMS Pressure Dashboard</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: #f4f7fb;
-        }
-
-        .header {
-            background: #1f2937;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .container {
-            padding: 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .value {
-            font-size: 40px;
-            font-weight: bold;
-        }
-
-        .unit {
-            font-size: 18px;
-            color: gray;
-        }
-
-        .status {
-            padding: 8px 16px;
-            border-radius: 20px;
-            display: inline-block;
-            color: white;
-            font-weight: bold;
-        }
-
-        .normal { background: #10b981; }
-        .warning { background: #f59e0b; }
-        .critical { background: #ef4444; }
-
-        button {
-            padding: 10px 15px;
-            margin-right: 10px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .btn-primary { background: #3b82f6; color: white; }
-        .btn-danger { background: #ef4444; color: white; }
-
-        .cycle {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-        }
-
-        .cycle.bottom {
-            justify-content: center;
-        }
-
-        .box {
-            background: #e0f2fe;
-            padding: 15px 20px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .wide-box {
-            grid-column: span 2;   /* takes 2 columns width */
-        }
-
-        .arrow {
-            margin: 0 10px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .sub-header {
-            background: #374151;
-            color: #e5e7eb;
-            text-align: center;
-            padding: 8px;
-            font-size: 16px;
-            letter-spacing: 1px;
-        }
-
-        .ess-grid {
-            display: grid;
-            grid-template-columns: 35% 45% 20%;
-            gap: 20px;
-            align-items: start;
-        }
-
-
-
-        .small-box {
-            height: 120px;
-            font-size: 14px;
-        }
-
-        /* Big left box */
-        .large {
-            grid-row: span 2;
-        }
-
-        /* Right side grid */
-        .ess-right {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .ess-box {
-            background: #e0f2fe;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            font-weight: bold;
-            height: 150px;
-
-            display: flex;
-            flex-direction: column;
-
-            justify-content: flex-start;   /* move content to top */
-            align-items: center;
-
-            padding-top: 15px;             /* control how much up */
-        }
-
-
-        .big-value {
-            font-size: 28px;
-            margin-top: 10px;
-        }
-
-        .label {
-            font-size: 14px;
-            color: #374151;
-        }
-
-        /* Top Banner */
-        .top-banner {
-            background: #cbd5e1;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 10px;
-            text-align: center;
-        }
-
-        .banner-content h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .banner-content h2 {
-            margin: 5px 0;
-            font-size: 20px;
-        }
-
-        .banner-content p {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        /* Title Section */
-        .title-section {
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .title-section h2 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: bold;
-        }
-
-        .title-section p {
-            margin: 5px 0;
-            font-size: 18px;
-            color: gray;
-        }
-
-        /* MEMS Header */
-        .mems-header {
-            background: linear-gradient(to right, #1f2937, #334155);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .manual-box {
-            height: 80px;
-            padding: 18px;
-
-            width: 120px;
-            max-width: 180px;
-
-            justify-self: center;   /* center inside grid cell */
-            margin: 0 auto;         /* extra safety centering */
-
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* ESS Line */
-        .ess-line {
-            background: #e5e7eb;
-            text-align: center;
-            padding: 12px;
-            font-size: 18px;
-            margin: 10px;
-            border-radius: 8px;
-            letter-spacing: 1px;
-        }
-
-        .header {
-            background: linear-gradient(to right, #1f2937, #334155);
-            color: white;
-            text-align: center;
-            padding: 12px;
-            font-size: 22px;
-            font-weight: bold;
-            margin: 10px;
-            border-radius: 8px;
-        }
-
-.top-banner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #cbd5e1;
-    padding: 15px 20px;
-    border-radius: 10px;
-    margin: 10px;
-    gap: 20px;
-}
-
-.banner-text {
-    flex: 1;
-    text-align: center;
-}
-
-.logo {
-    flex-shrink: 0;
-}
-
-.top-label-box {
-    text-align: center;
-    font-size: 14px;        /* bigger text */
-    font-weight: bold;
-    color: white;
-
-    background: #3b82f6;
-    border-radius: 8px;
-
-    padding: 6px 14px;      /* bigger box */
-    min-width: 70px;        /* consistent width */
-    
-    margin: 0 auto -10px auto; /* center + closer to box */
-}
-
-/* Center Text */
-.banner-text {
-    text-align: center;
-    flex: 1;
-}
-
-.banner-text h1 {
-    margin: 0;
-    font-size: 30px;   /* Centre for Nano Science and Engineering */
-    font-weight: bold;
-}
-
-.banner-text h2 {
-    margin: 5px 0;
-    font-size: 24px;   /* Indian Institute of Science */
-    font-weight: 600;
-}
-
-.banner-text p {
-    margin: 0;
-    font-size: 20px;   /* Bangalore, 560012 */
-    font-weight: 500;
-}
-
-/* Logos */
-.logo img {
-    width: 100px;   /* try 80–120px */
-    height: auto;
-}
-
-/* Left & Right spacing */
-.logo.left {
-    margin-right: 10px;
-}
-
-.logo.right {
-    margin-left: 10px;
-}
-
-.mode-row {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    margin: 3px 0;
-}
-
-.mode-btn {
-    width: 30px;
-    height: 30px;
-    margin-right: 8px;
-
-    border: none;
-    border-radius: 6px;
-
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.mode-btn {
-    width: 30px;
-    height: 30px;
-    margin-right: 8px;
-
-    border: none;
-    border-radius: 6px;
-
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-
-    background: #ef4444; /* default = OFF (red) */
-}
-
-.control-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.control-btn {
-    padding: 6px 10px;
-    font-size: 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: white;
-    background: #3b82f6;
-}
-
-.control-btn:hover {
-    background: #2563eb;
-}
-
-/* ON state */
-.active {
-    background: #10b981 !important; /* green */
-    outline: 3px solid #1f2937;
-}
-
-.active-manual {
-    outline: 3px solid #1f2937;
-    background: #10b981 !important; /* green */
-}
-
-.active-auto {
-    outline: 3px solid #1f2937;
-    background: #ef4444 !important; /* red */
-}
-
-.instrument-box {
-    width: 100%;
-    min-height: 420px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    padding: 25px;
-    box-sizing: border-box;
-}
-
-.psu-box {
-    grid-column: 1;
-}
-
-.dmm-box {
-    grid-column: 2;
-    width:100%;
-    max-width: none;
-}
-
-.manual-box {
-    grid-column: 3;
-}
-
-.ps-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;  /* 2 buttons per row */
-    gap: 8px;
-    margin-top: 15px;
-    width: 50%;
-    justify-items: center;
-}
-
-.ps-control {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 15px;
-    width: 100%;
-}
-
-.ps-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.ps-row input {
-    width: 100px;
-    padding: 5px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    text-align: center;
-}
-
-.ps-row-top {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-.ps-item input {
-    width: 120px;
-    padding: 5px;
-    text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-.ps-row-units {
-    display: flex;
-    justify-content: center;
-    gap: 110px;   /* aligns V and A under inputs */
-    margin-top: 5px;
-    font-weight: bold;
-    color: #374151;
-}
-
-.ps-row-bottom {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 15px;
-}
-
-.start-btn {
-    background: #10b981;
-    color: white;
-    width: 100px;
-}
-
-.stop-btn {
-    background: #ef4444;
-    color: white;
-    width: 100px;
-}
-
-.ps-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.dmm-title {
-    font-size: 20px;        /* bigger text */
-    font-weight: bold;
-    margin-top: -10px;      /* move upward */
-    margin-bottom: 30px;
-    color: #111827;
-    letter-spacing: 0.5px;
-}
-
-.dmm-title {
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: -10px;
-    margin-bottom: 30px;
-    color: #111827;
-}
-
-.dmm-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    margin-top: 10px;
-}
-
-.dmm-row input {
-    width: 120px;
-    padding: 5px;
-    text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-.unit-label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #374151;
-}
-
-.dmm-bottom {
-    display: flex;
-    gap: 15px;
-    margin-top: 15px;
-}
-
-.start-btn {
-    background: #10b981;
-    color: white;
-    width: 100px;
-}
-
-.stop-btn {
-    background: #ef4444;
-    color: white;
-    width: 100px;
-}
-
-.instrument-label {
-    font-size: 14px;
-    color: #374151;
-    font-weight: bold;
-}
-
-.instrument-inline {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.inline-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.inline-group input {
-    width: 80px;
-    padding: 6px;
-    text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-.channel-row {
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #1f2937;
-}
-
-.instrument-inline {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-top: 5px;
-}
-
-.inline-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.inline-group input {
-    width: 80px;
-    padding: 6px;
-    text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-.ps-grid-clean {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 20px;
-    width: 90%;
-    margin-top: 5px;
-    text-align: center;
-}
-
-.ps-head {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.ps-label {
-    font-size: 14px;
-    color: #374151;
-    font-weight: 600;
-}
-
-.ps-input {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-}
-
-.ps-input input {
-    width: 80px;
-    padding: 6px;
-    text-align: center;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-.instrument-row input {
-    width: 90px;
-    height: 30px;
-
-    text-align: center;
-
-    border: 1px solid #ccc;
-    border-radius: 6px;
-}
-
-.instrument-row {
-    display: grid;
-    grid-template-columns: 130px 100px 50px;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 10px 0;
-}
-
-.dmm-display {
-    width: 260px;
-    height: 70px;
-
-    background: black;
-    color: #00ff66;
-
-    font-size: 42px;
-    font-family: "Courier New", monospace;
-    font-weight: bold;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    border-radius: 8px;
-    border: 3px solid #1f2937;
-
-    letter-spacing: 2px;
-
-    box-shadow:
-        inset 0 0 10px rgba(0,255,100,0.3),
-        0 0 8px rgba(0,255,100,0.2);
-}
-
-.ess-idle {
-    color: gray;
-    font-weight: bold;
-}
-
-.ess-delay {
-    color: blue;
-    font-weight: bold;
-}
-
-.ess-on {
-    color: green;
-    font-weight: bold;
-}
-
-.ess-off {
-    color: orange;
-    font-weight: bold;
-}
-
-.ess-complete {
-    color: darkgreen;
-    font-weight: bold;
-}
-
-.ess-stop {
-    color: red;
-    font-weight: bold;
-}
-
-    </style>
-</head>
-
-<body>
-
-    <!-- Top Banner -->
-<div class="top-banner">
-
-    <div class="logo left">
-        <img src="/static/images/cense.png" alt="CeNSE">
-    </div>
-
-    <div class="banner-text">
-        <h1>Centre for Nano Science and Engineering</h1>
-        <h2>Indian Institute of Science</h2>
-        <p>Bangalore, 560012</p>
-    </div>
-
-    <div class="logo right">
-        <img src="/static/images/IISc.png" alt="IISc">
-    </div>
-
-</div>
-
-<!-- MEMS Header -->
-<div class="mems-header">
-    MEMS Pressure Transducer
-</div>
-
-<div class="mems-header">
-    Environmental Stress Screening (ESS) Cycle Test
-</div>
-
-<div class="card">
-    
-    <div class="ess-grid">
-
-<div class="ess-box instrument-box psu-box">
-
-    <div class="ps-title">DC Power Supply</div>
-
-<div style="margin-bottom:15px;">
-
-    <select id="psuPortSelect"
-        style="
-        padding:8px;
-        border-radius:6px;
-        width:140px;
-    ">
-        <option>Loading...</option>
-    </select>
-
-    <button onclick="connectPSU()" class="control-btn">
-        Connect
-    </button>
-
-</div>
-
-    <div class="ps-head" style="margin-bottom:20px;">
-        CH1
-    </div>
-
-    <div class="instrument-row">
-        <span class="instrument-label">Set Voltage</span>
-
-        <input
-            id="psVoltage"
-            type="number"
-            step="0.01"
-            value="2.00">
-
-        <span>Volt</span>
-    </div>
-
-    <div class="instrument-row">
-        <span class="instrument-label">Set Current</span>
-
-        <input
-            id="psCurrent"
-            type="number"
-            step="0.01"
-            value="0.20">
-
-        <span>Amp</span>
-    </div>
-
-<div class="ps-row-bottom">
-
-    <button
-        class="control-btn"
-        onclick="updatePSU()">
-
-        Send To PSU
-
-    </button>
-
-</div>
-
-<div class="ps-row-bottom">
-
-    <button
-        class="control-btn start-btn"
-        onclick="startPSU()">
-        ON
-    </button>
-
-    <button
-        class="control-btn stop-btn"
-        onclick="stopPSU()">
-        OFF
-    </button>
-
-</div>
-
-</div>
-
-<div class="ess-box instrument-box dmm-box">
-
-    <div class="dmm-title">Digital Multimeter</div>
-
-<div style="margin-bottom:15px;">
-
-    <select id="comPortSelect" style="
-        padding:8px;
-        border-radius:6px;
-        width:140px;
-    ">
-        <option>Loading...</option>
-    </select>
-
-    <button onclick="connectDMM()" class="control-btn">
-        Connect
-    </button>
-
-</div>
-
-    <div class="instrument-row">
-        <span class="instrument-label">Voltage</span>
-        <div id="dmmVoltage" class="dmm-display">
-            000.0000
-        </div>
-        <span>VDC</span>
-    </div>
-
-    <div class="ps-row-bottom">
-        <button class="control-btn start-btn" onclick="startDMM()">Start</button>
-        <button class="control-btn stop-btn" onclick="stopDMM()">Stop</button>
-    </div>
-
-</div>
-
-        <!-- NEW SMALL BOX -->
-<div class="ess-box small-box manual-box">
-    
-    <div class="mode-row">
-        <button class="mode-btn" id="manualBtn"></button>
-        <span class="label">Manual</span>
-    </div>
-
-    <div class="mode-row">
-        <button class="mode-btn" id="autoBtn"></button>
-        <span class="label">Auto</span>
-    </div>
-
-</div>
-
-<!-- ROW 3 -->
-
-<div class="ess-box instrument-box" style="grid-column: 2;">
-    <div style="font-size:20px;font-weight:bold;margin-bottom:10px;">
-        Time Delay
-    </div>
-
-    <div class="instrument-row">
-        <span class="instrument-label">Initial Delay</span>
-
-        <input id="initialDelay" type="number" value="10">
-
-        <span>Initial OFF</span>
-    </div>
-
-    <div class="instrument-row">
-        <span class="instrument-label">ON Time</span>
-
-        <input id="onTime" type="number" value="5">
-
-        <span>ON Time</span>
-    </div>
-
-    <div class="instrument-row">
-        <span class="instrument-label">OFF Time</span>
-
+from flask import Flask, jsonify, request, render_template, send_file
+import random
+import time
+import serial.tools.list_ports
+import re
+
+def parse_value(x):
+    try:
+        if x is None:
+            return 0.0
+        x = str(x)
         
-<input id="offTime" type="number" value="3">
+        # extract number from: "1.998V", "0.700A", "+0.282E+1"
+        match = re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", x)
+        return float(match.group()) if match else 0.0
+    except:
+        return 0.0
+    
+def send_psu(voltage, current):
 
-        <span>OFF Time</span>
-    </div>
+    global psu
 
-    <div class="instrument-row">
-        <span class="instrument-label">No. of Cycles</span>
+    if not psu:
+        return "PSU not connected"
 
-        
-<input id="cycleCountInput" type="number" value="4">
+    try:
+        with psu_lock:
 
-        <span>No. of Cycles</span>
-    </div>
-</div>
+            cmd_v = f"VSET1:{voltage:.3f}\r\n"
+            cmd_i = f"ISET1:{current:.3f}\r\n"
 
-<div class="ps-row-bottom">
+            psu.write(cmd_v)
+            time.sleep(0.1)
 
-    <button
-        class="control-btn start-btn"
-        onclick="startAuto()">
+            psu.write(cmd_i)
+            time.sleep(0.1)
 
-        START AUTO
+            psu.write("OUT1\r\n")
 
-    </button>
+        return "OK"
 
-    <button
-        class="control-btn stop-btn"
-        onclick="stopAuto()">
+    except Exception as e:
+        return str(e)
 
-        STOP AUTO
+from threading import Lock
 
-    </button>
+serial_lock = Lock()
 
-</div>
+psu_lock = Lock()
+psu_busy = False
 
-        <!-- Empty placeholder (keeps grid aligned) -->
-        <div></div>
+from instrument import PowerSupply, Multimeter
+from logger import initialize_csv, log_data, CSV_FILE
 
-    </div>
-</div>
+app = Flask(__name__)
 
-<div class="container">
+# INITIALIZATION
+initialize_csv()
 
-    <div class="card">
+# Connect to instruments (replace COM ports with your actual ports)
+psu = None
 
-    <h3>ESS Status</h3>
+dmm = None
 
-    <div id="essState">
-        IDLE
-    </div>
+# GLOBAL SYSTEM STATE
+system_state = {
+    "mode": "manual",
+    "dmm_running": False,
+    "dmm_voltage": 0.0,
+    "pressure": 0.0,
 
-    <br>
+    "psu_voltage": 0.0,
+    "psu_current": 0.0,
+    "psu_output": False,
 
-    <div id="cycleCount">
-        Cycle 0
-    </div>
+    "cycle_start": time.time(),
 
-</div>
+    # 🔴 ADD THIS LINE
+    "last_psu_read": 0,
+    "ess_state": "IDLE",
 
-</div class="card">
+    "current_cycle": 0,
 
-    <h3>Current Event</h3>h3>
+    "auto_running": False,
 
-    <div id="cycleEvent">
-        Waiting...
-    </div>
+    "cycle_event": "Waiting",
 
-</div>
-
-<div class="card">
-
-    <h3>System Status</h3>
-
-    <div>
-        PSU Connection:
-        <span id="psuStatus">🔴</span>
-    </div>
-
-    <br>
-
-    <div>
-        DMM Connection:
-        <span id="dmmStatus">🔴</span>
-    </div>
-
-    <br>
-
-    <div>
-        PSU Output:
-        <span id="psuOutputStatus">🔴</span>
-    </div>
-
-    <br>
-
-    <div>
-        Auto Mode:
-        <span id="autoStatus">🔴</span>
-    </div>
-
-</div>
-
-<br>
-
-    <!-- Live Value -->
-    <div class="card">
-        <div>Current Pressure</div>
-        <div class="value" id="pressure">0</div>
-        <div class="unit">kPa</div>
-        <br>
-        <div id="status" class="status normal">NORMAL</div>
-    </div>
-
-</div>
-    <!-- Chart -->
-    <div class="card">
-        <canvas id="chart"></canvas>
-    </div>
-
-    <!-- Controls -->
-    <div class="card">
-        <button class="btn-primary" onclick="resetData()">Reset</button>
-        <button class="btn-danger" onclick="downloadCSV()">Download CSV</button>
-    </div>
-
-</div>
-
-<script>
-let dataPoints = [];
-let labels = [];
-
-const ctx = document.getElementById('chart').getContext('2d');
-
-const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Pressure (kPa)',
-            data: dataPoints,
-            borderWidth: 2,
-            fill: false
-        }]
+    "config": {
+        "initial_off": 5,
+        "on_time": 5,
+        "off_time": 5,
+        "cycles": 10
     }
-});
-
-// Simulated data (replace with API)
-setInterval(() => {
-    fetch('/data')
-        .then(res => res.json())
-        .then(data => {
-
-            // PRESSURE
-            document.getElementById('pressure').innerText = data.pressure;
-
-            document.getElementById("essState")
-            .innerText = data.ess_state;
-
-            const essEl =
-                document.getElementById("essState");
-
-            essEl.className = "";
-
-            if(data.ess_state === "INITIAL_DELAY")
-            {
-                essEl.classList.add("ess-delay");
-            }
-            else if(data.ess_state.includes("_ON"))
-            {
-                essEl.classList.add("ess-on");
-            }
-            else if(data.ess_state.includes("_OFF"))
-            {
-                essEl.classList.add("ess-off");
-            }
-            else if(data.ess_state === "COMPLETE")
-            {
-                essEl.classList.add("ess-complete");
-            }
-            else if(data.ess_state === "STOPPED")
-            {
-                essEl.classList.add("ess-stop");
-            }
-            else
-            {
-                essEl.classList.add("ess-idle");
-            }
-
-            document.getElementById("cycleCount")
-            .innerText =
-                "Cycle " + data.current_cycle;
-
-            document.getElementById("cycleEvent")
-            .innerText =
-                data.cycle_event;
-
-            // DMM REAL-TIME DISPLAY
-            const voltage = parseFloat(data.dmm_voltage || 0);
-
-            document.getElementById('dmmVoltage').innerText =
-                voltage.toFixed(3).padStart(6, '0');
-
-            // MODE SYNC (IMPORTANT)
-            if (data.mode === "manual") {
-                manualBtn.classList.add("active");
-                autoBtn.classList.remove("active");
-            } else {
-                autoBtn.classList.add("active");
-                manualBtn.classList.remove("active");
-            }
-
-            // STATUS
-            let statusEl = document.getElementById('status');
-            if (data.pressure < 50) {
-                statusEl.innerText = "NORMAL";
-                statusEl.className = "status normal";
-            } else if (data.pressure < 80) {
-                statusEl.innerText = "WARNING";
-                statusEl.className = "status warning";
-            } else {
-                statusEl.innerText = "CRITICAL";
-                statusEl.className = "status critical";
-            }
-
-            // GRAPH
-            dataPoints.push(data.pressure);
-            labels.push(new Date().toLocaleTimeString());
-
-            if (dataPoints.length > 50) {
-                dataPoints.shift();
-                labels.shift();
-            }
-
-            if (data.mode === "auto") {
-                dmmStartBtn.disabled = true;
-                dmmStopBtn.disabled = true;
-                dmmStartBtn.style.opacity = 0.5;
-                dmmStopBtn.style.opacity = 0.5;
-            } else {
-                dmmStartBtn.disabled = false;
-                dmmStopBtn.disabled = false;
-                dmmStartBtn.style.opacity = 1;
-                dmmStopBtn.style.opacity = 1;
-            }
-
-            chart.update();
-        });
-
-}, 1500);
-
-// Reset
-function resetData() {
-    dataPoints = [];
-    labels = [];
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = dataPoints;
-    chart.update();
 }
 
-function connectPSU() {
+# WEB PAGE
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-    const port =
-        document.getElementById("psuPortSelect").value;
+@app.route('/status')
+def status():
 
-    fetch('/connect_psu', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            port: port
-        })
-    })
+    return jsonify({
 
-    .then(async response => {
+        "psu_connected": psu is not None,
 
-        const data = await response.json();
+        "dmm_connected": dmm is not None,
 
-        if (!response.ok) {
-            throw new Error(data.message);
-        }
+        "current_cycle":
+            system_state["current_cycle"],
 
-        return data;
-    })
+        "ess_state":
+            system_state["ess_state"],
 
-    .then(data => {
+        "cycle_event":
+            system_state["cycle_event"],
 
-        alert(
-            "PSU Connected\n\n" +
-            data.id
-        );
+        "psu_output": system_state["psu_output"],
+
+        "auto_running": system_state["auto_running"],
+
+        "ess_state": system_state["ess_state"],
+
+        "voltage": system_state["psu_voltage"],
+
+        "current": system_state["psu_current"]
 
     })
 
-    .catch(error => {
+@app.route('/connect_psu', methods=['POST'])
+def connect_psu():
 
-        alert(
-            "PSU Connection Failed\n\n" +
-            error.message
-        );
+    global psu
 
-        console.error(error);
-    });
-}
+    data = request.json
+    com_port = data.get("port")
 
+    with psu_lock:
 
-// Download CSV
-function downloadCSV() {
-    window.location.href = "/download";
-}
+        # Close previous PSU connection if any
+        try:
+            if psu:
+                psu.close()
+        except:
+            pass
 
-const manualBtn = document.getElementById("manualBtn");
-const autoBtn = document.getElementById("autoBtn");
+        try:
 
-const dmmStartBtn = document.querySelector(".dmm-box .start-btn");
-const dmmStopBtn = document.querySelector(".dmm-box .stop-btn");
+            psu = None
+            response = ""
 
-// default state (optional)
-manualBtn.classList.add("active"); // Manual ON
+            # Try common baud rates
+            for baud in [9600, 19200, 38400, 57600]:
 
-manualBtn.onclick = () => {
-    fetch('/mode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: "manual" })
-    });
+                try:
 
-    manualBtn.classList.add("active");
-    autoBtn.classList.remove("active");
-};
+                    print(f"\nTrying PSU baudrate: {baud}")
 
-autoBtn.onclick = () => {
-    fetch('/mode', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: "auto" })
-    });
+                    candidate = PowerSupply(
+                        port=com_port,
+                        baudrate=baud,
+                        # timeout=2
+                    )
 
-    autoBtn.classList.add("active");
-    manualBtn.classList.remove("active");
-};
+                    idn  = candidate.query("*IDN?")
+                    vset = candidate.query("VSET1?")
+                    iset = candidate.query("ISET1?")
 
-let voltOn = false;
-let ampOn = false;
+                    print("IDN  =", idn)
+                    print("VSET =", vset)
+                    print("ISET =", iset)
 
-function startDMM() {
-    fetch('/dmm/start', { method: 'POST' })
-    .then(res => res.json())
-    .then(data => {
-        if (data.error) alert(data.error);
-    });
-}
+                    if (
+                        not vset
+                        or not iset
+                        or vset == "ERROR"
+                        or iset == "ERROR"
+                    ):
+                        print("No PSU response")
+                        candidate.close()
+                        continue
 
-function stopDMM() {
-    fetch('/dmm/stop', { method: 'POST' })
-    .then(res => res.json())
-    .then(data => {
-        if (data.error) alert(data.error);
-    });
-}
+                    try:
 
-function sendCycleConfig() {
+                        candidate.write("VSET1:2.00")
+                        time.sleep(0.5)
 
-    const config = {
+                        candidate.write("ISET1:0.10")
+                        time.sleep(0.5)
 
-        initial_off:
-            document.getElementById(
-                "initialDelay"
-            ).value,
+                        check_v = candidate.query("VSET1?")
+                        check_i = candidate.query("ISET1?")
 
-        on_time:
-            document.getElementById(
-                "onTime"
-            ).value,
+                        print("VERIFY V =", check_v)
+                        print("VERIFY I =", check_i)
 
-        off_time:
-            document.getElementById(
-                "offTime"
-            ).value,
+                        print("PORT =", com_port)
+                        print("BAUD =", baud)
+                        print("OPEN =", candidate.ser.is_open)
 
-        cycles:
-            document.getElementById(
-                "cycleCountInput"
-            ).value
-    };
+                        psu = candidate
 
-    return fetch('/config', {
+                        system_state["psu_output"] = False
+                        system_state["psu_voltage"] = 0.0
+                        system_state["psu_current"] = 0.0
 
-        method:'POST',
+                        print("\n================================")
+                        print("PSU CONNECTED SUCCESSFULLY")
+                        print("PORT:", com_port)
+                        print("BAUDRATE:", baud)
+                        print("================================\n")
 
-        headers:{
-            'Content-Type':'application/json'
-        },
+                        return jsonify({
+                            "status": "connected",
+                            "baudrate": baud,
+                            "id": f"PSU Connected @ {baud}"
+                        })
 
-        body:JSON.stringify(config)
-    });
-}
+                    except Exception as e:
 
-function loadPorts() {
+                        print("PSU TEST FAILED:", e)
 
-    fetch('/ports')
-    .then(res => res.json())
-    .then(ports => {
+                        candidate.close()
 
-        const dmmSelect =
-            document.getElementById('comPortSelect');
+                except Exception as e:
 
-        const psuSelect =
-            document.getElementById('psuPortSelect');
+                    print(f"Failed at {baud}: {e}")
 
-        dmmSelect.innerHTML = '';
-        psuSelect.innerHTML = '';
+            # If all baud rates fail
+            psu = None
 
-        ports.forEach(port => {
+            return jsonify({
+                "status": "error",
+                "message": "No response from PSU on any baud rate"
+            }), 500
 
-            const option1 =
-                document.createElement('option');
+        except Exception as e:
 
-            option1.value = port.device;
-            option1.text =
-                `${port.device} - ${port.description}`;
+            psu = None
 
-            dmmSelect.appendChild(option1);
+            return jsonify({
+                "status": "error",
+                "message": str(e)
+            }), 500
 
-            const option2 =
-                document.createElement('option');
+@app.route('/psu_test')
+def psu_test():
 
-            option2.value = port.device;
-            option2.text =
-                `${port.device} - ${port.description}`;
+    global psu
 
-            psuSelect.appendChild(option2);
-        });
-    });
-}
+    if not psu:
+        return jsonify({"error": "PSU not connected"})
 
-loadPorts();
+    try:
 
-// ============================================
-// CONNECT DMM
-// ============================================
+        with psu_lock:
 
-function connectDMM() {
+            print("SETTING VOLTAGE...")
+            psu.write("VSET1:2.00")
+            time.sleep(1)
 
-    const port =
-        document.getElementById('comPortSelect').value;
+            print("SETTING CURRENT...")
+            psu.write("ISET1:0.10")
+            time.sleep(1)
 
-    fetch('/connect_dmm', {
+            print("OUTPUT ON...")
+            psu.write("OUT1")
+            time.sleep(1)
 
-        method: 'POST',
+            vset = psu.query("VSET1?")
+            iset = psu.query("ISET1?")
 
-        headers: {
-            'Content-Type': 'application/json'
-        },
+            try:
+                vout = psu.query("VOUT1?")
+            except:
+                vout = "N/A"
 
-        body: JSON.stringify({
-            port: port
+            try:
+                iout = psu.query("IOUT1?")
+            except:
+                iout = "N/A"
+
+            result = {
+                "VSET1": vset,
+                "ISET1": iset,
+                "VOUT1": vout,
+                "IOUT1": iout
+            }
+
+            print(result)
+
+            return jsonify(result)
+
+    except Exception as e:
+
+        return jsonify({
+            "error": str(e)
         })
 
-    })
-    .then(res => res.json())
-    .then(data => {
+@app.route('/psu_debug')
+def psu_debug():
 
-        if (data.status === "connected") {
+    global psu
 
-            alert(
-                "DMM Connected:\n" + data.id
-            );
+    if not psu:
+        return jsonify({"error": "No PSU"})
 
-        } else {
+    try:
 
-            alert(
-                "Connection Failed:\n" + data.message
-            );
+        result = {
+            "VSET1": psu.query("VSET1?"),
+            "ISET1": psu.query("ISET1?"),
+            "VOUT1": psu.query("VOUT1?"),
+            "IOUT1": psu.query("IOUT1?")
         }
-    });
-}
 
-function updatePSU() {
+        print(result)
 
-    fetch('/psu/set', {
+        return jsonify(result)
 
-        method:'POST',
+    except Exception as e:
 
-        headers:{
-            'Content-Type':'application/json'
-        },
-
-        body:JSON.stringify({
-
-            voltage:
-                document.getElementById("psVoltage").value,
-
-            current:
-                document.getElementById("psCurrent").value
+        return jsonify({
+            "error": str(e)
         })
 
-    })
-    .then(res => res.json())
-    .then(data => {
+# LIVE DATA API
+@app.route('/data')
+def data():
 
-        console.log(data);
+    global psu_busy, psu
 
-        alert("PSU Updated");
+    # Simulated pressure reading
+    system_state["pressure"] = round(random.uniform(20, 100), 2)
 
-    });
-}
+    # AUTO MODE LOGIC
+    if (
+        system_state["mode"] == "auto"
+        and system_state["auto_running"]
+    ):
 
-function startPSU() {
+        cfg = system_state["config"]
 
-    const voltage =
-        document.getElementById("psVoltage").value;
+        elapsed = time.time() - system_state["cycle_start"]
 
-    const current =
-        document.getElementById("psCurrent").value;
+        initial_delay = cfg["initial_off"]
+        on_time = cfg["on_time"]
+        off_time = cfg["off_time"]
+        cycles = cfg["cycles"]
 
-    fetch('/psu/start', {
+        cycle_period = on_time + off_time
 
-        method: 'POST',
+    if elapsed < initial_delay:
 
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        system_state["ess_state"] = "INITIAL_DELAY"
 
-        body: JSON.stringify({
-            voltage: voltage,
-            current: current
+        system_state["cycle_event"] = \
+            "Waiting Initial Delay"
+
+        system_state["current_cycle"] = 0
+
+        system_state["dmm_running"] = False
+
+    if system_state["psu_output"]:
+
+        try:
+            with psu_lock:
+                psu.write("OUT0")
+        except:
+            pass
+
+        system_state["psu_output"] = False
+
+    else:
+
+        adjusted = elapsed - initial_delay
+
+        completed_cycles = int(
+            adjusted // cycle_period
+        )
+
+        if completed_cycles >= cycles:
+
+            system_state["auto_running"] = False
+
+            system_state["ess_state"] = "COMPLETE"
+            system_state["cycle_event"] = \
+                "ESS Completed"
+
+            system_state["dmm_running"] = False
+
+            if psu and system_state["psu_output"]:
+
+                try:
+                    with psu_lock:
+                        psu.write("OUT0")
+                except:
+                    pass
+
+                system_state["psu_output"] = False
+
+            else:
+
+                cycle_no = completed_cycles + 1
+
+                position = adjusted % cycle_period
+
+                system_state["current_cycle"] = cycle_no
+
+                if position < on_time:
+
+                    system_state["ess_state"] = \
+                        f"CYCLE_{cycle_no}_ON"
+
+                    system_state["cycle_event"] = \
+                        f"Cycle {cycle_no} ON"
+
+                    system_state["dmm_running"] = True
+
+                if (
+                    psu
+                    and not system_state["psu_output"]
+                ):
+
+                    try:
+
+                        with psu_lock:
+                            psu.write("OUT1")
+
+                        system_state["psu_output"] = True
+
+                    except Exception as e:
+
+                        print("PSU ON ERROR:", e)
+
+                else:
+
+                    system_state["ess_state"] = \
+                        f"CYCLE_{cycle_no}_OFF"
+
+                    system_state["cycle_event"] = \
+                        f"Cycle {cycle_no} OFF"
+
+                    system_state["dmm_running"] = False
+
+                if (
+                    psu
+                    and system_state["psu_output"]
+                ):
+
+                    try:
+
+                        with psu_lock:
+                            psu.write("OUT0")
+
+                        system_state["psu_output"] = False
+
+                    except Exception as e:
+
+                        print("PSU OFF ERROR:", e)
+
+    # DMM READING
+    if system_state["dmm_running"]:
+        if dmm:
+            try:
+                reading = dmm.measure_voltage()
+                if isinstance(reading, (int, float)):
+                    system_state["dmm_voltage"] = reading
+            except Exception as e:
+                print("DMM read error:", e)
+                system_state["dmm_voltage"] = 0.0
+        else:
+            system_state["dmm_voltage"] = round(random.uniform(0, 10), 3)
+    else:
+        system_state["dmm_voltage"] = 0.0
+
+    # PSU READINGS (FIXED LOCATION)
+    PSU_READ_INTERVAL = 1
+
+    last_psu_read = system_state.get("last_psu_read", 0)
+
+    if (
+        psu
+        and not psu_busy
+        and (time.time() - last_psu_read > PSU_READ_INTERVAL)
+    ):
+
+        try:
+
+            with psu_lock:
+
+                if system_state["psu_output"]:
+
+                    v = psu.query("VOUT1?")
+                    i = psu.query("IOUT1?")
+
+                else:
+
+                    v = "0"
+                    i = "0"
+
+            print("PSU V =", v)
+            print("PSU I =", i)
+
+            if not v or not i:
+
+                print("WARNING: PSU returned empty response")
+
+            else:
+
+                system_state["psu_voltage"] = parse_value(v)
+                system_state["psu_current"] = parse_value(i)
+
+                system_state["last_psu_read"] = time.time()
+
+        except Exception as e:
+
+            print("PSU read error:", e)
+
+            try:
+                psu.close()
+            except:
+                pass
+
+            psu = None
+
+    # LOG DATA
+    log_data(
+        system_state["pressure"],
+        system_state["dmm_voltage"],
+        system_state["psu_voltage"],
+        system_state["psu_current"],
+        system_state["mode"],
+        system_state["ess_state"],
+        system_state["current_cycle"],
+        system_state["cycle_event"]
+    )
+
+    return jsonify(system_state)
+
+# MODE CONTROL
+@app.route('/mode', methods=['POST'])
+def set_mode():
+    mode = request.json.get("mode")
+
+    if mode in ["manual", "auto"]:
+        system_state["mode"] = mode
+        system_state["cycle_start"] = time.time()
+        return jsonify({"status": f"{mode} mode activated"})
+
+    return jsonify({"error": "Invalid mode"}), 400
+
+# DMM CONTROL
+@app.route('/dmm/start', methods=['POST'])
+def start_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+
+    system_state["dmm_running"] = True
+    return jsonify({"status": "DMM started"})
+
+
+@app.route('/dmm/stop', methods=['POST'])
+def stop_dmm():
+    if system_state["mode"] != "manual":
+        return jsonify({"error": "Auto mode active"}), 403
+
+    system_state["dmm_running"] = False
+    return jsonify({"status": "DMM stopped"})
+
+# POWER SUPPLY CONTROL
+@app.route('/psu/start', methods=['POST'])
+def start_psu():
+
+    global psu, psu_busy
+
+    if not psu:
+        return jsonify({"error":"PSU not connected"}),500
+
+    try:
+        psu_busy = True
+
+        data = request.json or {}
+
+        voltage = float(data.get("voltage",0))
+        current = float(data.get("current",0))
+
+        with psu_lock:
+
+            psu.write(f"VSET1:{voltage:.3f}")
+            time.sleep(0.2)
+
+            psu.write(f"ISET1:{current:.3f}")
+            time.sleep(0.2)
+
+            psu.write("OUT1")
+            time.sleep(0.5)
+
+        system_state["psu_output"] = True
+        system_state["psu_voltage"] = voltage
+        system_state["psu_current"] = current
+
+        return jsonify({"status":"started"})
+
+    except Exception as e:
+
+        return jsonify({"error":str(e)}),500
+
+    finally:
+
+        psu_busy = False
+
+@app.route('/psu/stop', methods=['POST'])
+def stop_psu():
+
+    global psu, psu_busy
+
+    if not psu:
+        return jsonify({
+            "error": "PSU not connected"
+        }), 500
+
+    try:
+
+        psu_busy = True
+
+        with psu_lock:
+
+            psu.write("OUT0")
+            time.sleep(0.5)
+
+        system_state["psu_output"] = False
+        system_state["psu_voltage"] = 0.0
+        system_state["psu_current"] = 0.0
+
+        return jsonify({
+            "status": "stopped"
         })
+
+    except Exception as e:
+
+        return jsonify({
+            "error": str(e)
+        }), 500
+
+    finally:
+
+        psu_busy = False
+
+# NEW ROUTE
+@app.route('/psu/set', methods=['POST'])
+def set_psu():
+
+    global psu, psu_busy
+
+    if not psu:
+        return jsonify({
+            "error": "PSU not connected"
+        }), 500
+
+    data = request.json or {}
+
+    voltage = float(data.get("voltage", 0))
+    current = float(data.get("current", 0))
+
+    try:
+
+        psu_busy = True
+
+        with psu_lock:
+
+            psu.write(f"VSET1:{voltage:.3f}")
+            time.sleep(0.2)
+
+            psu.write(f"ISET1:{current:.3f}")
+            time.sleep(0.2)
+
+            #psu.write("OUT1")
+            #time.sleep(0.1)
+
+        system_state["psu_voltage"] = voltage
+        system_state["psu_current"] = current
+
+        return jsonify({
+            "status": "updated"
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "error": str(e)
+        }), 500
+    
+    finally:
+        psu_busy = False
+
+@app.route('/auto/start', methods=['POST'])
+def auto_start():
+
+    system_state["mode"] = "auto"
+
+    system_state["cycle_start"] = time.time()
+
+    system_state["auto_running"] = True
+
+    system_state["current_cycle"] = 0
+
+    system_state["ess_state"] = "INITIAL_DELAY"
+
+    system_state["cycle_event"] = \
+        "Waiting Initial Delay"
+
+    return jsonify({
+        "status":"started"
     })
-    .then(res => res.json())
-    .then(data => {
 
-        console.log(data);
+@app.route('/auto/stop', methods=['POST'])
+def auto_stop():
 
-        if(data.error){
-            alert(data.error);
-        }
-    });
-}
+    global psu
 
-function stopPSU() {
+    system_state["auto_running"] = False
 
-    fetch('/psu/stop', {
-        method: 'POST'
-    })
-    .then(res => res.json())
-    .then(data => {
+    system_state["ess_state"] = "STOPPED"
+    system_state["cycle_event"] = \
+        "ESS Stopped"
 
-        console.log(data);
+    system_state["dmm_running"] = False
 
-        if(data.error){
-            alert(data.error);
-        }
-    });
-}
+    if psu:
 
-setInterval(() => {
+        try:
+            with psu_lock:
+                psu.write("OUT0")
+        except:
+            pass
 
-    fetch('/status')
+    system_state["psu_output"] = False
 
-    .then(res => res.json())
-
-    .then(data => {
-
-        document.getElementById("psuStatus")
-        .innerText =
-            data.psu_connected ? "🟢" : "🔴";
-
-        document.getElementById("dmmStatus")
-        .innerText =
-            data.dmm_connected ? "🟢" : "🔴";
-    });
-
-},1000);
-
-function startAuto(){
-
-    sendCycleConfig()
-
-    .then(() => {
-
-        return fetch('/auto/start', {
-            method:'POST'
-        });
-
+    return jsonify({
+        "status":"stopped"
     })
 
-    .then(res => res.json())
+# SAVE AUTO MODE CONFIGURATION
+@app.route('/config', methods=['POST'])
+def save_config():
+    data = request.json or {}
 
-    .then(data => {
+    system_state["config"] = {
+        "initial_off": int(data.get("initial_off", 5)),
+        "on_time": int(data.get("on_time", 5)),
+        "off_time": int(data.get("off_time", 5)),
+        "cycles": int(data.get("cycles", 10))
+    }
 
-        console.log(data);
+    system_state["cycle_start"] = time.time()
 
-        alert("ESS Cycle Started");
-
-    });
-}
-
-function stopAuto(){
-
-    fetch('/auto/stop', {
-
-        method:'POST'
-
+    return jsonify({
+        "status": "Configuration saved",
+        "config": system_state["config"]
     })
 
-    .then(res => res.json())
+# DOWNLOAD CSV
+@app.route('/download')
+def download():
+    return send_file(CSV_FILE, as_attachment=True)
 
-    .then(data => {
+# GET INSTRUMENT IDS
+@app.route('/id')
+def get_ids():
+    return jsonify({
+        "psu_id": psu.idn() if psu else "Not Connected",
+        "dmm_id": dmm.idn() if dmm else "Not Connected"
+    })
 
-        console.log(data);
+@app.route('/psu_raw')
+def psu_raw():
 
-        alert("ESS Cycle Stopped");
+    global psu
 
-    });
-}
+    if not psu:
+        return "No PSU"
 
-setInterval(() => {
+    cmds = [
+        "VSET1?",
+        "ISET1?",
+        "STATUS?"
+    ]
 
-    fetch('/status')
+    for cmd in cmds:
+        print(cmd, "=", psu.query(cmd))
 
-    .then(res => res.json())
+    return "Done"
 
-    .then(data => {
+# GET AVAILABLE COM PORTS
+@app.route('/ports')
+def get_ports():
 
-        document.getElementById("psuStatus")
-        .innerText =
-            data.psu_connected
-            ? "🟢 Connected"
-            : "🔴 Disconnected";
+    ports = serial.tools.list_ports.comports()
 
-        document.getElementById("dmmStatus")
-        .innerText =
-            data.dmm_connected
-            ? "🟢 Connected"
-            : "🔴 Disconnected";
+    port_list = []
 
-        document.getElementById("psuOutputStatus")
-        .innerText =
-            data.psu_output
-            ? "🟢 ON"
-            : "🔴 OFF";
+    for port in ports:
+        port_list.append({
+            "device": port.device,
+            "description": port.description
+        })
 
-        document.getElementById("autoStatus")
-        .innerText =
-            data.auto_running
-            ? "🟢 RUNNING"
-            : "🔴 IDLE";
+    return jsonify(port_list)
 
-    });
+# CONNECT DMM
+@app.route('/connect_dmm', methods=['POST'])
+def connect_dmm():
 
-}, 1000);
+    global dmm
 
-</script>
+    data = request.json
 
-</body>
-</html>
+    com_port = data.get("port")
+
+    BAUDRATES = [9600, 19200, 38400, 57600, 115200]
+
+    # CLOSE OLD CONNECTION FIRST
+    try:
+        if dmm:
+            dmm.close()
+            dmm = None
+    except:
+        pass
+
+    # TRY DIFFERENT BAUDRATES
+    for baud in BAUDRATES:
+
+        test_dmm = None
+
+        try:
+
+            print(f"\nTrying baudrate: {baud}")
+
+            test_dmm = Multimeter(
+                port=com_port,
+                baudrate=baud,
+            #   timeout=2
+            )
+
+            # give instrument time
+            time.sleep(1)
+
+            response = test_dmm.idn()
+
+            print("RAW ID RESPONSE:", response)
+
+            # VALID RESPONSE CHECK
+            if response and len(response) > 3:
+
+                dmm = test_dmm
+
+                print("\n================================")
+                print("DMM CONNECTED SUCCESSFULLY")
+                print("PORT:", com_port)
+                print("BAUDRATE:", baud)
+                print("DMM ID:", response)
+                print("================================\n")
+
+                return jsonify({
+                    "status": "connected",
+                    "id": response,
+                    "baudrate": baud
+                })
+
+            else:
+
+                print("Invalid response")
+
+                test_dmm.close()
+
+        except Exception as e:
+
+            print(f"FAILED at {baud}: {e}")
+
+            # IMPORTANT
+            try:
+                if test_dmm:
+                    test_dmm.close()
+            except:
+                pass
+
+    # IF ALL BAUDRATES FAIL
+    dmm = None
+
+    return jsonify({
+        "status": "error",
+        "message": "Could not connect to DMM"
+    }), 500
+
+# MAIN
+if __name__ == '__main__':
+    app.run(
+    debug=False,
+    threaded=True
+)
