@@ -1,18 +1,19 @@
-function stopAuto(){
+<div class="card">
 
-    fetch('/auto/stop', {
+    <h3>ESS Status</h3>
 
-        method:'POST'
+    <div id="essState">
 
-    })
+        IDLE
 
-    .then(res => res.json())
+    </div>
 
-    .then(data => {
+    <br>
 
-        console.log(data);
+    <div id="cycleCount">
 
-        alert("ESS Cycle Stopped");
+        Cycle 0
 
-    });
-}
+    </div>
+
+</div>
