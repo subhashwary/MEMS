@@ -1,12 +1,9 @@
-if (data.mode === "manual") {
+manualBtn.onclick = () => {
+
+    fetch('/auto/stop', {
+        method: 'POST'
+    });
 
     manualBtn.classList.add("active");
     autoBtn.classList.remove("active");
-
-}
-else {
-
-    autoBtn.classList.add("active");
-    manualBtn.classList.remove("active");
-
-}
+};
