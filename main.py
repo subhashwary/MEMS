@@ -1,9 +1,19 @@
-manualBtn.onclick = () => {
+autoBtn.onclick = () => {
 
-    fetch('/auto/stop', {
-        method: 'POST'
+    sendCycleConfig()
+
+    .then(() => {
+
+        return fetch('/auto/start', {
+            method: 'POST'
+        });
+
+    })
+
+    .then(() => {
+
+        autoBtn.classList.add("active");
+        manualBtn.classList.remove("active");
+
     });
-
-    manualBtn.classList.add("active");
-    autoBtn.classList.remove("active");
 };
