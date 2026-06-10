@@ -1,2 +1,5 @@
+system_state["ess_state"] = \
+    f"CYCLE_{cycle_no}_ON"
+
 system_state["cycle_event"] = \
-    "Waiting Initial Delay"
+    f"Cycle {cycle_no} ON"
