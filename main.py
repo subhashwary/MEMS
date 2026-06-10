@@ -1,72 +1,19 @@
-        if completed_cycles >= cycles:
+<div class="ps-row-bottom">
 
-            system_state["auto_running"] = False
+    <button
+        class="control-btn start-btn"
+        onclick="startAuto()">
 
-            system_state["ess_state"] = "COMPLETE"
+        START AUTO
 
-            system_state["dmm_running"] = False
+    </button>
 
-            if psu and system_state["psu_output"]:
+    <button
+        class="control-btn stop-btn"
+        onclick="stopAuto()">
 
-                try:
-                    with psu_lock:
-                        psu.write("OUT0")
-                except:
-                    pass
+        STOP AUTO
 
-            system_state["psu_output"] = False
+    </button>
 
-        else:
-
-            cycle_no = completed_cycles + 1
-
-            position = adjusted % cycle_period
-
-            system_state["current_cycle"] = cycle_no
-
-            if position < on_time:
-
-                system_state["ess_state"] = \
-                    f"CYCLE_{cycle_no}_ON"
-
-                system_state["dmm_running"] = True
-
-                if (
-                    psu
-                    and not system_state["psu_output"]
-                ):
-
-                    try:
-
-                        with psu_lock:
-                            psu.write("OUT1")
-
-                        system_state["psu_output"] = True
-
-                    except Exception as e:
-
-                        print("PSU ON ERROR:", e)
-
-            else:
-
-                system_state["ess_state"] = \
-                    f"CYCLE_{cycle_no}_OFF"
-
-                system_state["dmm_running"] = False
-
-                if (
-                    psu
-                    and system_state["psu_output"]
-                ):
-
-                    try:
-
-                        with psu_lock:
-                            psu.write("OUT0")
-
-                        system_state["psu_output"] = False
-
-                    except Exception as e:
-
-                        print("PSU OFF ERROR:", e)
-
+</div>
