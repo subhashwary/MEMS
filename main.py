@@ -1,12 +1,8 @@
-if(data.mode === "manual"){
+const psuSendBtn =
+    document.querySelector('.psu-box .control-btn');
 
-    manualBtn.classList.add("active");
-    autoBtn.classList.remove("active");
+const psuOnBtn =
+    document.querySelector('.psu-box .start-btn');
 
-}
-else{
-
-    autoBtn.classList.add("active");
-    manualBtn.classList.remove("active");
-
-}
+const psuOffBtn =
+    document.querySelector('.psu-box .stop-btn');
