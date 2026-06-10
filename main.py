@@ -1,45 +1,72 @@
-if (
-    system_state["mode"] == "auto"
-    and system_state["auto_running"]
-):
+        if completed_cycles >= cycles:
 
-    cfg = system_state["config"]
+            system_state["auto_running"] = False
 
-    elapsed = time.time() - system_state["cycle_start"]
+            system_state["ess_state"] = "COMPLETE"
 
-    initial_delay = cfg["initial_off"]
+            system_state["dmm_running"] = False
 
-    on_time = cfg["on_time"]
+            if psu and system_state["psu_output"]:
 
-    off_time = cfg["off_time"]
-
-    cycles = cfg["cycles"]
-
-    cycle_period = on_time + off_time
-
-    if elapsed < initial_delay:
-
-        system_state["ess_state"] = "INITIAL_DELAY"
-
-        system_state["current_cycle"] = 0
-
-        system_state["dmm_running"] = False
-
-        if system_state["psu_output"]:
-
-            try:
-                with psu_lock:
-                    psu.write("OUT0")
-            except:
-                pass
+                try:
+                    with psu_lock:
+                        psu.write("OUT0")
+                except:
+                    pass
 
             system_state["psu_output"] = False
 
-    else:
+        else:
 
-        adjusted = elapsed - initial_delay
+            cycle_no = completed_cycles + 1
 
-        completed_cycles = int(
-            adjusted // cycle_period
-        )
+            position = adjusted % cycle_period
+
+            system_state["current_cycle"] = cycle_no
+
+            if position < on_time:
+
+                system_state["ess_state"] = \
+                    f"CYCLE_{cycle_no}_ON"
+
+                system_state["dmm_running"] = True
+
+                if (
+                    psu
+                    and not system_state["psu_output"]
+                ):
+
+                    try:
+
+                        with psu_lock:
+                            psu.write("OUT1")
+
+                        system_state["psu_output"] = True
+
+                    except Exception as e:
+
+                        print("PSU ON ERROR:", e)
+
+            else:
+
+                system_state["ess_state"] = \
+                    f"CYCLE_{cycle_no}_OFF"
+
+                system_state["dmm_running"] = False
+
+                if (
+                    psu
+                    and system_state["psu_output"]
+                ):
+
+                    try:
+
+                        with psu_lock:
+                            psu.write("OUT0")
+
+                        system_state["psu_output"] = False
+
+                    except Exception as e:
+
+                        print("PSU OFF ERROR:", e)
 
