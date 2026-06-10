@@ -1,29 +1,29 @@
-.ess-idle {
-    color: gray;
-    font-weight: bold;
-}
+const essEl =
+    document.getElementById("essState");
 
-.ess-delay {
-    color: blue;
-    font-weight: bold;
-}
+essEl.className = "";
 
-.ess-on {
-    color: green;
-    font-weight: bold;
+if(data.ess_state === "INITIAL_DELAY")
+{
+    essEl.classList.add("ess-delay");
 }
-
-.ess-off {
-    color: orange;
-    font-weight: bold;
+else if(data.ess_state.includes("_ON"))
+{
+    essEl.classList.add("ess-on");
 }
-
-.ess-complete {
-    color: darkgreen;
-    font-weight: bold;
+else if(data.ess_state.includes("_OFF"))
+{
+    essEl.classList.add("ess-off");
 }
-
-.ess-stop {
-    color: red;
-    font-weight: bold;
+else if(data.ess_state === "COMPLETE")
+{
+    essEl.classList.add("ess-complete");
+}
+else if(data.ess_state === "STOPPED")
+{
+    essEl.classList.add("ess-stop");
+}
+else
+{
+    essEl.classList.add("ess-idle");
 }
