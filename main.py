@@ -1,11 +1,11 @@
-[
-    "Timestamp",
-    "Pressure",
-    "DMM_Voltage",
-    "PSU_Voltage",
-    "PSU_Current",
-    "Mode",
-    "ESS_State",
-    "Cycle",
-    "Event"
-]
+<div class="card">
+
+    <h3>Current Event</h3>
+
+    <div id="cycleEvent">
+
+        Waiting
+
+    </div>
+
+</div>
