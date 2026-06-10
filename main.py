@@ -1,36 +1,22 @@
-function sendCycleConfig() {
+function startAuto(){
 
-    const config = {
+    sendCycleConfig()
 
-        initial_off:
-            document.getElementById(
-                "initialDelay"
-            ).value,
+    .then(() => {
 
-        on_time:
-            document.getElementById(
-                "onTime"
-            ).value,
+        return fetch('/auto/start', {
+            method:'POST'
+        });
 
-        off_time:
-            document.getElementById(
-                "offTime"
-            ).value,
+    })
 
-        cycles:
-            document.getElementById(
-                "cycleCountInput"
-            ).value
-    };
+    .then(res => res.json())
 
-    return fetch('/config', {
+    .then(data => {
 
-        method:'POST',
+        console.log(data);
 
-        headers:{
-            'Content-Type':'application/json'
-        },
+        alert("ESS Cycle Started");
 
-        body:JSON.stringify(config)
     });
 }
