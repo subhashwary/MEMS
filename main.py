@@ -916,8 +916,6 @@ Traceback (most recent call last):
 UnboundLocalError: cannot access local variable 'elapsed' where it is not associated with a value
 127.0.0.1 - - [10/Jun/2026 15:30:27] "GET /data HTTP/1.1" 500 -
 127.0.0.1 - - [10/Jun/2026 15:30:27] "GET /status HTTP/1.1" 200 -
-127.0.0.1 - - [10/Jun/2026 15:30:27] "GET /status HTTP/1.1" 200 -
-127.0.0.1 - - [10/Jun/2026 15:30:28] "GET /status HTTP/1.1" 200 -
 [2026-06-10 15:30:28,172] ERROR in app: Exception on /data [GET]
 Traceback (most recent call last):
   File "D:\Wary\MEMS\venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
@@ -938,8 +936,6 @@ Traceback (most recent call last):
 UnboundLocalError: cannot access local variable 'elapsed' where it is not associated with a value
 127.0.0.1 - - [10/Jun/2026 15:30:28] "GET /data HTTP/1.1" 500 -
 127.0.0.1 - - [10/Jun/2026 15:30:28] "GET /status HTTP/1.1" 200 -
-127.0.0.1 - - [10/Jun/2026 15:30:29] "GET /status HTTP/1.1" 200 -
-127.0.0.1 - - [10/Jun/2026 15:30:29] "GET /status HTTP/1.1" 200 -
 [2026-06-10 15:30:30,172] ERROR in app: Exception on /data [GET]
 Traceback (most recent call last):
   File "D:\Wary\MEMS\venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
@@ -960,8 +956,6 @@ Traceback (most recent call last):
 UnboundLocalError: cannot access local variable 'elapsed' where it is not associated with a value
 127.0.0.1 - - [10/Jun/2026 15:30:30] "GET /status HTTP/1.1" 200 -
 127.0.0.1 - - [10/Jun/2026 15:30:30] "GET /data HTTP/1.1" 500 -
-127.0.0.1 - - [10/Jun/2026 15:30:30] "GET /status HTTP/1.1" 200 -
-127.0.0.1 - - [10/Jun/2026 15:30:31] "GET /status HTTP/1.1" 200 -
 [2026-06-10 15:30:31,176] ERROR in app: Exception on /data [GET]
 Traceback (most recent call last):
   File "D:\Wary\MEMS\venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
@@ -982,8 +976,6 @@ Traceback (most recent call last):
 UnboundLocalError: cannot access local variable 'elapsed' where it is not associated with a value
 127.0.0.1 - - [10/Jun/2026 15:30:31] "GET /data HTTP/1.1" 500 -
 127.0.0.1 - - [10/Jun/2026 15:30:31] "GET /status HTTP/1.1" 200 -
-127.0.0.1 - - [10/Jun/2026 15:30:32] "GET /status HTTP/1.1" 200 -
-127.0.0.1 - - [10/Jun/2026 15:30:32] "GET /status HTTP/1.1" 200 -
 [2026-06-10 15:30:33,170] ERROR in app: Exception on /data [GET]
 Traceback (most recent call last):
   File "D:\Wary\MEMS\venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
@@ -1003,5 +995,4 @@ Traceback (most recent call last):
                ^^^^^^^
 UnboundLocalError: cannot access local variable 'elapsed' where it is not associated with a value
 127.0.0.1 - - [10/Jun/2026 15:30:33] "GET /data HTTP/1.1" 500 -
-127.0.0.1 - - [10/Jun/2026 15:30:33] "GET /status HTTP/1.1" 200 -
 127.0.0.1 - - [10/Jun/2026 15:30:33] "GET /status HTTP/1.1" 200 -
