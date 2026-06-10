@@ -1,17 +1,31 @@
-return jsonify({
+<div class="card">
 
-    "psu_connected": psu is not None,
+    <h3>System Status</h3>
 
-    "dmm_connected": dmm is not None,
+    <div>
+        PSU Connection:
+        <span id="psuStatus">🔴</span>
+    </div>
 
-    "psu_output": system_state["psu_output"],
+    <br>
 
-    "auto_running": system_state["auto_running"],
+    <div>
+        DMM Connection:
+        <span id="dmmStatus">🔴</span>
+    </div>
 
-    "ess_state": system_state["ess_state"],
+    <br>
 
-    "voltage": system_state["psu_voltage"],
+    <div>
+        PSU Output:
+        <span id="psuOutputStatus">🔴</span>
+    </div>
 
-    "current": system_state["psu_current"]
+    <br>
 
-})
+    <div>
+        Auto Mode:
+        <span id="autoStatus">🔴</span>
+    </div>
+
+</div>
