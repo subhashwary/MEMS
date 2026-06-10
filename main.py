@@ -1,21 +1,14 @@
-if (data.mode === "auto") {
+const psuSendBtn =
+    document.querySelector('.psu-box .control-btn');
 
-    psuSendBtn.disabled = true;
-    psuOnBtn.disabled = true;
-    psuOffBtn.disabled = true;
+const psuOnBtn =
+    document.querySelector('.psu-box .start-btn');
 
-    psuSendBtn.style.opacity = 0.5;
-    psuOnBtn.style.opacity = 0.5;
-    psuOffBtn.style.opacity = 0.5;
+const psuOffBtn =
+    document.querySelector('.psu-box .stop-btn');
 
-}
-else {
+const voltageInput =
+    document.getElementById("psVoltage");
 
-    psuSendBtn.disabled = false;
-    psuOnBtn.disabled = false;
-    psuOffBtn.disabled = false;
-
-    psuSendBtn.style.opacity = 1;
-    psuOnBtn.style.opacity = 1;
-    psuOffBtn.style.opacity = 1;
-}
+const currentInput =
+    document.getElementById("psCurrent");
