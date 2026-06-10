@@ -1,13 +1,18 @@
-<br>
+setInterval(() => {
 
-<div class="status-indicator">
+    fetch('/status')
 
-    PSU:
-    <span id="psuStatus">🔴</span>
+    .then(res => res.json())
 
-    &nbsp;&nbsp;&nbsp;
+    .then(data => {
 
-    DMM:
-    <span id="dmmStatus">🔴</span>
+        document.getElementById("psuStatus")
+        .innerText =
+            data.psu_connected ? "🟢" : "🔴";
 
-</div>
+        document.getElementById("dmmStatus")
+        .innerText =
+            data.dmm_connected ? "🟢" : "🔴";
+    });
+
+},1000);
