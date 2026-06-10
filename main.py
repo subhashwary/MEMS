@@ -1,19 +1,12 @@
-autoBtn.onclick = () => {
+if(data.mode === "manual"){
 
-    sendCycleConfig()
+    manualBtn.classList.add("active");
+    autoBtn.classList.remove("active");
 
-    .then(() => {
+}
+else{
 
-        return fetch('/auto/start', {
-            method: 'POST'
-        });
+    autoBtn.classList.add("active");
+    manualBtn.classList.remove("active");
 
-    })
-
-    .then(() => {
-
-        autoBtn.classList.add("active");
-        manualBtn.classList.remove("active");
-
-    });
-};
+}
