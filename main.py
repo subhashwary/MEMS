@@ -1,8 +1,21 @@
-const psuSendBtn =
-    document.querySelector('.psu-box .control-btn');
+if (data.mode === "auto") {
 
-const psuOnBtn =
-    document.querySelector('.psu-box .start-btn');
+    psuSendBtn.disabled = true;
+    psuOnBtn.disabled = true;
+    psuOffBtn.disabled = true;
 
-const psuOffBtn =
-    document.querySelector('.psu-box .stop-btn');
+    psuSendBtn.style.opacity = 0.5;
+    psuOnBtn.style.opacity = 0.5;
+    psuOffBtn.style.opacity = 0.5;
+
+}
+else {
+
+    psuSendBtn.disabled = false;
+    psuOnBtn.disabled = false;
+    psuOffBtn.disabled = false;
+
+    psuSendBtn.style.opacity = 1;
+    psuOnBtn.style.opacity = 1;
+    psuOffBtn.style.opacity = 1;
+}
