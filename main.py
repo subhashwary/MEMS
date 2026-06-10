@@ -1,96 +1,21 @@
-# AUTO MODE LOGIC
-if (
-    system_state["mode"] == "auto"
-    and system_state["auto_running"]
-):
+@app.route('/mode', methods=['POST'])
+def set_mode():
 
-    cfg = system_state["config"]
+    mode = request.json.get("mode")
 
-    elapsed = time.time() - system_state["cycle_start"]
+    if mode == "manual":
 
-    initial_delay = cfg["initial_off"]
-    on_time = cfg["on_time"]
-    off_time = cfg["off_time"]
-    cycles = cfg["cycles"]
+        system_state["mode"] = "manual"
+        system_state["auto_running"] = False
 
-    cycle_period = on_time + off_time
+        return jsonify({"status":"manual mode"})
 
-    if elapsed < initial_delay:
+    elif mode == "auto":
 
-        system_state["ess_state"] = "INITIAL_DELAY"
-        system_state["cycle_event"] = "Waiting Initial Delay"
-        system_state["current_cycle"] = 0
-        system_state["dmm_running"] = False
+        system_state["mode"] = "auto"
+        system_state["auto_running"] = True
+        system_state["cycle_start"] = time.time()
 
-        if system_state["psu_output"]:
-            try:
-                with psu_lock:
-                    psu.write("OUT0")
-            except:
-                pass
+        return jsonify({"status":"auto mode"})
 
-            system_state["psu_output"] = False
-
-    else:
-
-        adjusted = elapsed - initial_delay
-
-        completed_cycles = int(
-            adjusted // cycle_period
-        )
-
-        if completed_cycles >= cycles:
-
-            system_state["auto_running"] = False
-
-            system_state["ess_state"] = "COMPLETE"
-            system_state["cycle_event"] = "ESS Completed"
-
-            if psu and system_state["psu_output"]:
-                try:
-                    with psu_lock:
-                        psu.write("OUT0")
-                except:
-                    pass
-
-                system_state["psu_output"] = False
-
-        else:
-
-            cycle_no = completed_cycles + 1
-
-            position = adjusted % cycle_period
-
-            system_state["current_cycle"] = cycle_no
-
-            if position < on_time:
-
-                system_state["ess_state"] = f"CYCLE_{cycle_no}_ON"
-                system_state["cycle_event"] = f"Cycle {cycle_no} ON"
-                system_state["dmm_running"] = True
-
-                if psu and not system_state["psu_output"]:
-                    try:
-                        with psu_lock:
-                            psu.write("OUT1")
-
-                        system_state["psu_output"] = True
-
-                    except Exception as e:
-                        print("PSU ON ERROR:", e)
-
-            else:
-
-                system_state["ess_state"] = f"CYCLE_{cycle_no}_OFF"
-                system_state["cycle_event"] = f"Cycle {cycle_no} OFF"
-                system_state["dmm_running"] = False
-
-                if psu and system_state["psu_output"]:
-                    try:
-                        with psu_lock:
-                            psu.write("OUT0")
-
-                        system_state["psu_output"] = False
-
-                    except Exception as e:
-                        print("PSU OFF ERROR:", e)
+    return jsonify({"error":"Invalid mode"}),400
