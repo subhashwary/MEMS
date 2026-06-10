@@ -1,12 +1,8 @@
-function startAuto(){
+function stopAuto(){
 
-    sendCycleConfig()
+    fetch('/auto/stop', {
 
-    .then(() => {
-
-        return fetch('/auto/start', {
-            method:'POST'
-        });
+        method:'POST'
 
     })
 
@@ -16,7 +12,7 @@ function startAuto(){
 
         console.log(data);
 
-        alert("ESS Cycle Started");
+        alert("ESS Cycle Stopped");
 
     });
 }
