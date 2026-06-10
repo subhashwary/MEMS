@@ -1,19 +1,8 @@
-<div class="card">
+document.getElementById(
+    "essState"
+).innerText = data.ess_state;
 
-    <h3>ESS Status</h3>
-
-    <div id="essState">
-
-        IDLE
-
-    </div>
-
-    <br>
-
-    <div id="cycleCount">
-
-        Cycle 0
-
-    </div>
-
-</div>
+document.getElementById(
+    "cycleCount"
+).innerText =
+    "Cycle " + data.current_cycle;
