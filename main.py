@@ -1,4 +1,4 @@
-function startAuto() {
+function stopAuto() {
 
     fetch('/mode', {
 
@@ -9,7 +9,7 @@ function startAuto() {
         },
 
         body: JSON.stringify({
-            mode: 'auto'
+            mode: 'manual'
         })
 
     })
@@ -18,7 +18,7 @@ function startAuto() {
 
         console.log(data);
 
-        alert("ESS Cycle Started");
+        alert("ESS Cycle Stopped");
 
     });
 
