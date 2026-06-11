@@ -1,9 +1,6 @@
-fetch('/mode', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        mode: 'manual'
-    })
-});
+@app.route('/mode', methods=['POST'])
+def set_mode():
+
+    mode = request.json.get("mode")
+
+    print("MODE REQUEST =", mode)
