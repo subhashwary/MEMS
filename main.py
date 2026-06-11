@@ -1,9 +1,9 @@
-fetch('/mode',{
-    method:'POST',
-    headers:{
-        'Content-Type':'application/json'
+fetch('/mode', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
     },
-    body:JSON.stringify({
-        mode:'auto'
+    body: JSON.stringify({
+        mode: 'auto'
     })
 });
