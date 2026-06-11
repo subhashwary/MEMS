@@ -4,6 +4,6 @@ fetch('/mode', {
         'Content-Type':'application/json'
     },
     body: JSON.stringify({
-        mode:'auto'
+        mode:'manual'
     })
 });
