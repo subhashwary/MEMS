@@ -1,25 +1,8 @@
-<div class="card">
-
-    <h3>ESS Status</h3>
-
-    <div id="essState">
-        IDLE
-    </div>
-
-    <br>
-
-    <div id="cycleCount">
-        Cycle 0
-    </div>
-
-</div>
-
-<div class="card">
-
-    <h3>Current Event</h3>
-
-    <div id="cycleEvent">
-        Waiting...
-    </div>
-
-</div>
+.instrument-row {
+    display: grid;
+    grid-template-columns: 140px 260px 60px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+}
