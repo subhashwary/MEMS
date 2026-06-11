@@ -1,7 +1,10 @@
-if completed_cycles >= cycles:
+else:
 
-    system_state["auto_running"] = False
-    system_state["mode"] = "manual"
+    cycle_no = completed_cycles + 1
 
-    system_state["ess_state"] = "COMPLETE"
-    system_state["cycle_event"] = "ESS Completed"
+    position = adjusted % cycle_period
+
+    print("cycle_no =", cycle_no)
+    print("position =", position)
+
+    system_state["current_cycle"] = cycle_no
