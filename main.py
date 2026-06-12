@@ -1,13 +1,5 @@
-<button
-    id="dmmStartBtn"
-    class="control-btn start-btn"
-    onclick="startDMM()">
-    Start
-</button>
+const dmmStartBtn =
+    document.getElementById("dmmStartBtn");
 
-<button
-    id="dmmStopBtn"
-    class="control-btn stop-btn"
-    onclick="stopDMM()">
-    Stop
-</button>
+const dmmStopBtn =
+    document.getElementById("dmmStopBtn");
