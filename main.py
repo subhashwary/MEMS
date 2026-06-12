@@ -1,8 +1,26 @@
-const psuSendBtn =
-    document.getElementById("psuSendBtn");
+<div class="ps-row-bottom">
+    <button
+        id="psuSendBtn"
+        class="control-btn"
+        onclick="updatePSU()">
+        Send To PSU
+    </button>
+</div>
 
-const psuOnBtn =
-    document.getElementById("psuOnBtn");
+<div class="ps-row-bottom" style="margin-top:15px;">
+    <button
+        id="psuOnBtn"
+        class="control-btn start-btn"
+        onclick="startPSU()">
+        ON
+    </button>
 
-const psuOffBtn =
-    document.getElementById("psuOffBtn");
+    <button
+        id="psuOffBtn"
+        class="control-btn stop-btn"
+        onclick="stopPSU()">
+        OFF
+    </button>
+</div>
+
+</div> <!-- PSU BOX CLOSED -->
