@@ -1,10 +1,2 @@
-.ess-grid {
-    display:grid;
-
-    grid-template-columns:
-        1fr
-        1fr
-        150px;
-
-    gap:20px;
-}
+<div class="ess-box ess-status-box"
+     style="grid-column:2;grid-row:2;">
