@@ -1,7 +1,2 @@
-.ess-status-box {
-    min-height: 420px;
-
-    align-items: stretch;
-
-    text-align: left;
-}
+<div class="ess-box instrument-box ess-status-box"
+     style="grid-column:2;">
