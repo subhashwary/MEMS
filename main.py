@@ -878,7 +878,6 @@
 </div>
 <!-- PSU BOX END -->
 
-
 <!-- DMM BOX -->
 <div class="ess-box instrument-box dmm-box">
 
@@ -934,52 +933,7 @@
 </div>
 <!-- DMM BOX END -->
 
-    <div class="dmm-title">Digital Multimeter</div>
-
-<div style="margin-bottom:15px;">
-
-    <select id="comPortSelect" style="
-        padding:8px;
-        border-radius:6px;
-        width:140px;
-    ">
-        <option>Loading...</option>
-    </select>
-
-    <button onclick="connectDMM()" class="control-btn">
-        Connect
-    </button>
-
-</div>
-
-    <div class="instrument-row">
-        <span class="instrument-label">Voltage</span>
-        <div id="dmmVoltage" class="dmm-display">
-            000.0000
-        </div>
-        <span>VDC</span>
-    </div>
-
-    <div class="ps-row-bottom">
-<button
-    id="dmmStartBtn"
-    class="control-btn start-btn"
-    onclick="startDMM()">
-    Start
-</button>
-
-<button
-    id="dmmStopBtn"
-    class="control-btn stop-btn"
-    onclick="stopDMM()">
-    Stop
-</button>
-
-    </div>
-
-</div>
-
-        <!-- NEW SMALL BOX -->
+<!-- NEW SMALL BOX -->
 <div class="ess-box small-box manual-box">
     
     <div class="mode-row">
