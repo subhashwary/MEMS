@@ -1,5 +1,2 @@
-const dmmStartBtn =
-    document.getElementById("dmmStartBtn");
-
-const dmmStopBtn =
-    document.getElementById("dmmStopBtn");
+chart.data.labels = labels;
+chart.data.datasets[0].data = dataPoints;
