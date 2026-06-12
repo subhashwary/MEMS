@@ -1,27 +1,30 @@
-<div class="psu-buttons">
+.psu-buttons {
+    width: 100%;
 
-    <button
-        id="psuSendBtn"
-        class="control-btn">
-        Send To PSU
-    </button>
+    display: flex;
+    flex-direction: column;
 
-    <div class="psu-onoff">
+    align-items: center;
 
-        <button
-            id="psuOnBtn"
-            class="control-btn start-btn"
-            onclick="startPSU()">
-            ON
-        </button>
+    margin-top: 25px;
 
-        <button
-            id="psuOffBtn"
-            class="control-btn stop-btn"
-            onclick="stopPSU()">
-            OFF
-        </button>
+    gap: 15px;
+}
 
-    </div>
+.psu-onoff {
+    display: flex;
 
-</div>
+    justify-content: center;
+
+    gap: 20px;
+
+    width: 100%;
+}
+
+.psu-onoff button {
+    width: 100px;
+}
+
+#psuSendBtn {
+    width: 140px;
+}
