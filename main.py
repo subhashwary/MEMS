@@ -1,15 +1,13 @@
-<div class="ps-control">
+<div class="psu-buttons">
 
-    <div class="ps-row-bottom">
-        <button
-            id="psuSendBtn"
-            class="control-btn"
-            onclick="updatePSU()">
-            Send To PSU
-        </button>
-    </div>
+    <button
+        id="psuSendBtn"
+        class="control-btn">
+        Send To PSU
+    </button>
 
-    <div class="ps-row-bottom">
+    <div class="psu-onoff">
+
         <button
             id="psuOnBtn"
             class="control-btn start-btn"
@@ -23,6 +21,7 @@
             onclick="stopPSU()">
             OFF
         </button>
+
     </div>
 
 </div>
