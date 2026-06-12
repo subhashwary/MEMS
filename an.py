@@ -1,0 +1,10 @@
+.ess-grid {
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        1fr
+        150px;
+
+    gap:20px;
+}
