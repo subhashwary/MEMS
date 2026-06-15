@@ -1,7 +1,5 @@
-{
-    label: 'Initial Delay',
-    data: delayData,
-    stepped: true,
-    borderWidth: 3,
-    yAxisID: 'y2'
-},
+delayData.push(
+    data.ess_state === "INITIAL_DELAY"
+        ? 2
+        : 0
+);
