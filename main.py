@@ -1,18 +1,4 @@
-function resetData() {
-
-    labels.length = 0;
-
-    pressureData.length = 0;
-    dmmData.length = 0;
-
-    psuVoltageData.length = 0;
-    psuCurrentData.length = 0;
-
-    essData.length = 0;
-    delayData.length = 0;
-
-    modeData.length = 0;
-    cycleData.length = 0;
-
-    chart.update();
-}
+"ess_numeric":
+    2 if "ON" in system_state["ess_state"]
+    else 1 if system_state["ess_state"] == "INITIAL_DELAY"
+    else 0
