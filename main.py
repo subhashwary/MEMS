@@ -83,17 +83,14 @@
         }
 
         .ess-grid {
-            display: grid;
+            display:grid;
 
             grid-template-columns:
-                minmax(500px, 1fr)
-                minmax(500px, 1fr)
+                1fr
+                1fr
                 150px;
 
-            grid-template-rows: auto auto;
-
-            gap: 20px;
-            align-items: start;
+            gap:20px;
         }
 
         .small-box {
@@ -294,8 +291,9 @@
     font-weight: 500;
 }
 
-#chart {
-    height: 350px !important;
+.card canvas {
+    width:100% !important;
+    height: 400px !important;
 }
 
 /* Logos */
@@ -984,11 +982,8 @@
     </div>
 </div>
 
-<div class="card"
-    style="
-    grid-column:2;
-    grid-row:2;
-    ">
+<div class="ess-box ess-status-box"
+     style="grid-column:2;grid-row:2;">
 
     <h3>Current Event</h3>
 
@@ -1044,8 +1039,6 @@
         <canvas id="chart"></canvas>
     </div>
 
-    <div class="card">
-
 </div>
 
 <br>
@@ -1074,6 +1067,10 @@ const chart = new Chart(ctx, {
             borderWidth: 2,
             fill: false
         }]
+    },
+    options:{
+        responsive:true,
+        maintainAspectRatio:false
     }
 });
 
@@ -1658,6 +1655,7 @@ setInterval(() => {
 
 </body>
 </html>
+
 
 from flask import Flask, jsonify, request, render_template, send_file
 import random
