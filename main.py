@@ -1,15 +1,12 @@
-if (labels.length > 300) {
+return jsonify({
 
-    labels.shift();
+    **system_state,
 
-    pressureData.shift();
-    dmmData.shift();
+    "timestamp": time.strftime("%H:%M:%S"),
 
-    psuVoltageData.shift();
-    psuCurrentData.shift();
+    "mode_numeric":
+        1 if system_state["mode"] == "auto" else 0,
 
-    essData.shift();
-    modeData.shift();
-
-    cycleData.shift();
-}
+    "ess_numeric":
+        1 if system_state["psu_output"] else 0
+})
