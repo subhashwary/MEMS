@@ -1,15 +1,15 @@
-labels.push(data.timestamp);
+if (labels.length > 300) {
 
-pressureData.push(data.pressure);
+    labels.shift();
 
-dmmData.push(data.dmm_voltage);
+    pressureData.shift();
+    dmmData.shift();
 
-psuVoltageData.push(data.psu_voltage);
+    psuVoltageData.shift();
+    psuCurrentData.shift();
 
-psuCurrentData.push(data.psu_current);
+    essData.shift();
+    modeData.shift();
 
-essData.push(data.ess_numeric);
-
-modeData.push(data.mode_numeric);
-
-cycleData.push(data.current_cycle);
+    cycleData.shift();
+}
