@@ -1,19 +1,4 @@
-from instrument import Multimeter
-import time
+import serial.tools.list_ports
 
-# CONNECT TO DMM
-dmm = Multimeter("COM3")
-
-# PRINT DMM ID
-print("DMM ID:")
-print(dmm.idn())
-
-print("\nReading Voltage...\n")
-
-while True:
-
-    voltage = dmm.measure_voltage()
-
-    print("Voltage =", voltage, "V")
-
-    time.sleep(1)
+for p in serial.tools.list_ports.comports():
+    print(p.device, p.description, p.hwid)
