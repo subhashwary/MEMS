@@ -1,4 +1,10 @@
-"ess_numeric":
-    2 if "ON" in system_state["ess_state"]
-    else 1 if system_state["ess_state"] == "INITIAL_DELAY"
-    else 0
+if (ports.length === 0) {
+
+            dmmSelect.innerHTML =
+                '<option>No Ports Found</option>';
+
+            psuSelect.innerHTML =
+                '<option>No Ports Found</option>';
+
+            return;
+        }
