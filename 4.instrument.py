@@ -14,49 +14,54 @@ class SCPIInstrument:
         self.ser = serial.Serial(
             port=port,
             baudrate=baudrate,
-            timeout=timeout
+            bytesize=serial.EIGHTBITS,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            timeout=timeout,
+            xonxoff=False,
+            rtscts=False,
+            dsrdtr=False
         )
+
+        self.ser.dtr = False
+        self.ser.rts = False
 
         time.sleep(1)
 
-    # -------------------------------------------------
-    # WRITE COMMAND
-    # -------------------------------------------------
     def write(self, cmd):
 
-        if not cmd.endswith("\n"):
-            cmd += "\n"
+        if not cmd.endswith("\r\n"):
+            cmd += "\r\n"
 
         self.ser.write(cmd.encode())
 
-    # -------------------------------------------------
-    # QUERY COMMAND
-    # -------------------------------------------------
     def query(self, cmd):
 
         with serial_lock:
 
             try:
-                # Clear old data
+
                 self.ser.reset_input_buffer()
-                self.ser.reset_output_buffer()
 
-                # Add newline automatically
-                if not cmd.endswith("\n"):
-                    cmd += "\n"
+                if not cmd.endswith("\r\n"):
+                    cmd += "\r\n"
 
-                # Send command
                 self.ser.write(cmd.encode())
 
-                # Wait for full response
-                time.sleep(0.3)
+                time.sleep(0.1)
 
-                # Read response
-                response = self.ser.readline().decode(
-                    errors='ignore'
+                raw = self.ser.read(200)
+
+                print("HEX =", raw.hex())
+                print("RAW BYTES =", raw)
+
+                response = raw.decode(
+                    errors="ignore"
                 ).strip()
 
-                print(f"SCPI QUERY [{cmd.strip()}] -> {response}")
+                print(
+                    f"SCPI QUERY [{cmd.strip()}] -> {response}"
+                )
 
                 return response
 
@@ -66,14 +71,10 @@ class SCPIInstrument:
 
                 return "ERROR"
 
-    # -------------------------------------------------
-    # CLOSE PORT
-    # -------------------------------------------------
     def close(self):
 
         if self.ser.is_open:
             self.ser.close()
-
 
 # =====================================================
 # POWER SUPPLY CLASS
@@ -85,9 +86,11 @@ class PowerSupply(SCPIInstrument):
         return self.query("*IDN?")
 
     def set_voltage(self, voltage):
+        print(f"PSU CMD -> VSET1:{voltage}")
         self.write(f"VSET1:{voltage}")
 
     def set_current(self, current):
+        print(f"PSU CMD -> ISET1:{current}")
         self.write(f"ISET1:{current}")
 
     def get_voltage(self):
@@ -97,11 +100,12 @@ class PowerSupply(SCPIInstrument):
         return self.query("IOUT1?")
 
     def output_on(self):
+        print("PSU CMD -> OUT1")
         self.write("OUT1")
 
     def output_off(self):
+        print("PSU CMD -> OUT0")
         self.write("OUT0")
-
 
 # =====================================================
 # MULTIMETER CLASS
