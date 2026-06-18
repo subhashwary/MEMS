@@ -11,23 +11,38 @@ def initialize_csv():
             writer = csv.writer(f)
             writer.writerow([
                 "Timestamp",
-                "Pressure_kPa",
+                "Pressure",
                 "DMM_Voltage",
                 "PSU_Voltage",
                 "PSU_Current",
-                "Mode"
+                "Mode",
+                "ESS_State",
+                "Cycle",
+                "Event"
             ])
 
-
-def log_data(pressure, dmm_voltage, psu_voltage, psu_current, mode):
+def log_data(
+    pressure,
+    dmm_voltage,
+    psu_voltage,
+    psu_current,
+    mode,
+    ess_state,
+    cycle,
+    event
+):
     with open(CSV_FILE, "a", newline="") as f:
+
         writer = csv.writer(f)
+
         writer.writerow([
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             pressure,
             dmm_voltage,
             psu_voltage,
             psu_current,
-            mode
+            mode,
+            ess_state,
+            cycle,
+            event
         ])
-
