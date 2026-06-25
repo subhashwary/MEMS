@@ -1,15 +1,26 @@
-def initialize_csv():
+@app.route('/reset', methods=['POST'])
+def reset():
 
-    with open(CSV_FILE, "w", newline="") as f:
+    global system_state
 
-        writer = csv.writer(f)
+    system_state["mode"] = "manual"
+    system_state["auto_running"] = False
+    system_state["dmm_running"] = False
 
-        writer.writerow([
-            "Timestamp",
-            "DMM_Voltage",
-            "PSU_Voltage",
-            "Mode",
-            "ESS_State",
-            "Cycle",
-            "Event"
-        ])
+    system_state["current_cycle"] = 0
+    system_state["cycle_event"] = "Waiting"
+    system_state["ess_state"] = "IDLE"
+
+    system_state["dmm_voltage"] = 0.0
+    system_state["psu_voltage"] = 0.0
+    system_state["psu_current"] = 0.0
+    system_state["pressure"] = 0.0
+
+    system_state["cycle_start"] = time.time()
+
+    # Erase old CSV and create fresh one
+    initialize_csv()
+
+    return jsonify({
+        "status": "reset complete"
+    })
