@@ -1,11 +1,10 @@
-datasets: [
-    {
-        label: 'DMM Voltage (V)',
-        data: dmmData,
-        borderColor: 'green',
-        borderWidth: 2,
-        yAxisID: 'y',
-        fill: false,
-        tension: 0.2
+scales: {
+    y: {
+        type: 'linear',
+        position: 'left',
+        title: {
+            display: true,
+            text: 'Voltage (V)'
+        }
     }
-]
+}
