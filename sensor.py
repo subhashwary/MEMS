@@ -1,60 +1,40 @@
-let labels = [];
-let dmmData = [];
-let stateData = [];
+const eventLabelPlugin = {
 
-let backgroundColors = [];
+    id: "eventLabels",
 
-const ctx = document.getElementById('chart').getContext('2d');
-
-
-// ===============================
-// ESS Background Plugin
-// ===============================
-const essPlugin = {
-
-    id: "essBackground",
-
-    beforeDraw(chart) {
+    afterDatasetsDraw(chart) {
 
         const ctx = chart.ctx;
 
-        const xAxis = chart.scales.x;
-        const yAxis = chart.scales.y;
+        const meta = chart.getDatasetMeta(0);
 
         ctx.save();
 
-        for (let i = 0; i < stateData.length - 1; i++) {
+        ctx.fillStyle = "black";
+        ctx.font = "11px Arial";
 
-            let color = null;
+        meta.data.forEach((point, index) => {
 
-            if (stateData[i].includes("_ON"))
-                color = "rgba(0,255,0,0.10)";
+            if(eventLabels[index] !== ""){
 
-            else if (stateData[i].includes("_OFF"))
-                color = "rgba(255,0,0,0.10)";
+                ctx.save();
 
-            if (color) {
+                ctx.translate(point.x, point.y - 10);
 
-                const x1 = xAxis.getPixelForValue(i);
-                const x2 = xAxis.getPixelForValue(i + 1);
+                ctx.rotate(-Math.PI/4);
 
-                ctx.fillStyle = color;
+                ctx.fillText(eventLabels[index],0,0);
 
-                ctx.fillRect(
-                    x1,
-                    yAxis.top,
-                    x2 - x1,
-                    yAxis.bottom - yAxis.top
-                );
+                ctx.restore();
+
             }
-        }
+
+        });
 
         ctx.restore();
+
     }
+
 };
 
-Chart.register(essPlugin);
-
-// ===============================
-
-const chart = new Chart(ctx, {
+Chart.register(eventLabelPlugin);
