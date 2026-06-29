@@ -1,40 +1,23 @@
-const eventLabelPlugin = {
+if (data.ess_state !== previousState) {
 
-    id: "eventLabels",
+    if (data.ess_state.includes("_ON")) {
 
-    afterDatasetsDraw(chart) {
-
-        const ctx = chart.ctx;
-
-        const meta = chart.getDatasetMeta(0);
-
-        ctx.save();
-
-        ctx.fillStyle = "black";
-        ctx.font = "11px Arial";
-
-        meta.data.forEach((point, index) => {
-
-            if(eventLabels[index] !== ""){
-
-                ctx.save();
-
-                ctx.translate(point.x, point.y - 10);
-
-                ctx.rotate(-Math.PI/4);
-
-                ctx.fillText(eventLabels[index],0,0);
-
-                ctx.restore();
-
-            }
-
+        eventMarkers.push({
+            index: labels.length - 1,
+            title: `Cycle ${data.current_cycle} ON`,
+            time: data.timestamp
         });
 
-        ctx.restore();
+    }
+    else if (data.ess_state.includes("_OFF")) {
+
+        eventMarkers.push({
+            index: labels.length - 1,
+            title: `Cycle ${data.current_cycle} OFF`,
+            time: data.timestamp
+        });
 
     }
 
-};
-
-Chart.register(eventLabelPlugin);
+    previousState = data.ess_state;
+}
