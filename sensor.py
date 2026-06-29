@@ -1,7 +1,3 @@
-{
-    label:'PSU Output',
-    data: psuStateData,
-    stepped:true,
-    borderColor:'red',
-    yAxisID:'y1'
-}
+eventMarkers = eventMarkers
+    .map(m => ({...m,index:m.index-1}))
+    .filter(m => m.index >= 0);
