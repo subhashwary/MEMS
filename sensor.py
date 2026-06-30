@@ -55,15 +55,12 @@ from logger import initialize_csv, log_data, CSV_FILE
 
 app = Flask(__name__)
 
-# INITIALIZATION
 initialize_csv()
 
-# Connect to instruments (replace COM ports with your actual ports)
 psu = None
 
 dmm = None
 
-# GLOBAL SYSTEM STATE
 system_state = {
     "mode": "manual",
     "timestamp": "",
@@ -97,7 +94,6 @@ system_state = {
     }
 }
 
-# WEB PAGE
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -142,7 +138,6 @@ def connect_psu():
 
     with psu_lock:
 
-        # Close previous PSU connection if any
         try:
             if psu:
                 psu.close()
@@ -154,7 +149,6 @@ def connect_psu():
             psu = None
             response = ""
 
-            # Try common baud rates
             for baud in [9600, 19200, 38400, 57600]:
 
                 try:
@@ -164,7 +158,6 @@ def connect_psu():
                     candidate = PowerSupply(
                         port=com_port,
                         baudrate=baud,
-                        # timeout=2
                     )
 
                     idn  = candidate.query("*IDN?")
@@ -231,7 +224,6 @@ def connect_psu():
 
                     print(f"Failed at {baud}: {e}")
 
-            # If all baud rates fail
             psu = None
 
             return jsonify({
@@ -329,7 +321,6 @@ def psu_debug():
             "error": str(e)
         })
 
-# LIVE DATA API
 @app.route("/data")
 def data():
 
@@ -347,13 +338,7 @@ def data():
 
     })
 
-
     global psu_busy, psu
-
-    # Simulated pressure reading
-    # system_state["pressure"] = pressure_from_sensor
-
-    # AUTO MODE LOGIC
 
         else:
 
@@ -447,7 +432,6 @@ def data():
                         except Exception as e:
                             print("PSU OFF ERROR:", e)
 
-    # PSU READINGS (FIXED LOCATION)
     PSU_READ_INTERVAL = 1
 
     last_psu_read = system_state.get("last_psu_read", 0)
@@ -501,7 +485,9 @@ def background_worker():
         
         while True:
         
-        system_state["timestamp"] = ( datetime.now().strftime("%H:%M:%S.%f")[:-3])
+        system_state["timestamp"] = (
+            datetime.now().strftime("%H:%M:%S.%f")[:-3]
+            )
         time.sleep(0.1)
 
     # DMM READING
@@ -559,14 +545,6 @@ def background_worker():
                 .strftime("%H:%M:%S.%f")[:-3]
             )
 
-            # ESS Logic
-
-            # PSU Read
-
-            # DMM Read
-
-            # CSV Logging
-
             time.sleep(0.1)
 
             log_data(
@@ -578,7 +556,6 @@ def background_worker():
             system_state["cycle_event"]
         )
 
-# MODE CONTROL
 @app.route('/mode', methods=['POST'])
 def set_mode():
 
@@ -622,7 +599,6 @@ def set_mode():
 
     return jsonify({"error":"Invalid mode"}),400
 
-# DMM CONTROL
 @app.route('/dmm/start', methods=['POST'])
 def start_dmm():
     if system_state["mode"] != "manual":
@@ -639,7 +615,6 @@ def stop_dmm():
     system_state["dmm_running"] = False
     return jsonify({"status": "DMM stopped"})
 
-# POWER SUPPLY CONTROL
 @app.route('/psu/start', methods=['POST'])
 def start_psu():
 
@@ -728,7 +703,6 @@ def stop_psu():
 
         psu_busy = False
 
-# NEW ROUTE
 @app.route('/psu/set', methods=['POST'])
 def set_psu():
 
@@ -761,9 +735,6 @@ def set_psu():
             psu.write(f"ISET1:{current:.3f}")
             time.sleep(0.2)
 
-            #psu.write("OUT1")
-            #time.sleep(0.1)
-
         system_state["psu_voltage"] = voltage
         system_state["psu_current"] = current
 
@@ -780,7 +751,6 @@ def set_psu():
     finally:
         psu_busy = False
 
-# SAVE AUTO MODE CONFIGURATION
 @app.route('/config', methods=['POST'])
 def save_config():
 
@@ -805,12 +775,10 @@ def save_config():
         "config": system_state["config"]
     })
 
-# DOWNLOAD CSV
 @app.route('/download')
 def download():
     return send_file(CSV_FILE, as_attachment=True)
 
-# RESET SYSTEM
 @app.route('/reset', methods=['POST'])
 def reset():
 
@@ -838,7 +806,6 @@ def reset():
         "status": "reset complete"
     })
 
-# GET INSTRUMENT IDS
 @app.route('/id')
 def get_ids():
     return jsonify({
@@ -865,7 +832,6 @@ def psu_raw():
 
     return "Done"
 
-# GET AVAILABLE COM PORTS
 @app.route('/ports')
 def get_ports():
 
@@ -881,21 +847,6 @@ def get_ports():
 
     return jsonify(port_list)
 
-    def ess_loop():
-
-        while True:
-
-            update_ess_state()
-
-            read_psu()
-
-            read_dmm()
-
-            log_csv()
-
-            time.sleep(0.1)
-
-# CONNECT DMM
 @app.route('/connect_dmm', methods=['POST'])
 def connect_dmm():
 
@@ -907,7 +858,6 @@ def connect_dmm():
 
     BAUDRATES = [9600, 19200, 38400, 57600, 115200]
 
-    # CLOSE OLD CONNECTION FIRST
     try:
         if dmm:
             dmm.close()
@@ -915,7 +865,6 @@ def connect_dmm():
     except:
         pass
 
-    # TRY DIFFERENT BAUDRATES
     for baud in BAUDRATES:
 
         test_dmm = None
@@ -927,17 +876,14 @@ def connect_dmm():
             test_dmm = Multimeter(
                 port=com_port,
                 baudrate=baud,
-            #   timeout=2
             )
 
-            # give instrument time
             time.sleep(1)
 
             response = test_dmm.idn()
 
             print("RAW ID RESPONSE:", response)
 
-            # VALID RESPONSE CHECK
             if response and len(response) > 3:
 
                 dmm = test_dmm
@@ -965,14 +911,12 @@ def connect_dmm():
 
             print(f"FAILED at {baud}: {e}")
 
-            # IMPORTANT
             try:
                 if test_dmm:
                     test_dmm.close()
             except:
                 pass
 
-    # IF ALL BAUDRATES FAIL
     dmm = None
 
     return jsonify({
@@ -980,7 +924,6 @@ def connect_dmm():
         "message": "Could not connect to DMM"
     }), 500
 
-# MAIN
 if __name__ == '__main__':
     worker = Thread(
         target=background_worker,
