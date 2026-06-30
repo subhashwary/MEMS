@@ -1,836 +1,144 @@
-from flask import Flask, jsonify, request, render_template, send_file
-import random
-import time
-from datetime import datetime
-import serial.tools.list_ports
-import re
+            print("AUTO LOOP RUNNING")
 
-def parse_value(x):
-    try:
-        if x is None:
-            return 0.0
-        x = str(x)
-        
-        # extract number from: "1.998V", "0.700A", "+0.282E+1"
-        match = re.search(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?", x)
-        return float(match.group()) if match else 0.0
-    except:
-        return 0.0
-    
-def send_psu(voltage, current):
+            cfg = system_state["config"]
 
-    global psu
+            elapsed = time.time() - system_state["cycle_start"]
 
-    if not psu:
-        return "PSU not connected"
+            initial_delay = cfg["initial_off"]
+            on_time = cfg["on_time"]
+            off_time = cfg["off_time"]
+            cycles = cfg["cycles"]
 
-    try:
-        with psu_lock:
+            cycle_period = on_time + off_time
 
-            cmd_v = f"VSET1:{voltage:.3f}\r\n"
-            cmd_i = f"ISET1:{current:.3f}\r\n"
+            # -------------------------
+            # INITIAL DELAY
+            # -------------------------
 
-            psu.write(cmd_v)
-            time.sleep(0.1)
+            if elapsed < initial_delay:
 
-            psu.write(cmd_i)
-            time.sleep(0.1)
+                system_state["ess_state"] = "INITIAL_DELAY"
+                system_state["cycle_event"] = "Waiting Initial Delay"
+                system_state["current_cycle"] = 0
+                system_state["dmm_running"] = False
 
-            psu.write("OUT1\r\n")
-
-        return "OK"
-
-    except Exception as e:
-        return str(e)
-
-from threading import Thread, Lock
-
-serial_lock = Lock()
-
-psu_lock = Lock()
-psu_busy = False
-
-from instrument import PowerSupply, Multimeter
-from logger import initialize_csv, log_data, CSV_FILE
-
-app = Flask(__name__)
-
-initialize_csv()
-
-psu = None
-
-dmm = None
-
-system_state = {
-    "mode": "manual",
-    "timestamp": "",
-    "event_timestamp": "",
-    "event_name": "",
-    "dmm_running": False,
-    "dmm_voltage": 0.0,
-    "pressure": 0.0,
-
-    "psu_voltage": 0.0,
-    "psu_current": 0.0,
-    "psu_output": False,
-
-    "cycle_start": time.time(),
-
-    # 🔴 ADD THIS LINE
-    "last_psu_read": 0,
-    "ess_state": "IDLE",
-
-    "current_cycle": 0,
-
-    "auto_running": False,
-
-    "cycle_event": "Waiting",
-
-    "config": {
-        "initial_off": 5,
-        "on_time": 5,
-        "off_time": 5,
-        "cycles": 10
-    }
-}
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/status')
-def status():
-
-    return jsonify({
-
-        "psu_connected": psu is not None,
-
-        "dmm_connected": dmm is not None,
-
-        "mode": system_state["mode"],
-
-        "current_cycle":
-            system_state["current_cycle"],
-
-        "ess_state":
-            system_state["ess_state"],
-
-        "cycle_event":
-            system_state["cycle_event"],
-
-        "psu_output": system_state["psu_output"],
-
-        "auto_running": system_state["auto_running"],
-
-        "voltage": system_state["psu_voltage"],
-
-        "current": system_state["psu_current"]
-
-    })
-
-@app.route('/connect_psu', methods=['POST'])
-def connect_psu():
-
-    global psu
-
-    data = request.json
-    com_port = data.get("port")
-
-    with psu_lock:
-
-        try:
-            if psu:
-                psu.close()
-        except:
-            pass
-
-        try:
-
-            psu = None
-            response = ""
-
-            for baud in [9600, 19200, 38400, 57600]:
-
-                try:
-
-                    print(f"\nTrying PSU baudrate: {baud}")
-
-                    candidate = PowerSupply(
-                        port=com_port,
-                        baudrate=baud,
-                    )
-
-                    idn  = candidate.query("*IDN?")
-                    vset = candidate.query("VSET1?")
-                    iset = candidate.query("ISET1?")
-
-                    print("IDN  =", idn)
-                    print("VSET =", vset)
-                    print("ISET =", iset)
-
-                    if (
-                        not vset
-                        or not iset
-                        or vset == "ERROR"
-                        or iset == "ERROR"
-                    ):
-                        print("No PSU response")
-                        candidate.close()
-                        continue
+                if system_state["psu_output"]:
 
                     try:
+                        with psu_lock:
+                            psu.write("OUT0")
+                    except:
+                        pass
 
-                        candidate.write("VSET1:2.00")
-                        time.sleep(0.5)
+                    system_state["psu_output"] = False
 
-                        candidate.write("ISET1:0.10")
-                        time.sleep(0.5)
+            else:
 
-                        check_v = candidate.query("VSET1?")
-                        check_i = candidate.query("ISET1?")
+                adjusted = elapsed - initial_delay
 
-                        print("VERIFY V =", check_v)
-                        print("VERIFY I =", check_i)
+                completed_cycles = int(
+                    adjusted // cycle_period
+                )
 
-                        print("PORT =", com_port)
-                        print("BAUD =", baud)
-                        print("OPEN =", candidate.ser.is_open)
+                # -------------------------
+                # ESS COMPLETE
+                # -------------------------
 
-                        psu = candidate
+                if completed_cycles >= cycles:
+
+                    system_state["auto_running"] = False
+                    system_state["mode"] = "manual"
+
+                    system_state["ess_state"] = "COMPLETE"
+                    system_state["cycle_event"] = "ESS Completed"
+
+                    if psu and system_state["psu_output"]:
+
+                        try:
+                            with psu_lock:
+                                psu.write("OUT0")
+                        except:
+                            pass
 
                         system_state["psu_output"] = False
-                        system_state["psu_voltage"] = 0.0
-                        system_state["psu_current"] = 0.0
-
-                        print("\n================================")
-                        print("PSU CONNECTED SUCCESSFULLY")
-                        print("PORT:", com_port)
-                        print("BAUDRATE:", baud)
-                        print("================================\n")
-
-                        return jsonify({
-                            "status": "connected",
-                            "baudrate": baud,
-                            "id": f"PSU Connected @ {baud}"
-                        })
-
-                    except Exception as e:
-
-                        print("PSU TEST FAILED:", e)
-
-                        candidate.close()
-
-                except Exception as e:
-
-                    print(f"Failed at {baud}: {e}")
-
-            psu = None
-
-            return jsonify({
-                "status": "error",
-                "message": "No response from PSU on any baud rate"
-            }), 500
-
-        except Exception as e:
-
-            psu = None
-
-            return jsonify({
-                "status": "error",
-                "message": str(e)
-            }), 500
-
-@app.route('/psu_test')
-def psu_test():
-
-    global psu
-
-    if not psu:
-        return jsonify({"error": "PSU not connected"})
-
-    try:
-
-        with psu_lock:
-
-            print("SETTING VOLTAGE...")
-            psu.write("VSET1:2.00")
-            time.sleep(1)
-
-            print("SETTING CURRENT...")
-            psu.write("ISET1:0.10")
-            time.sleep(1)
-
-            print("OUTPUT ON...")
-            psu.write("OUT1")
-            time.sleep(1)
-
-            vset = psu.query("VSET1?")
-            iset = psu.query("ISET1?")
-
-            try:
-                vout = psu.query("VOUT1?")
-            except:
-                vout = "N/A"
-
-            try:
-                iout = psu.query("IOUT1?")
-            except:
-                iout = "N/A"
-
-            result = {
-                "VSET1": vset,
-                "ISET1": iset,
-                "VOUT1": vout,
-                "IOUT1": iout
-            }
-
-            print(result)
-
-            return jsonify(result)
-
-    except Exception as e:
-
-        return jsonify({
-            "error": str(e)
-        })
-
-@app.route('/psu_debug')
-def psu_debug():
-
-    global psu
-
-    if not psu:
-        return jsonify({"error": "No PSU"})
-
-    try:
-
-        result = {
-            "VSET1": psu.query("VSET1?"),
-            "ISET1": psu.query("ISET1?"),
-            "VOUT1": psu.query("VOUT1?"),
-            "IOUT1": psu.query("IOUT1?")
-        }
-
-        print(result)
-
-        return jsonify(result)
-
-    except Exception as e:
-
-        return jsonify({
-            "error": str(e)
-        })
-
-@app.route("/data")
-def data():
-
-    return jsonify({
-
-        **system_state,
-
-        "mode_numeric":
-            1 if system_state["mode"] == "auto" else 0,
-
-        "ess_numeric":
-            2 if "ON" in system_state["ess_state"]
-            else 1 if system_state["ess_state"] == "INITIAL_DELAY"
-            else 0
-
-    })
-
-def background_worker():
-
-    global psu
-
-    while True:
-
-        # 1. TIMESTAMP
-        system_state["timestamp"] = (
-            datetime.now().strftime("%H:%M:%S.%f")[:-3]
-        )
-
-        # 2. ESS UPDATE
-        if (
-            system_state["mode"] == "auto"
-            and system_state["auto_running"]
-        ):
-
-@app.route('/mode', methods=['POST'])
-def set_mode():
-
-    mode = request.json.get("mode")
-
-    print("MODE REQUEST =", mode)
-
-    if mode == "manual":
-
-        system_state["mode"] = "manual"
-        system_state["auto_running"] = False
-
-        return jsonify({"status":"manual mode"})
-
-    elif mode == "auto":
-
-        if not psu:
-            return jsonify({
-                "error": "Connect PSU first"
-            }), 400
-
-        if not dmm:
-            return jsonify({
-                "error": "Connect DMM first"
-            }), 400
-
-        system_state["mode"] = "auto"
-        system_state["auto_running"] = True
-
-        system_state["cycle_start"] = time.time()
-
-        system_state["current_cycle"] = 0
-
-        system_state["ess_state"] = "INITIAL_DELAY"
-
-        system_state["cycle_event"] = "Starting ESS"
-
-        return jsonify({
-            "status": "auto mode"
-        })
-
-    return jsonify({"error":"Invalid mode"}),400
-
-        # 3. PSU READ
-PSU_READ_INTERVAL = 1
-
-        last_psu_read = system_state.get(
-            "last_psu_read",
-            0
-        )
-
-        if (
-            psu
-            and not psu_busy
-            and (time.time() - last_psu_read > PSU_READ_INTERVAL)
-        ):
-
-            try:
-
-                with psu_lock:
-
-                    if system_state["psu_output"]:
-
-                        v = psu.query("VOUT1?")
-                        i = psu.query("IOUT1?")
-
-                    else:
-
-                        v = "0"
-                        i = "0"
-
-                print("PSU V =", v)
-                print("PSU I =", i)
-
-                if not v or not i:
-
-                    print("WARNING")
 
                 else:
 
-                    system_state["psu_voltage"] = parse_value(v)
-                    system_state["psu_current"] = parse_value(i)
+                    cycle_no = completed_cycles + 1
 
-                    system_state["last_psu_read"] = time.time()
+                    position = adjusted % cycle_period
 
-            except Exception as e:
+                    system_state["current_cycle"] = cycle_no
 
-                print(e)
+                    # -------------------------
+                    # ON PERIOD
+                    # -------------------------
 
-                try:
-                    psu.close()
-                except:
-                    pass
+                    if position < on_time:
 
-                psu = None
+                        system_state["ess_state"] = f"CYCLE_{cycle_no}_ON"
 
-        # 4. DMM READ
-if system_state["dmm_running"]:
+                        system_state["event_timestamp"] = (
+                            datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                        )
 
-            if dmm:
+                        system_state["event_name"] = (
+                            f"Cycle {cycle_no} ON"
+                        )
 
-                try:
+                        system_state["cycle_event"] = (
+                            f"Cycle {cycle_no} ON"
+                        )
 
-                    reading = dmm.measure_voltage()
+                        system_state["dmm_running"] = True
 
-                    if isinstance(reading, (int, float)):
+                        if psu and not system_state["psu_output"]:
 
-                        system_state["dmm_voltage"] = reading
+                            try:
+                                with psu_lock:
+                                    psu.write("OUT1")
 
-                except Exception as e:
+                                print("PSU ON")
 
-                    print(e)
+                                system_state["psu_output"] = True
 
-                    system_state["dmm_voltage"] = 0.0
+                            except Exception as e:
 
-            else:
+                                print("PSU ON ERROR:", e)
 
-                system_state["dmm_voltage"] = round(
-                    random.uniform(0, 10),
-                    3
-                )
+                    # -------------------------
+                    # OFF PERIOD
+                    # -------------------------
 
-        else:
+                    else:
 
-            system_state["dmm_voltage"] = 0.0
+                        system_state["ess_state"] = f"CYCLE_{cycle_no}_OFF"
 
-        # 5. CSV LOG
-        log_data(
-            system_state["dmm_voltage"],
-            system_state["psu_voltage"],
-            system_state["mode"],
-            system_state["ess_state"],
-            system_state["current_cycle"],
-            system_state["cycle_event"]
-        )
+                        system_state["event_timestamp"] = (
+                            datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                        )
 
-        # -------------------------------------------------
-        # 6. LOOP DELAY
-        # -------------------------------------------------
+                        system_state["event_name"] = (
+                            f"Cycle {cycle_no} OFF"
+                        )
 
-        time.sleep(0.1)
+                        system_state["cycle_event"] = (
+                            f"Cycle {cycle_no} OFF"
+                        )
 
-@app.route('/dmm/start', methods=['POST'])
-def start_dmm():
-    if system_state["mode"] != "manual":
-        return jsonify({"error": "Auto mode active"}), 403
+                        system_state["dmm_running"] = False
 
-    system_state["dmm_running"] = True
-    return jsonify({"status": "DMM started"})
+                        if psu and system_state["psu_output"]:
 
-@app.route('/dmm/stop', methods=['POST'])
-def stop_dmm():
-    if system_state["mode"] != "manual":
-        return jsonify({"error": "Auto mode active"}), 403
+                            try:
 
-    system_state["dmm_running"] = False
-    return jsonify({"status": "DMM stopped"})
+                                with psu_lock:
+                                    psu.write("OUT0")
 
-@app.route('/psu/start', methods=['POST'])
-def start_psu():
+                                print("PSU OFF")
 
-    global psu, psu_busy
+                                system_state["psu_output"] = False
 
-    if system_state["mode"] == "auto":
-        return jsonify({
-            "error": "Manual PSU control disabled in AUTO mode"
-        }), 403
+                            except Exception as e:
 
-    if not psu:
-        return jsonify({"error":"PSU not connected"}),500
-
-    try:
-        psu_busy = True
-
-        data = request.json or {}
-
-        voltage = float(data.get("voltage",0))
-        current = float(data.get("current",0))
-
-        with psu_lock:
-
-            psu.write(f"VSET1:{voltage:.3f}")
-            time.sleep(0.2)
-
-            psu.write(f"ISET1:{current:.3f}")
-            time.sleep(0.2)
-
-            psu.write("OUT1")
-            time.sleep(0.5)
-
-        system_state["psu_output"] = True
-        system_state["psu_voltage"] = voltage
-        system_state["psu_current"] = current
-
-        return jsonify({"status":"started"})
-
-    except Exception as e:
-
-        return jsonify({"error":str(e)}),500
-
-    finally:
-
-        psu_busy = False
-
-@app.route('/psu/stop', methods=['POST'])
-def stop_psu():
-
-    global psu, psu_busy
-
-    if system_state["mode"] == "auto":
-        return jsonify({
-            "error": "Manual PSU control disabled in AUTO mode"
-        }), 403
-
-    if not psu:
-        return jsonify({
-            "error": "PSU not connected"
-        }), 500
-
-    try:
-
-        psu_busy = True
-
-        with psu_lock:
-
-            psu.write("OUT0")
-            time.sleep(0.5)
-
-        system_state["psu_output"] = False
-        system_state["psu_voltage"] = 0.0
-        system_state["psu_current"] = 0.0
-
-        return jsonify({
-            "status": "stopped"
-        })
-
-    except Exception as e:
-
-        return jsonify({
-            "error": str(e)
-        }), 500
-
-    finally:
-
-        psu_busy = False
-
-@app.route('/psu/set', methods=['POST'])
-def set_psu():
-
-    global psu, psu_busy
-
-    if system_state["mode"] == "auto":
-        return jsonify({
-            "error": "PSU settings locked in AUTO mode"
-        }), 403
-
-    if not psu:
-        return jsonify({
-            "error": "PSU not connected"
-        }), 500
-
-    data = request.json or {}
-
-    voltage = float(data.get("voltage", 0))
-    current = float(data.get("current", 0))
-
-    try:
-
-        psu_busy = True
-
-        with psu_lock:
-
-            psu.write(f"VSET1:{voltage:.3f}")
-            time.sleep(0.2)
-
-            psu.write(f"ISET1:{current:.3f}")
-            time.sleep(0.2)
-
-        system_state["psu_voltage"] = voltage
-        system_state["psu_current"] = current
-
-        return jsonify({
-            "status": "updated"
-        })
-
-    except Exception as e:
-
-        return jsonify({
-            "error": str(e)
-        }), 500
-    
-    finally:
-        psu_busy = False
-
-@app.route('/config', methods=['POST'])
-def save_config():
-
-    data = request.json or {}
-
-    initial_off = max(1, int(data.get("initial_off", 5)))
-    on_time = max(1, int(data.get("on_time", 5)))
-    off_time = max(1, int(data.get("off_time", 5)))
-    cycles = max(1, int(data.get("cycles", 10)))
-
-    system_state["config"] = {
-        "initial_off": initial_off,
-        "on_time": on_time,
-        "off_time": off_time,
-        "cycles": cycles
-    }
-    
-    system_state["cycle_start"] = time.time()
-
-    return jsonify({
-        "status": "Configuration saved",
-        "config": system_state["config"]
-    })
-
-@app.route('/download')
-def download():
-    return send_file(CSV_FILE, as_attachment=True)
-
-@app.route('/reset', methods=['POST'])
-def reset():
-
-    global system_state
-
-    system_state["mode"] = "manual"
-    system_state["auto_running"] = False
-    system_state["dmm_running"] = False
-
-    system_state["current_cycle"] = 0
-    system_state["cycle_event"] = "Waiting"
-    system_state["ess_state"] = "IDLE"
-
-    system_state["dmm_voltage"] = 0.0
-    system_state["psu_voltage"] = 0.0
-    system_state["psu_current"] = 0.0
-    system_state["pressure"] = 0.0
-
-    system_state["cycle_start"] = time.time()
-
-    # Erase old CSV and create fresh one
-    initialize_csv()
-
-    return jsonify({
-        "status": "reset complete"
-    })
-
-@app.route('/id')
-def get_ids():
-    return jsonify({
-        "psu_id": psu.idn() if psu else "Not Connected",
-        "dmm_id": dmm.idn() if dmm else "Not Connected"
-    })
-
-@app.route('/psu_raw')
-def psu_raw():
-
-    global psu
-
-    if not psu:
-        return "No PSU"
-
-    cmds = [
-        "VSET1?",
-        "ISET1?",
-        "STATUS?"
-    ]
-
-    for cmd in cmds:
-        print(cmd, "=", psu.query(cmd))
-
-    return "Done"
-
-@app.route('/ports')
-def get_ports():
-
-    ports = serial.tools.list_ports.comports()
-
-    port_list = []
-
-    for port in ports:
-        port_list.append({
-            "device": port.device,
-            "description": port.description
-        })
-
-    return jsonify(port_list)
-
-@app.route('/connect_dmm', methods=['POST'])
-def connect_dmm():
-
-    global dmm
-
-    data = request.json
-
-    com_port = data.get("port")
-
-    BAUDRATES = [9600, 19200, 38400, 57600, 115200]
-
-    try:
-        if dmm:
-            dmm.close()
-            dmm = None
-    except:
-        pass
-
-    for baud in BAUDRATES:
-
-        test_dmm = None
-
-        try:
-
-            print(f"\nTrying baudrate: {baud}")
-
-            test_dmm = Multimeter(
-                port=com_port,
-                baudrate=baud,
-            )
-
-            time.sleep(1)
-
-            response = test_dmm.idn()
-
-            print("RAW ID RESPONSE:", response)
-
-            if response and len(response) > 3:
-
-                dmm = test_dmm
-
-                print("\n================================")
-                print("DMM CONNECTED SUCCESSFULLY")
-                print("PORT:", com_port)
-                print("BAUDRATE:", baud)
-                print("DMM ID:", response)
-                print("================================\n")
-
-                return jsonify({
-                    "status": "connected",
-                    "id": response,
-                    "baudrate": baud
-                })
-
-            else:
-
-                print("Invalid response")
-
-                test_dmm.close()
-
-        except Exception as e:
-
-            print(f"FAILED at {baud}: {e}")
-
-            try:
-                if test_dmm:
-                    test_dmm.close()
-            except:
-                pass
-
-    dmm = None
-
-    return jsonify({
-        "status": "error",
-        "message": "Could not connect to DMM"
-    }), 500
-
-if __name__ == '__main__':
-    worker = Thread(
-        target=background_worker,
-        daemon=True
-    )
-
-    worker.start()
-
-    app.run(
-        debug=False,
-        threaded=True
-    )
+                                print("PSU OFF ERROR:", e)
