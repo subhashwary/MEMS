@@ -1,20 +1,14 @@
 timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
-def background_worker():
 
-    while True:
+worker = Thread(
+    target=background_worker,
+    daemon=True
+)
 
-        system_state["timestamp"] = (
-            datetime.now()
-            .strftime("%H:%M:%S.%f")[:-3]
-        )
+worker.start()
 
-        # ESS Logic
-
-        # PSU Read
-
-        # DMM Read
-
-        # CSV Logging
-
-        time.sleep(0.1)
+app.run(
+    debug=False,
+    threaded=True
+)
