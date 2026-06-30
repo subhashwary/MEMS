@@ -10,7 +10,7 @@ if psu and system_state["psu_output"]:
         system_state["psu_voltage"] = 0.0
         system_state["psu_current"] = 0.0
 
-        print(f"Cycle {cycle_no}: PSU OFF")
+        print(f"Cycle {cycle_no} PSU OFF")
 
     except Exception as e:
 
