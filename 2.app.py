@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, render_template, send_file
 import random
 import time
+from datetime import datetime
 import serial.tools.list_ports
 import re
 
@@ -42,7 +43,7 @@ def send_psu(voltage, current):
     except Exception as e:
         return str(e)
 
-from threading import Lock
+from threading import Thread, Lock
 
 serial_lock = Lock()
 
@@ -54,17 +55,17 @@ from logger import initialize_csv, log_data, CSV_FILE
 
 app = Flask(__name__)
 
-# INITIALIZATION
 initialize_csv()
 
-# Connect to instruments (replace COM ports with your actual ports)
 psu = None
 
 dmm = None
 
-# GLOBAL SYSTEM STATE
 system_state = {
     "mode": "manual",
+    "timestamp": "",
+    "event_timestamp": "",
+    "event_name": "",
     "dmm_running": False,
     "dmm_voltage": 0.0,
     "pressure": 0.0,
@@ -86,6 +87,8 @@ system_state = {
     "cycle_event": "Waiting",
 
     "config": {
+        "voltage": 2.0,
+        "current": 0.1,
         "initial_off": 5,
         "on_time": 5,
         "off_time": 5,
@@ -93,7 +96,6 @@ system_state = {
     }
 }
 
-# WEB PAGE
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -122,8 +124,6 @@ def status():
 
         "auto_running": system_state["auto_running"],
 
-        "ess_state": system_state["ess_state"],
-
         "voltage": system_state["psu_voltage"],
 
         "current": system_state["psu_current"]
@@ -140,7 +140,6 @@ def connect_psu():
 
     with psu_lock:
 
-        # Close previous PSU connection if any
         try:
             if psu:
                 psu.close()
@@ -152,7 +151,6 @@ def connect_psu():
             psu = None
             response = ""
 
-            # Try common baud rates
             for baud in [9600, 19200, 38400, 57600]:
 
                 try:
@@ -162,7 +160,6 @@ def connect_psu():
                     candidate = PowerSupply(
                         port=com_port,
                         baudrate=baud,
-                        # timeout=2
                     )
 
                     idn  = candidate.query("*IDN?")
@@ -229,7 +226,6 @@ def connect_psu():
 
                     print(f"Failed at {baud}: {e}")
 
-            # If all baud rates fail
             psu = None
 
             return jsonify({
@@ -327,70 +323,66 @@ def psu_debug():
             "error": str(e)
         })
 
-# LIVE DATA API
-@app.route('/data')
+@app.route("/data")
 def data():
 
-    global psu_busy, psu
+    return jsonify({
 
-    # Simulated pressure reading
-    # system_state["pressure"] = pressure_from_sensor
+        **system_state,
 
-    # AUTO MODE LOGIC
-    if (
-        system_state["mode"] == "auto"
-        and system_state["auto_running"]
-    ):
-        print("AUTO LOOP RUNNING")
+        "mode_numeric":
+            1 if system_state["mode"] == "auto" else 0,
 
-        cfg = system_state["config"]
+        "ess_numeric":
+            2 if "ON" in system_state["ess_state"]
+            else 1 if system_state["ess_state"] == "INITIAL_DELAY"
+            else 0
 
-        elapsed = time.time() - system_state["cycle_start"]
+    })
 
-        initial_delay = cfg["initial_off"]
-        on_time = cfg["on_time"]
-        off_time = cfg["off_time"]
-        cycles = cfg["cycles"]
+def background_worker():
 
-        cycle_period = on_time + off_time
+    global psu
 
-        if elapsed < initial_delay:
+    while True:
 
-            system_state["ess_state"] = "INITIAL_DELAY"
-            system_state["cycle_event"] = "Waiting Initial Delay"
-            system_state["current_cycle"] = 0
-            system_state["dmm_running"] = False
+        # 1. TIMESTAMP
+        system_state["timestamp"] = (
+            datetime.now().strftime("%H:%M:%S.%f")[:-3]
+        )
 
-            if system_state["psu_output"]:
-                try:
-                    with psu_lock:
-                        psu.write("OUT0")
-                except:
-                    pass
+        # 2. ESS UPDATE
+        if (
+            system_state["mode"] == "auto"
+            and system_state["auto_running"]
+        ):
+            
+            print("AUTO LOOP RUNNING")
 
-                system_state["psu_output"] = False
+            cfg = system_state["config"]
 
-        else:
+            elapsed = time.time() - system_state["cycle_start"]
 
-            adjusted = elapsed - initial_delay
+            initial_delay = cfg["initial_off"]
+            on_time = cfg["on_time"]
+            off_time = cfg["off_time"]
+            cycles = cfg["cycles"]
 
-            print("AUTO STARTED")
-            print("elapsed =", elapsed)
-            print("adjusted =", adjusted)
+            cycle_period = on_time + off_time
 
-            completed_cycles = int(
-                adjusted // cycle_period
-            )
+            # -------------------------
+            # INITIAL DELAY
+            # -------------------------
 
-            if completed_cycles >= cycles:
+            if elapsed < initial_delay:
 
-                system_state["auto_running"] = False
-                system_state["mode"] = "manual"
+                system_state["ess_state"] = "INITIAL_DELAY"
+                system_state["cycle_event"] = "Waiting Initial Delay"
+                system_state["current_cycle"] = 0
+                system_state["dmm_running"] = False
 
-                system_state["ess_state"] = "COMPLETE"
-                system_state["cycle_event"] = "ESS Completed"
+                if system_state["psu_output"]:
 
-                if psu and system_state["psu_output"]:
                     try:
                         with psu_lock:
                             psu.write("OUT0")
@@ -401,186 +393,233 @@ def data():
 
             else:
 
-                cycle_no = completed_cycles + 1
+                adjusted = elapsed - initial_delay
 
-                position = adjusted % cycle_period
+                completed_cycles = int(
+                    adjusted // cycle_period
+                )
 
-                print("cycle_no =", cycle_no)
-                print("position =", position)
+                # -------------------------
+                # ESS COMPLETE
+                # -------------------------
 
-                system_state["current_cycle"] = cycle_no
+                if completed_cycles >= cycles:
 
-                if position < on_time:
+                    system_state["auto_running"] = False
+                    system_state["mode"] = "manual"
 
-                    system_state["ess_state"] = f"CYCLE_{cycle_no}_ON"
-                    system_state["cycle_event"] = f"Cycle {cycle_no} ON"
-                    system_state["dmm_running"] = True
-
-                    if psu and not system_state["psu_output"]:
-                        try:
-                            with psu_lock:
-                                psu.write("OUT1")
-                            
-                            print("PSU ON")
-                            system_state["psu_output"] = True
-
-                        except Exception as e:
-                            print("PSU ON ERROR:", e)
-
-                else:
-
-                    system_state["ess_state"] = f"CYCLE_{cycle_no}_OFF"
-                    system_state["cycle_event"] = f"Cycle {cycle_no} OFF"
                     system_state["dmm_running"] = False
 
-                    if psu and system_state["psu_output"]:
+                    system_state["current_cycle"] = cycles
+
+                    system_state["psu_output"] = False
+
+                    system_state["ess_state"] = "COMPLETE"
+                    system_state["cycle_event"] = "ESS Completed"
+
+                    if psu:
+
                         try:
                             with psu_lock:
                                 psu.write("OUT0")
+                                time.sleep(0.2)
+                        except:
+                            pass
 
-                            print("PSU OFF")
-                            system_state["psu_output"] = False
-
-                        except Exception as e:
-                            print("PSU OFF ERROR:", e)
-
-    # DMM READING
-    if system_state["dmm_running"]:
-        if dmm:
-            try:
-                reading = dmm.measure_voltage()
-                if isinstance(reading, (int, float)):
-                    system_state["dmm_voltage"] = reading
-            except Exception as e:
-                print("DMM read error:", e)
-                system_state["dmm_voltage"] = 0.0
-        else:
-            system_state["dmm_voltage"] = round(random.uniform(0, 10), 3)
-    else:
-        system_state["dmm_voltage"] = 0.0
-
-    # PSU READINGS (FIXED LOCATION)
-    PSU_READ_INTERVAL = 1
-
-    last_psu_read = system_state.get("last_psu_read", 0)
-
-    if (
-        psu
-        and not psu_busy
-        and (time.time() - last_psu_read > PSU_READ_INTERVAL)
-    ):
-
-        try:
-
-            with psu_lock:
-
-                if system_state["psu_output"]:
-
-                    v = psu.query("VOUT1?")
-                    i = psu.query("IOUT1?")
+                        system_state["psu_output"] = False
+                        system_state["psu_voltage"] = 0.0
+                        system_state["psu_current"] = 0.0
 
                 else:
 
-                    v = "0"
-                    i = "0"
+                    cycle_no = completed_cycles + 1
 
-            print("PSU V =", v)
-            print("PSU I =", i)
+                    position = adjusted % cycle_period
 
-            if not v or not i:
+                    system_state["current_cycle"] = cycle_no
 
-                print("WARNING: PSU returned empty response")
+                    # -------------------------
+                    # ON PERIOD
+                    # -------------------------
+
+                    if position < on_time:
+
+                        system_state["ess_state"] = f"CYCLE_{cycle_no}_ON"
+
+                        system_state["event_timestamp"] = (
+                            datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                        )
+
+                        system_state["event_name"] = (
+                            f"Cycle {cycle_no} ON"
+                        )
+
+                        system_state["cycle_event"] = (
+                            f"Cycle {cycle_no} ON"
+                        )
+
+                        system_state["dmm_running"] = True
+
+                        if psu and not system_state["psu_output"]:
+
+                            try:
+
+                                voltage = system_state["config"]["voltage"]
+                                current = system_state["config"]["current"]
+
+                                with psu_lock:
+
+                                    psu.write(f"VSET1:{voltage:.3f}")
+                                    time.sleep(0.2)
+
+                                    psu.write(f"ISET1:{current:.3f}")
+                                    time.sleep(0.2)
+
+                                    psu.write("OUT1")
+                                    time.sleep(0.2)
+
+                                system_state["psu_output"] = True
+                                system_state["psu_voltage"] = voltage
+                                system_state["psu_current"] = current
+
+                                print(f"Cycle {cycle_no}: PSU ON")
+                                print(f"Voltage = {voltage} V")
+                                print(f"Current = {current} A")
+
+                            except Exception as e:
+
+                                print("PSU ON ERROR:", e)
+
+                    else:
+
+                        system_state["ess_state"] = f"CYCLE_{cycle_no}_OFF"
+
+                        system_state["event_timestamp"] = (
+                            datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                        )
+
+                        system_state["event_name"] = (
+                            f"Cycle {cycle_no} OFF"
+                        )
+
+                        system_state["cycle_event"] = (
+                            f"Cycle {cycle_no} OFF"
+                        )
+
+                        system_state["dmm_running"] = False
+
+                        if psu and system_state["psu_output"]:
+
+                            try:
+
+                                with psu_lock:
+                                    psu.write("OUT0")
+                                    time.sleep(0.2)
+
+                                system_state["psu_output"] = False
+                                system_state["psu_voltage"] = 0.0
+                                system_state["psu_current"] = 0.0
+
+                                print(f"Cycle {cycle_no} PSU OFF")
+
+                            except Exception as e:
+
+                                print("PSU OFF ERROR:", e)
+
+        # 3. PSU READ
+        PSU_READ_INTERVAL = 1
+
+        last_psu_read = system_state.get(
+            "last_psu_read",
+            0
+        )
+
+        if (
+            psu
+            and not psu_busy
+            and (time.time() - last_psu_read > PSU_READ_INTERVAL)
+        ):
+
+            try:
+
+                with psu_lock:
+
+                    if system_state["psu_output"]:
+
+                        v = psu.query("VOUT1?")
+                        i = psu.query("IOUT1?")
+
+                    else:
+
+                        v = "0"
+                        i = "0"
+
+                print("PSU V =", v)
+                print("PSU I =", i)
+
+                if not v or not i:
+
+                    print("WARNING")
+
+                else:
+
+                    system_state["psu_voltage"] = parse_value(v)
+                    system_state["psu_current"] = parse_value(i)
+
+                    system_state["last_psu_read"] = time.time()
+
+            except Exception as e:
+
+                print(e)
+
+                try:
+                    psu.close()
+                except:
+                    pass
+
+                psu = None
+
+# 4. DMM READ
+        if system_state["dmm_running"]:
+
+            if dmm:
+
+                try:
+
+                    reading = dmm.measure_voltage()
+
+                    if isinstance(reading, (int, float)):
+
+                        system_state["dmm_voltage"] = reading
+
+                except Exception as e:
+
+                    print(e)
+
+                    system_state["dmm_voltage"] = 0.0
 
             else:
 
-                system_state["psu_voltage"] = parse_value(v)
-                system_state["psu_current"] = parse_value(i)
+                system_state["dmm_voltage"] = round(
+                    random.uniform(0, 10),
+                    3
+                )
 
-                system_state["last_psu_read"] = time.time()
+        else:
 
-        except Exception as e:
+            system_state["dmm_voltage"] = 0.0
 
-            print("PSU read error:", e)
+                    # 5. CSV LOG
+        log_data(
+            system_state["dmm_voltage"],
+            system_state["psu_voltage"],
+            system_state["mode"],
+            system_state["ess_state"],
+            system_state["current_cycle"],
+            system_state["cycle_event"]
+        )
+        time.sleep(0.1)
 
-            try:
-                psu.close()
-            except:
-                pass
-
-            psu = None
-
-    # LOG DATA
-    log_data(
-        system_state["pressure"],
-        system_state["dmm_voltage"],
-        system_state["psu_voltage"],
-        system_state["psu_current"],
-        system_state["mode"],
-        system_state["ess_state"],
-        system_state["current_cycle"],
-        system_state["cycle_event"]
-    )
-
-    return jsonify({
-
-        **system_state,
-
-        "timestamp": time.strftime("%H:%M:%S"),
-
-        "mode_numeric":
-            1 if system_state["mode"] == "auto" else 0,
-
-        "ess_numeric":
-            2 if "ON" in system_state["ess_state"]
-            else 1 if system_state["ess_state"] == "INITIAL_DELAY"
-            else 0
-    })
-
-# MODE CONTROL
-@app.route('/mode', methods=['POST'])
-def set_mode():
-
-    mode = request.json.get("mode")
-
-    print("MODE REQUEST =", mode)
-
-    if mode == "manual":
-
-        system_state["mode"] = "manual"
-        system_state["auto_running"] = False
-
-        return jsonify({"status":"manual mode"})
-
-    elif mode == "auto":
-
-        if not psu:
-            return jsonify({
-                "error": "Connect PSU first"
-            }), 400
-
-        if not dmm:
-            return jsonify({
-                "error": "Connect DMM first"
-            }), 400
-
-        system_state["mode"] = "auto"
-        system_state["auto_running"] = True
-
-        system_state["cycle_start"] = time.time()
-
-        system_state["current_cycle"] = 0
-
-        system_state["ess_state"] = "INITIAL_DELAY"
-
-        system_state["cycle_event"] = "Starting ESS"
-
-        return jsonify({
-            "status": "auto mode"
-        })
-
-    return jsonify({"error":"Invalid mode"}),400
-
-# DMM CONTROL
 @app.route('/dmm/start', methods=['POST'])
 def start_dmm():
     if system_state["mode"] != "manual":
@@ -588,7 +627,6 @@ def start_dmm():
 
     system_state["dmm_running"] = True
     return jsonify({"status": "DMM started"})
-
 
 @app.route('/dmm/stop', methods=['POST'])
 def stop_dmm():
@@ -598,7 +636,6 @@ def stop_dmm():
     system_state["dmm_running"] = False
     return jsonify({"status": "DMM stopped"})
 
-# POWER SUPPLY CONTROL
 @app.route('/psu/start', methods=['POST'])
 def start_psu():
 
@@ -687,7 +724,6 @@ def stop_psu():
 
         psu_busy = False
 
-# NEW ROUTE
 @app.route('/psu/set', methods=['POST'])
 def set_psu():
 
@@ -720,9 +756,6 @@ def set_psu():
             psu.write(f"ISET1:{current:.3f}")
             time.sleep(0.2)
 
-            #psu.write("OUT1")
-            #time.sleep(0.1)
-
         system_state["psu_voltage"] = voltage
         system_state["psu_current"] = current
 
@@ -739,31 +772,142 @@ def set_psu():
     finally:
         psu_busy = False
 
-# SAVE AUTO MODE CONFIGURATION
 @app.route('/config', methods=['POST'])
 def save_config():
+
     data = request.json or {}
 
+    voltage = float(data.get("voltage", 2.0))
+    current = float(data.get("current", 0.1))
+
+    initial_off = max(1, int(data.get("initial_off", 5)))
+    on_time = max(1, int(data.get("on_time", 5)))
+    off_time = max(1, int(data.get("off_time", 5)))
+    cycles = max(1, int(data.get("cycles", 10)))
+
     system_state["config"] = {
-        "initial_off": int(data.get("initial_off", 5)),
-        "on_time": int(data.get("on_time", 5)),
-        "off_time": int(data.get("off_time", 5)),
-        "cycles": int(data.get("cycles", 10))
+
+        "voltage": voltage,
+        "current": current,
+
+        "initial_off": initial_off,
+        "on_time": on_time,
+        "off_time": off_time,
+        "cycles": cycles
     }
 
     system_state["cycle_start"] = time.time()
 
     return jsonify({
-        "status": "Configuration saved",
+        "status": "Configuration Saved",
         "config": system_state["config"]
     })
 
-# DOWNLOAD CSV
+@app.route('/mode', methods=['POST'])
+def set_mode():
+
+    global psu
+
+    data = request.json or {}
+    mode = data.get("mode")
+
+    print("MODE REQUEST =", mode)
+
+    if mode == "manual":
+
+        system_state["mode"] = "manual"
+        system_state["auto_running"] = False
+        system_state["dmm_running"] = False
+
+        if psu and system_state["psu_output"]:
+            try:
+                with psu_lock:
+                    psu.write("OUT0")
+                    time.sleep(0.2)
+            except Exception as e:
+                print("PSU OFF ERROR:", e)
+
+        system_state["psu_output"] = False
+        system_state["psu_voltage"] = 0.0
+        system_state["psu_current"] = 0.0
+
+        system_state["ess_state"] = "IDLE"
+        system_state["cycle_event"] = "Waiting"
+        system_state["current_cycle"] = 0
+
+        return jsonify({
+            "status": "manual mode"
+        })
+
+    elif mode == "auto":
+
+        if not psu:
+            return jsonify({
+                "error": "Connect PSU first"
+            }), 400
+
+        if not dmm:
+            return jsonify({
+                "error": "Connect DMM first"
+            }), 400
+
+        system_state["mode"] = "auto"
+        system_state["auto_running"] = True
+
+        system_state["cycle_start"] = time.time()
+
+        system_state["current_cycle"] = 0
+
+        system_state["ess_state"] = "INITIAL_DELAY"
+        system_state["cycle_event"] = "Starting ESS"
+
+        system_state["dmm_running"] = False
+
+        system_state["psu_output"] = False
+        system_state["psu_voltage"] = 0.0
+        system_state["psu_current"] = 0.0
+
+        print("AUTO MODE STARTED")
+
+        return jsonify({
+            "status": "auto mode"
+        })
+
+    return jsonify({
+        "error": "Invalid mode"
+    }), 400
+
 @app.route('/download')
 def download():
     return send_file(CSV_FILE, as_attachment=True)
 
-# GET INSTRUMENT IDS
+@app.route('/reset', methods=['POST'])
+def reset():
+
+    global system_state
+
+    system_state["mode"] = "manual"
+    system_state["auto_running"] = False
+    system_state["dmm_running"] = False
+
+    system_state["current_cycle"] = 0
+    system_state["cycle_event"] = "Waiting"
+    system_state["ess_state"] = "IDLE"
+
+    system_state["dmm_voltage"] = 0.0
+    system_state["psu_voltage"] = 0.0
+    system_state["psu_current"] = 0.0
+    system_state["pressure"] = 0.0
+
+    system_state["cycle_start"] = time.time()
+
+    # Erase old CSV and create fresh one
+    initialize_csv()
+
+    return jsonify({
+        "status": "reset complete"
+    })
+
 @app.route('/id')
 def get_ids():
     return jsonify({
@@ -790,7 +934,6 @@ def psu_raw():
 
     return "Done"
 
-# GET AVAILABLE COM PORTS
 @app.route('/ports')
 def get_ports():
 
@@ -806,7 +949,6 @@ def get_ports():
 
     return jsonify(port_list)
 
-# CONNECT DMM
 @app.route('/connect_dmm', methods=['POST'])
 def connect_dmm():
 
@@ -818,7 +960,6 @@ def connect_dmm():
 
     BAUDRATES = [9600, 19200, 38400, 57600, 115200]
 
-    # CLOSE OLD CONNECTION FIRST
     try:
         if dmm:
             dmm.close()
@@ -826,7 +967,6 @@ def connect_dmm():
     except:
         pass
 
-    # TRY DIFFERENT BAUDRATES
     for baud in BAUDRATES:
 
         test_dmm = None
@@ -838,17 +978,14 @@ def connect_dmm():
             test_dmm = Multimeter(
                 port=com_port,
                 baudrate=baud,
-            #   timeout=2
             )
 
-            # give instrument time
             time.sleep(1)
 
             response = test_dmm.idn()
 
             print("RAW ID RESPONSE:", response)
 
-            # VALID RESPONSE CHECK
             if response and len(response) > 3:
 
                 dmm = test_dmm
@@ -876,14 +1013,12 @@ def connect_dmm():
 
             print(f"FAILED at {baud}: {e}")
 
-            # IMPORTANT
             try:
                 if test_dmm:
                     test_dmm.close()
             except:
                 pass
 
-    # IF ALL BAUDRATES FAIL
     dmm = None
 
     return jsonify({
@@ -891,9 +1026,15 @@ def connect_dmm():
         "message": "Could not connect to DMM"
     }), 500
 
-# MAIN
 if __name__ == '__main__':
+    worker = Thread(
+        target=background_worker,
+        daemon=True
+    )
+
+    worker.start()
+
     app.run(
-    debug=False,
-    threaded=True
-)
+        debug=False,
+        threaded=True
+    )
