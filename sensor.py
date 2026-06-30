@@ -3,5 +3,5 @@ system_state["event_timestamp"] = (
 )
 
 system_state["event_name"] = (
-    f"Cycle {cycle_no} ON"
+    f"Cycle {cycle_no} OFF"
 )
