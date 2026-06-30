@@ -500,62 +500,6 @@ def background_worker():
 
                                 print("PSU OFF ERROR:", e)
 
-                                        # -------------------------------------------------
-        # 3. PSU READ
-        # -------------------------------------------------
-
-        PSU_READ_INTERVAL = 1
-
-        last_psu_read = system_state.get(
-            "last_psu_read",
-            0
-        )
-
-        if (
-            psu
-            and not psu_busy
-            and (time.time() - last_psu_read > PSU_READ_INTERVAL)
-        ):
-
-            try:
-
-                with psu_lock:
-
-                    if system_state["psu_output"]:
-
-                        v = psu.query("VOUT1?")
-                        i = psu.query("IOUT1?")
-
-                    else:
-
-                        v = "0"
-                        i = "0"
-
-                print("PSU V =", v)
-                print("PSU I =", i)
-
-                if not v or not i:
-
-                    print("WARNING: PSU returned empty response")
-
-                else:
-
-                    system_state["psu_voltage"] = parse_value(v)
-                    system_state["psu_current"] = parse_value(i)
-
-                    system_state["last_psu_read"] = time.time()
-
-            except Exception as e:
-
-                print("PSU read error:", e)
-
-                try:
-                    psu.close()
-                except:
-                    pass
-
-                psu = None
-
 @app.route('/mode', methods=['POST'])
 def set_mode():
 
@@ -652,7 +596,7 @@ PSU_READ_INTERVAL = 1
 
                 psu = None
 
-        # 4. DMM READ
+                # 4. DMM READ
 if system_state["dmm_running"]:
 
             if dmm:
@@ -682,7 +626,7 @@ if system_state["dmm_running"]:
 
             system_state["dmm_voltage"] = 0.0
 
-        # 5. CSV LOG
+                    # 5. CSV LOG
         log_data(
             system_state["dmm_voltage"],
             system_state["psu_voltage"],
@@ -691,11 +635,6 @@ if system_state["dmm_running"]:
             system_state["current_cycle"],
             system_state["cycle_event"]
         )
-
-        # -------------------------------------------------
-        # 6. LOOP DELAY
-        # -------------------------------------------------
-
         time.sleep(0.1)
 
 @app.route('/dmm/start', methods=['POST'])
