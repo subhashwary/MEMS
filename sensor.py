@@ -1,5 +1,5 @@
-voltage:
-        document.getElementById("psVoltage").value,
-
-    current:
-        document.getElementById("psCurrent").value,
+console.log(
+    labels.length,
+    dmmData.length,
+    data.dmm_voltage
+);
