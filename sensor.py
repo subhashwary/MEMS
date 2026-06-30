@@ -1,15 +1,7 @@
-if(data.event_timestamp !== lastEventTime){
+system_state["event_timestamp"] = (
+    datetime.now().strftime("%H:%M:%S.%f")[:-3]
+)
 
-    lastEventTime = data.event_timestamp;
-
-    eventMarkers.push({
-
-        index: sampleNumber - 1,
-
-        title: data.event_name,
-
-        time: data.event_timestamp
-
-    });
-
-}
+system_state["event_name"] = (
+    f"Cycle {cycle_no} ON"
+)
