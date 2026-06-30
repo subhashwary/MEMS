@@ -12,15 +12,6 @@
             background: #f4f7fb;
         }
 
-        .header {
-            background: #1f2937;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
         .container {
             padding: 20px;
         }
@@ -82,7 +73,13 @@
             letter-spacing: 1px;
         }
 
+        .psu,
+        .dmm-box {
+            align-self: start;
+        }
+
         .ess-grid {
+            align-items: start;
             display:grid;
 
             grid-template-columns:
@@ -116,7 +113,7 @@
             padding: 20px;
             text-align: center;
             font-weight: bold;
-            height: 150px;
+            min-height: 150px;
 
             display: flex;
             flex-direction: column;
@@ -373,18 +370,20 @@
 }
 
 .instrument-box {
+    height: auto !important;
+    min-height: 420px;
     width: 100%;
-    min-height: 520px;
-
+    
     display: flex;
     flex-direction: column;
     align-items: center;
-
     padding: 25px;
     box-sizing: border-box;
 }
 
 .psu-box {
+    padding-bottom: 25px;
+
     grid-column: 1;
     grid-row: 1;
 }
@@ -409,7 +408,7 @@
 .psu-box {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: space-between;
 }
 
 .ps-row-bottom {
@@ -495,12 +494,13 @@
 }
 
 .dmm-title {
-    font-size: 20px;        /* bigger text */
+    font-size: 24px;        /* bigger text */
     font-weight: bold;
-    margin-top: -10px;      /* move upward */
-    margin-bottom: 30px;
+    /* margin-top: -10px;      /* move upward */
+    margin-bottom: 20px;
     color: #111827;
     letter-spacing: 0.5px;
+    text-align: center;
 }
 
 .dmm-row {
@@ -657,15 +657,13 @@
 
 .psu-buttons {
     width: 100%;
-
     display: flex;
     flex-direction: column;
-
     align-items: center;
 
     margin-top: 25px;
-
-    gap: 15px;
+    padding-bottom: 20px;
+    gap: 10px;
 }
 
 .psu-onoff {
@@ -751,14 +749,14 @@
 }
 
 .status-box {
-    min-height: 420px;
+    min-height: 320px;
     justify-content: flex-start;
     align-items: flex-start;
     text-align: left;
 }
 
 .ess-status-box {
-    min-height: 420px;
+    min-height: 320px;
 
     align-items: stretch;
 
@@ -875,7 +873,6 @@
 
 </div>
 <!-- PSU BOX END -->
-
 <!-- DMM BOX -->
 <div class="ess-box instrument-box dmm-box">
 
@@ -930,7 +927,6 @@
 
 </div>
 <!-- DMM BOX END -->
-
 <!-- NEW SMALL BOX -->
 <div class="ess-box small-box manual-box">
     
@@ -947,7 +943,6 @@
 </div>
 
 <!-- ROW 3 -->
-
 <div class="ess-box instrument-box status-box" 
     style="grid-column: 1; grid-row:2;">
 
@@ -994,36 +989,33 @@
     <div style="font-size:20px;font-weight:bold;margin-bottom:10px;">
         Time Delay
     </div>
+<div class="instrument-row">
+    <span class="instrument-label">Initial Delay</span>
 
-    <div class="instrument-row">
-        <span class="instrument-label">Initial Delay</span>
+    <input id="initialDelay" type="number" value="10">
 
-        <input id="initialDelay" type="number" value="10">
+    <span>Seconds</span>
+</div>
 
-        <span>Initial OFF</span>
-    </div>
+<div class="instrument-row">
+    <span class="instrument-label">ON Time</span>
 
-    <div class="instrument-row">
-        <span class="instrument-label">ON Time</span>
+    <input id="onTime" type="number" value="5">
 
-        <input id="onTime" type="number" value="5">
+    <span>Seconds</span>
+</div>
 
-        <span>ON Time</span>
-    </div>
+<div class="instrument-row">
+    <span class="instrument-label">OFF Time</span>
 
-    <div class="instrument-row">
-        <span class="instrument-label">OFF Time</span>
+    <input id="offTime" type="number" value="3">
 
-        
-<input id="offTime" type="number" value="3">
-
-        <span>OFF Time</span>
-    </div>
+    <span>Seconds</span>
+</div>
 
     <div class="instrument-row">
         <span class="instrument-label">No. of Cycles</span>
 
-        
 <input id="cycleCountInput" type="number" value="4">
 
         <span>No. of Cycles</span>
@@ -1049,26 +1041,112 @@
         <button class="btn-danger" onclick="downloadCSV()">Download CSV</button>
     </div>
 
-</div>
-
 <script>
 
 let labels = [];
-
-let pressureData = [];
 let dmmData = [];
-let psuVoltageData = [];
-let psuCurrentData = [];
-
-let essData = [];
-let modeData = [];
-let cycleData = [];
-
-let delayData = [];
+let stateData = [];
+let eventLabels = [];
+let eventMarkers = [];
+let previousState = "";
+let sampleNumber = 0;
 
 const ctx = document.getElementById('chart').getContext('2d');
 
+const eventLabelPlugin = {
+
+    id: "eventLabels",
+
+    afterDatasetsDraw(chart) {
+
+        const ctx = chart.ctx;
+
+        const meta = chart.getDatasetMeta(0);
+
+        ctx.save();
+
+        ctx.fillStyle = "black";
+        ctx.font = "11px Arial";
+
+        meta.data.forEach((point, index) => {
+
+            if(eventLabels[index] !== ""){
+
+                ctx.save();
+
+                ctx.translate(point.x, point.y - 10);
+
+                ctx.rotate(-Math.PI/4);
+
+                ctx.fillText(eventLabels[index],0,0);
+
+                ctx.restore();
+
+            }
+
+        });
+
+        ctx.restore();
+
+    }
+
+};
+
+Chart.register(eventLabelPlugin);
+
+const eventPlugin = {
+
+    id: "eventPlugin",
+
+    afterDatasetsDraw(chart) {
+
+        const ctx = chart.ctx;
+        const meta = chart.getDatasetMeta(0);
+
+        ctx.save();
+
+        ctx.font = "12px Arial";
+        ctx.textAlign = "center";
+
+        eventMarkers.forEach(marker => {
+
+            const point = meta.data[marker.index];
+
+            if (!point) return;
+
+            const x = point.x;
+            const y = point.y;
+
+            // vertical guide line
+            ctx.beginPath();
+            ctx.strokeStyle = "#666";
+            ctx.setLineDash([4,4]);
+            ctx.moveTo(x, chart.scales.y.top);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+
+            ctx.setLineDash([]);
+
+            // title
+            ctx.fillStyle = "blue";
+            ctx.fillText(marker.title, x, chart.scales.y.top + 15);
+
+            // timestamp
+            ctx.fillStyle = "black";
+            ctx.fillText(marker.time, x, chart.scales.y.top + 30);
+
+        });
+
+        ctx.restore();
+
+    }
+
+};
+
+Chart.register(eventPlugin);
+
 const chart = new Chart(ctx, {
+
     type: 'line',
 
     data: {
@@ -1077,63 +1155,13 @@ const chart = new Chart(ctx, {
         datasets: [
 
             {
-                label: 'Pressure (kPa)',
-                data: pressureData,
-                borderWidth: 2,
-                yAxisID: 'y'
-            },
-
-            {
                 label: 'DMM Voltage (V)',
                 data: dmmData,
                 borderColor: 'green',
                 borderWidth: 2,
-                yAxisID: 'y'
-            },
-
-            {
-                label: 'PSU Voltage (V)',
-                data: psuVoltageData,
-                borderWidth: 2,
-                yAxisID: 'y'
-            },
-
-            {
-                label: 'PSU Current (A)',
-                data: psuCurrentData,
-                borderWidth: 2,
-                yAxisID: 'y1'
-            },
-
-            {
-                label: 'ESS State',
-                data: essData,
-                stepped: true,
-                borderWidth: 3,
-                yAxisID: 'y2'
-            },
-
-            {
-                label: 'Initial Delay',
-                data: delayData,
-                stepped: true,
-                borderWidth: 3,
-                yAxisID: 'y2'
-            },
-
-            {
-                label: 'Mode',
-                data: modeData,
-                stepped: true,
-                borderWidth: 3,
-                yAxisID: 'y2'
-            },
-
-            {
-                label: 'Cycle',
-                data: cycleData,
-                borderWidth: 2,
-                yAxisID: 'y3'
+                yAxisID: 'y',
+                fill: false,
+                tension: 0.2
             }
         ]
     },
@@ -1144,56 +1172,21 @@ const chart = new Chart(ctx, {
 
         scales: {
 
+            x: {
+                title: {
+                    display: true,
+                    text: "Timestamp"
+                }
+            },
+
             y: {
-                type: 'linear',
-                position: 'left',
-                title: {
-                    display: true,
-                    text: 'Voltage / Pressure'
-                }
-            },
-
-            y1: {
-                type: 'linear',
-                position: 'right',
-                title: {
-                    display: true,
-                    text: 'Current (A)'
-                },
-
-                grid: {
-                    drawOnChartArea: false
-                }
-            },
-
-            y2: {
-                min: 0,
-                max: 3,
-
-                position: 'right',
-
-                title: {
-                    display: true,
-                    text: 'State'
-                },
-
-                grid: {
-                    drawOnChartArea: false
-                }
-            },
-
-            y3: {
-                position: 'right',
-
-                title: {
-                    display: true,
-                    text: 'Cycle'
-                },
-
-                grid: {
-                    drawOnChartArea: false
-                }
-            }
+    title: {
+        display: true,
+        text: 'Voltage (V)'
+    },
+    min: 0,
+    max: 3
+}
         }
     }
 });
@@ -1262,116 +1255,112 @@ setInterval(() => {
                 autoBtn.classList.add("active");
                 manualBtn.classList.remove("active");
             }
+            updateControls(data.mode);
 
-            // GRAPH
+        // GRAPH
         labels.push(data.timestamp);
+        const voltageValue = Number(data.dmm_voltage);
 
-        pressureData.push(data.pressure);
-
-        dmmData.push(data.dmm_voltage);
-
-        psuVoltageData.push(data.psu_voltage);
-
-        psuCurrentData.push(data.psu_current);
-
-        essData.push(data.ess_numeric);
-
-        modeData.push(data.mode_numeric);
-
-        cycleData.push(data.current_cycle);
-
-        delayData.push(
-            data.ess_state === "INITIAL_DELAY"
-                ? 2
-                : 0
+        dmmData.push(
+            Number.isFinite(voltageValue)
+                ? voltageValue
+                : null
         );
 
-            if (labels.length > 300) {
+        stateData.push(data.ess_state);
 
-                labels.shift();
+        if (data.ess_state !== previousState) {
 
-                pressureData.shift();
-                dmmData.shift();
+            if (data.ess_state.includes("_ON")) {
 
-                psuVoltageData.shift();
-                psuCurrentData.shift();
+                eventMarkers.push({
+                    index: labels.length - 1,
+                    title: `C${data.current_cycle} ON`,
+                    time: data.timestamp
+                });
 
-                essData.shift();
-                delayData.shift();
+            }
+            else if (data.ess_state.includes("_OFF")) {
 
-                modeData.shift();
-                cycleData.shift();
+                eventMarkers.push({
+                    index: labels.length - 1,
+                    title: `C${data.current_cycle} OFF`,
+                    time: data.timestamp
+                });
+
             }
 
-        if (data.mode === "auto") {
-
-            // DMM
-            dmmStartBtn.disabled = true;
-            dmmStopBtn.disabled = true;
-
-            dmmStartBtn.style.opacity = 0.5;
-            dmmStopBtn.style.opacity = 0.5;
-
-            // PSU
-            psuSendBtn.disabled = true;
-            psuOnBtn.disabled = true;
-            psuOffBtn.disabled = true;
-
-            psuSendBtn.style.opacity = 0.5;
-            psuOnBtn.style.opacity = 0.5;
-            psuOffBtn.style.opacity = 0.5;
-
-            // Inputs
-            voltageInput.disabled = true;
-            currentInput.disabled = true;
-
-        }
-        else {
-
-            // DMM
-            dmmStartBtn.disabled = false;
-            dmmStopBtn.disabled = false;
-
-            dmmStartBtn.style.opacity = 1;
-            dmmStopBtn.style.opacity = 1;
-
-            // PSU
-            psuSendBtn.disabled = false;
-            psuOnBtn.disabled = false;
-            psuOffBtn.disabled = false;
-
-            psuSendBtn.style.opacity = 1;
-            psuOnBtn.style.opacity = 1;
-            psuOffBtn.style.opacity = 1;
-
-            // Inputs
-            voltageInput.disabled = false;
-            currentInput.disabled = false;
+            previousState = data.ess_state;
         }
 
-            chart.update();
+        if (
+            stateData.length < 2 ||
+            stateData[stateData.length - 1] !== stateData[stateData.length - 2]
+        ) {
+            eventLabels.push(data.timestamp);
+        } else {
+            eventLabels.push("");
+        }
+
+            if(labels.length > 300) {
+
+                labels.shift();
+                dmmData.shift();
+                stateData.shift();
+                eventLabels.shift();
+            }
+
+            eventMarkers = eventMarkers
+            .map(m => ({...m,index:m.index-1}))
+            .filter(m => m.index >= 0);
+
+            chart.update("none");
         });
 
-}, 1500);
+}, 250);
+
+function updateControls(mode) {
+
+    const auto = mode === "auto";
+
+    // DMM
+    dmmStartBtn.disabled = auto;
+    dmmStopBtn.disabled = auto;
+
+    dmmStartBtn.style.opacity = auto ? 0.5 : 1;
+    dmmStopBtn.style.opacity = auto ? 0.5 : 1;
+
+    // PSU
+    psuSendBtn.disabled = auto;
+    psuOnBtn.disabled = auto;
+    psuOffBtn.disabled = auto;
+
+    psuSendBtn.style.opacity = auto ? 0.5 : 1;
+    psuOnBtn.style.opacity = auto ? 0.5 : 1;
+    psuOffBtn.style.opacity = auto ? 0.5 : 1;
+
+    // Inputs
+    voltageInput.disabled = auto;
+    currentInput.disabled = auto;
+}
 
 // Reset
 function resetData() {
 
     labels.length = 0;
-
-    pressureData.length = 0;
     dmmData.length = 0;
+    stateData.length = 0;
+    eventLabels.length = 0;
+    eventMarkers.length = 0;
 
-    psuVoltageData.length = 0;
-    psuCurrentData.length = 0;
 
-    essData.length = 0;
-    delayData.length = 0;
+    console.log(
+    labels.length,
+    dmmData.length,
+    data.dmm_voltage
+);
 
-    modeData.length = 0;
-    cycleData.length = 0;
-
-    chart.update();
+    chart.update("none");
 }
 
 function connectPSU() {
@@ -1502,9 +1491,6 @@ autoBtn.onclick = () => {
     });
 };
 
-let voltOn = false;
-let ampOn = false;
-
 function startDMM() {
     fetch('/dmm/start', { method: 'POST' })
     .then(res => res.json())
@@ -1524,6 +1510,12 @@ function stopDMM() {
 function sendCycleConfig() {
 
     const config = {
+
+        voltage:
+        document.getElementById("psVoltage").value,
+
+        current:
+        document.getElementById("psCurrent").value,
 
         initial_off:
             document.getElementById(
@@ -1573,6 +1565,17 @@ function loadPorts() {
         dmmSelect.innerHTML = '';
         psuSelect.innerHTML = '';
 
+        if (ports.length === 0) {
+
+            dmmSelect.innerHTML =
+                '<option>No Ports Found</option>';
+
+            psuSelect.innerHTML =
+                '<option>No Ports Found</option>';
+
+            return;
+        }
+
         ports.forEach(port => {
 
             const option1 =
@@ -1598,10 +1601,7 @@ function loadPorts() {
 
 loadPorts();
 
-// ============================================
 // CONNECT DMM
-// ============================================
-
 function connectDMM() {
 
     const port =
@@ -1774,18 +1774,10 @@ setInterval(() => {
     .then(res => res.json())
     .then(data => {
 
-        if (data.mode === "manual") {
+    manualBtn.classList.toggle("active", data.mode === "manual");
+    autoBtn.classList.toggle("active", data.mode === "auto");
 
-            manualBtn.classList.add("active");
-            autoBtn.classList.remove("active");
-
-        }
-        else {
-
-            autoBtn.classList.add("active");
-            manualBtn.classList.remove("active");
-
-        }
+    updateControls(data.mode);
 
         document.getElementById("psuStatus")
         .innerText =
