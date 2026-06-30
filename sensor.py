@@ -1,144 +1,55 @@
-            print("AUTO LOOP RUNNING")
+        # -------------------------------------------------
+        # 3. PSU READ
+        # -------------------------------------------------
 
-            cfg = system_state["config"]
+        PSU_READ_INTERVAL = 1
 
-            elapsed = time.time() - system_state["cycle_start"]
+        last_psu_read = system_state.get(
+            "last_psu_read",
+            0
+        )
 
-            initial_delay = cfg["initial_off"]
-            on_time = cfg["on_time"]
-            off_time = cfg["off_time"]
-            cycles = cfg["cycles"]
+        if (
+            psu
+            and not psu_busy
+            and (time.time() - last_psu_read > PSU_READ_INTERVAL)
+        ):
 
-            cycle_period = on_time + off_time
+            try:
 
-            # -------------------------
-            # INITIAL DELAY
-            # -------------------------
+                with psu_lock:
 
-            if elapsed < initial_delay:
+                    if system_state["psu_output"]:
 
-                system_state["ess_state"] = "INITIAL_DELAY"
-                system_state["cycle_event"] = "Waiting Initial Delay"
-                system_state["current_cycle"] = 0
-                system_state["dmm_running"] = False
-
-                if system_state["psu_output"]:
-
-                    try:
-                        with psu_lock:
-                            psu.write("OUT0")
-                    except:
-                        pass
-
-                    system_state["psu_output"] = False
-
-            else:
-
-                adjusted = elapsed - initial_delay
-
-                completed_cycles = int(
-                    adjusted // cycle_period
-                )
-
-                # -------------------------
-                # ESS COMPLETE
-                # -------------------------
-
-                if completed_cycles >= cycles:
-
-                    system_state["auto_running"] = False
-                    system_state["mode"] = "manual"
-
-                    system_state["ess_state"] = "COMPLETE"
-                    system_state["cycle_event"] = "ESS Completed"
-
-                    if psu and system_state["psu_output"]:
-
-                        try:
-                            with psu_lock:
-                                psu.write("OUT0")
-                        except:
-                            pass
-
-                        system_state["psu_output"] = False
-
-                else:
-
-                    cycle_no = completed_cycles + 1
-
-                    position = adjusted % cycle_period
-
-                    system_state["current_cycle"] = cycle_no
-
-                    # -------------------------
-                    # ON PERIOD
-                    # -------------------------
-
-                    if position < on_time:
-
-                        system_state["ess_state"] = f"CYCLE_{cycle_no}_ON"
-
-                        system_state["event_timestamp"] = (
-                            datetime.now().strftime("%H:%M:%S.%f")[:-3]
-                        )
-
-                        system_state["event_name"] = (
-                            f"Cycle {cycle_no} ON"
-                        )
-
-                        system_state["cycle_event"] = (
-                            f"Cycle {cycle_no} ON"
-                        )
-
-                        system_state["dmm_running"] = True
-
-                        if psu and not system_state["psu_output"]:
-
-                            try:
-                                with psu_lock:
-                                    psu.write("OUT1")
-
-                                print("PSU ON")
-
-                                system_state["psu_output"] = True
-
-                            except Exception as e:
-
-                                print("PSU ON ERROR:", e)
-
-                    # -------------------------
-                    # OFF PERIOD
-                    # -------------------------
+                        v = psu.query("VOUT1?")
+                        i = psu.query("IOUT1?")
 
                     else:
 
-                        system_state["ess_state"] = f"CYCLE_{cycle_no}_OFF"
+                        v = "0"
+                        i = "0"
 
-                        system_state["event_timestamp"] = (
-                            datetime.now().strftime("%H:%M:%S.%f")[:-3]
-                        )
+                print("PSU V =", v)
+                print("PSU I =", i)
 
-                        system_state["event_name"] = (
-                            f"Cycle {cycle_no} OFF"
-                        )
+                if not v or not i:
 
-                        system_state["cycle_event"] = (
-                            f"Cycle {cycle_no} OFF"
-                        )
+                    print("WARNING: PSU returned empty response")
 
-                        system_state["dmm_running"] = False
+                else:
 
-                        if psu and system_state["psu_output"]:
+                    system_state["psu_voltage"] = parse_value(v)
+                    system_state["psu_current"] = parse_value(i)
 
-                            try:
+                    system_state["last_psu_read"] = time.time()
 
-                                with psu_lock:
-                                    psu.write("OUT0")
+            except Exception as e:
 
-                                print("PSU OFF")
+                print("PSU read error:", e)
 
-                                system_state["psu_output"] = False
+                try:
+                    psu.close()
+                except:
+                    pass
 
-                            except Exception as e:
-
-                                print("PSU OFF ERROR:", e)
+                psu = None
