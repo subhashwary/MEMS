@@ -1,30 +1,29 @@
-@app.route('/config', methods=['POST'])
-def save_config():
+if psu and not system_state["psu_output"]:
 
-    data = request.json or {}
+    try:
 
-    voltage = float(data.get("voltage", 2.0))
-    current = float(data.get("current", 0.1))
+        voltage = system_state["config"]["voltage"]
+        current = system_state["config"]["current"]
 
-    initial_off = max(1, int(data.get("initial_off", 5)))
-    on_time = max(1, int(data.get("on_time", 5)))
-    off_time = max(1, int(data.get("off_time", 5)))
-    cycles = max(1, int(data.get("cycles", 10)))
+        with psu_lock:
 
-    system_state["config"] = {
+            psu.write(f"VSET1:{voltage:.3f}")
+            time.sleep(0.2)
 
-        "voltage": voltage,
-        "current": current,
+            psu.write(f"ISET1:{current:.3f}")
+            time.sleep(0.2)
 
-        "initial_off": initial_off,
-        "on_time": on_time,
-        "off_time": off_time,
-        "cycles": cycles
-    }
+            psu.write("OUT1")
+            time.sleep(0.2)
 
-    system_state["cycle_start"] = time.time()
+        system_state["psu_output"] = True
+        system_state["psu_voltage"] = voltage
+        system_state["psu_current"] = current
 
-    return jsonify({
-        "status": "Configuration Saved",
-        "config": system_state["config"]
-    })
+        print(f"Cycle {cycle_no}: PSU ON")
+        print(f"Voltage = {voltage} V")
+        print(f"Current = {current} A")
+
+    except Exception as e:
+
+        print("PSU ON ERROR:", e)
